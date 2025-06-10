@@ -3,20 +3,6 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `angular-cli.json`.
 import { AuthConfig } from '@auth0/auth0-angular';
-const authConfig: AuthConfig = {
-  domain: 'devlogin.bdpsmart.com',
-  clientId: 'UrdJyZAIIjP15ahBa358JwJWSLIwMqk0',
-  authorizationParams: {
-      redirect_uri: window.location.origin,
-  },
-  httpInterceptor: {
-      allowedList: [
-          {
-              uri: 'http://localhost:3000/*',
-          },
-      ],
-  },
-};
 
 
   export const environment = {
@@ -28,8 +14,6 @@ const authConfig: AuthConfig = {
     ump_url:'',
     ump_endpoint_url: '',
     baseurl: 'http://localhost:8080',
-    authConfig:authConfig,
-    auth: authConfig,
     mapbox: {
         accessToken: '',
     },

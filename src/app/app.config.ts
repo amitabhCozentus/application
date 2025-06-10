@@ -50,34 +50,6 @@ export function initializeAppFactory(
                         accessToken: configObj['mapBoxAccessToken']
                     }
                 });
-                environment.auth.authorizationParams = {
-                    ...environment.auth.authorizationParams,
-                    redirect_uri: window.location.origin,
-                };
-                environment.auth.authorizationParams = {
-                    ...environment.auth.authorizationParams,
-                    redirect_uri: window.location.origin,
-                };
-                const allowedList = (environment?.auth?.httpInterceptor
-                    ?.allowedList || []) as string[];
-
-                const interceptorConfig: ApiRouteDefinition[] = [
-                    {
-                        uriMatcher: (uri: string) =>
-                            uriMatcherFunc(
-                                uri,
-                                allowedList,
-                                environment.baseurl
-                            ),
-                    },
-                ];
-                environment.auth.httpInterceptor = {
-                    allowedList: interceptorConfig,
-                };
-                
-                console.log(environment.auth);
-                
-                authClientConfig.set(environment.auth);
             })
         );
 }
