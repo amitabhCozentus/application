@@ -1,0 +1,88 @@
+{
+    "profiles": {
+        "local": {
+        "apiUrl": "http://localhost:8080/api/portal-service/",
+        "production": false,
+        "logLevel": "debug" ,
+        "ump_endpoint_url":"https://hubdev.bdpsmart.com/portal-api",
+        "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w"
+      },
+      "dev": {
+        "apiUrl": "https://dnddev.bdpsmart.com/api/portal-service/",
+        "appIconBaseUrl": "https://hubdev.bdpsmart.com/assets/bdp/images/",
+        "ump_endpoint_url":"https://hubdev.bdpsmart.com/portal-api",
+        "ump_url":"https://hubdev.bdpsmart.com",
+        "production": false,
+        "logLevel": "debug" ,
+        "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w",
+        "auth": {
+          "domain": "devlogin.bdpsmart.com",
+          "clientId": "UrdJyZAIIjP15ahBa358JwJWSLIwMqk0",
+          "authorizationParams": {
+              "audience": "https://bdpint-smarthub-dev.us.auth0.com/api/v2/"
+          },
+          "httpInterceptor": {
+              "allowedList": ["/portal-api/api/*"]
+          }
+      }
+      },
+      "test": { 
+          "apiUrl": "https://dndtest.bdpsmart.com/api/portal-service/",
+          "appIconBaseUrl": "https://hubtest.bdpsmart.com/assets/bdp/images/",
+          "ump_endpoint_url":"https://hubtest.bdpsmart.com/portal-api",
+          "ump_url":"https://hubtest.bdpsmart.com",
+          "production": false,
+          "logLevel": "debug" ,
+          "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w",
+          "auth": {
+            "domain": "testlogin.bdpsmart.com",
+            "clientId": "JVzEjARXN1zhxgpmUiLQ8nycx8KQCzFu",
+            "authorizationParams": {
+                "audience": "https://bdpint-smarthub-test.us.auth0.com/api/v2/"
+            },
+            "httpInterceptor": {
+                "allowedList": ["/portal-api/api/*"]
+            }
+        }
+      },
+      "stage": { 
+        "apiUrl": "https://dndstage.bdpsmart.com/api/portal-service/",
+        "appIconBaseUrl": "https://hubtest.bdpsmart.com/assets/bdp/images/",
+        "ump_endpoint_url":"https://hubtest.bdpsmart.com/portal-api",
+        "ump_url":"https://hubtest.bdpsmart.com",
+        "production": false,
+        "logLevel": "debug" ,
+        "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w",
+        "auth": {
+          "domain": "testlogin.bdpsmart.com",
+          "clientId": "x5U4wiu8tHJIsqOHyHIIWhBhEhUDzQdX",
+          "authorizationParams": {
+              "audience": "https://bdpint-smarthub-test.us.auth0.com/api/v2/"
+          },
+          "httpInterceptor": {
+              "allowedList": ["/portal-api/api/*"]
+          }
+      }
+      },
+      "prod": {
+        "apiUrl": "https://dnd.bdpsmart.com/api/portal-service/",
+        "appIconBaseUrl": "https://hub.bdpsmart.com/assets/bdp/images/",
+        "ump_endpoint_url":"https://hub.bdpsmart.com/portal-api",
+        "ump_url":"https://hub.bdpsmart.com",
+        "production": false,
+        "logLevel": "debug" ,
+        "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w",
+        "auth": {
+          "domain": "login.bdpsmart.com",
+          "clientId": "bg7X3FMUdviqmck7iZm6CQJaoXMy4gdy",
+          "authorizationParams": {
+              "audience": "https://bdpint-smarthub-prod.us.auth0.com/api/v2/"
+          },
+          "httpInterceptor": {
+              "allowedList": ["/portal-api/api/*"]
+          }
+      }
+      }
+    },
+    "activeProfile": "test"
+  }
