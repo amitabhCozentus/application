@@ -3,11 +3,29 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { ApiRouteDefinition, AuthClientConfig } from '@auth0/auth0-angular';
+import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
+import { routes } from '../app/app.routes'
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
 export interface AppConfig {
     profiles: { [key: string]: { [key: string]: unknown } };
     activeProfile: string;
 }
+export const appConfig: ApplicationConfig = {
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
+      , ErrorHandler, {
+      provide: APP_INITIALIZER,
+     useFactory: initializeAppFactory,
+      deps: [HttpBackend],
+      multi: true,
+     } ,
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes)
+  ]
+};
 
 export function initializeAppFactory(
     httpBackend: HttpBackend,

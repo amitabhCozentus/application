@@ -1,11 +1,12 @@
 import { Component, OnInit, AfterViewInit, ChangeDetectorRef, SimpleChanges, DoCheck } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 //import { PrimeNGConfig } from 'primeng/api';
 
 @Component({
     selector: 'app-root',
+    imports:[RouterOutlet],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
-    standalone :false
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
