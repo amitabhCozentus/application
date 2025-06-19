@@ -38,6 +38,8 @@ import { OrganizationChartModule } from 'primeng/organizationchart';
 import { PopoverModule } from 'primeng/popover';
 import { PaginatorModule } from 'primeng/paginator';
 import { PanelModule } from 'primeng/panel';
+import { IconFieldModule } from 'primeng/iconfield';
+import { InputIconModule } from 'primeng/inputicon';
 import { PanelMenuModule } from 'primeng/panelmenu';
 import { PasswordModule } from 'primeng/password';
 import { PickListModule } from 'primeng/picklist';
@@ -71,6 +73,7 @@ import { DividerModule } from 'primeng/divider';
   declarations: [],
   imports: [
     CommonModule,
+    IconFieldModule,
     FormsModule,
     AccordionModule,
     AutoCompleteModule,
@@ -82,6 +85,7 @@ import { DividerModule } from 'primeng/divider';
     ChartModule,
     CheckboxModule,
     TabsModule,
+    InputIconModule,
     ConfirmDialogModule,
     ColorPickerModule,
     ContextMenuModule,
@@ -146,6 +150,8 @@ import { DividerModule } from 'primeng/divider';
     AutoCompleteModule,
     BreadcrumbModule,
     ButtonModule,
+    InputIconModule,
+    IconFieldModule,
     DatePickerModule,
     CardModule,
     CarouselModule,

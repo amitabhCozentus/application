@@ -9,6 +9,7 @@ $gutter: 1rem; //for primeflex grid system
 @import "assets/sass/variables/psa-bdp/color_palette_bdp";
 @import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 @import "assets/sass/variables/psa-bdp/psa_bdp_common";
+@import "tailwindcss";
  //@import "../node_modules/primeng/resources/themes/lara-light-blue/theme.css";
 //@import "../node_modules/primeng/resources/components/skeleton/skeleton.css";
 //@import "../node_modules/primeng/resources/components/button/button.css";
@@ -1117,6 +1118,8 @@ p-toggleswitch.ng-dirty.ng-invalid > .p-toggleswitch {
 
 .p-tablist-tab-list {
     gap:4vw;
+    border-width:0px !important;
+    background: var(--bdpTabListBackGround) !important;
 }
 
 .p-inputtext {
@@ -1133,7 +1136,7 @@ p-toggleswitch.ng-dirty.ng-invalid > .p-toggleswitch {
     border-radius: 5px;
 }
 .p-inputtext:enabled:hover {
-    border-color: #1b74c5;
+    border-color: #1b74c5 !important;
 }
 .p-inputtext:enabled:focus {
     outline: 0 none;
@@ -2362,7 +2365,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
     border-radius: 0;
 }
 .p-datatable .p-datatable-header {
-    background: #f6f9fe;
+    background: #ffff;
     color: #515c66;
     border: 1px solid rgba(232, 241, 248, 0.7);
     border-width: 1px 0 1px 0;

@@ -1,1 +1,312 @@
-<p>user-control works!</p>
+<div class="grid mt-2 m-2" id="bdpUserControl">
+    <div class="col-12">
+        <div class="grid">
+            <div class="col-12">
+                <p-tabs value="0">
+                    <p-tablist>
+                        <p-tab value="0">Users
+                            <p-badge value="2" class="ml-2" />
+                        </p-tab>
+                        <p-tab value="1">Users With Inactive Role
+                            <p-badge value="6" class="ml-2" />
+                        </p-tab>
+                    </p-tablist>
+                    <p-tabpanel value="0">
+                        <p-table *ngIf="hasExistingUsers" #existingUserTable [value]="usersList"
+                            [(selection)]="selectedUsers" styleClass="p-datatable-customers p-datatable-striped"
+                            [rowHover]="true" [rows]="10" [showCurrentPageReport]="true"
+                            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row" dataKey="id"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            [filterDelay]="0" [resizableColumns]="true" [columns]="usersTableHeader"
+                            [reorderableColumns]="true" [(totalRecords)]="usersList.length" [globalFilterFields]="[
+                                'userId',
+                                'companies',
+                                'userName',
+                                'roleGranted'
+                            ]" stateStorage="local" stateKey="existingUserTableState">
+
+                            <ng-template #caption>
+                                <div class="flex">
+                                    <p-iconfield iconPosition="left">
+                                        <p-inputicon>
+                                            <i class="pi pi-search" class="ml-auto"></i>
+                                        </p-inputicon>
+                                        <input pInputText type="text"
+                                            (input)="existingUserTable.filterGlobal($event.target.value, 'contains')"
+                                            placeholder="Search keyword" />
+                                    </p-iconfield>
+                                </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                    <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+                                            {{ col.header }}
+                                            <p-sortIcon field="{{col.field}}" />
+                                            <p-columnFilter type="text" field="{{col.field}}" display="menu" />
+                                    </th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-assignment let-editing="editing" let-ri="rowIndex"
+                                let-columns="columns" class="bdp-body-container">
+                                <tr class="p-selectable-row">
+                                    <!-- <td style="text-align: center">
+                                        <p-tableCheckbox [value]="assignment"></p-tableCheckbox>
+                                    </td> -->
+                                    <td>
+                                        <button pButton pRipple icon="pi pi-pencil"
+                                            class="p-button-rounded p-button-text mr-2"
+                                            (click)="navigateToUserAssignment(assignment)">
+                                        </button>
+                                        <button pButton pRipple icon="pi pi-copy"
+                                            class="p-button-rounded p-button-text mr-2"
+                                            (click)="navigateToUserAssignment(assignment)">
+                                        </button>
+                                    </td>
+                                    <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                                        <div *ngSwitchCase="'actions'">
+                                            <button (click)="
+                                                    updateUsersCompany(
+                                                        assignment,
+                                                        'existing'
+                                                    )
+                                                " pButton type="button" label="Assign"></button>
+                                        </div>
+                                        <div *ngSwitchCase="'companies'">
+                                            <ul>
+                                                <li>
+                                                    {{
+                                                    assignment[
+                                                    "companies"
+                                                    ][0]
+                                                    }}
+                                                </li>
+                                                <li *ngIf="
+                                                        assignment['companies']
+                                                            .length >= 2
+                                                    ">
+                                                    {{
+                                                    assignment[
+                                                    "companies"
+                                                    ][1]
+                                                    }}
+                                                </li>
+                                            </ul>
+                                            <div *ngIf="
+                                                    assignment['companies']
+                                                        .length > 2
+                                                ">
+                                                <div class="bdp-link" (click)="
+                                                        extraCompanies.toggle(
+                                                            $event
+                                                        )
+                                                    ">
+                                                    <a class="ml-5">...+{{
+                                                        assignment[
+                                                        "companies"
+                                                        ].length - 2
+                                                        }}
+                                                        more.</a>
+                                                </div>
+                                            </div>
+                                            <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
+                                                appendTo="body">
+                                                <div *ngFor="
+                                                            let companyName of assignment[
+                                                                'companies'
+                                                            ];
+                                                            let index = index
+                                                        ">
+                                                    <span *ngIf="index > 1">{{
+                                                        companyName
+                                                        }}</span>
+                                                </div>
+                                            </p-popover>
+                                        </div>
+                                        <div *ngSwitchDefault>
+                                            {{ assignment[col.field] }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="8">No Data found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                        <div *ngIf="!hasExistingUsers" class="text-center mt-5 mb-4">
+                            <img src="./../../../../../../assets/layout/images/noPendingAssignment.svg" alt />
+                            <h5>There are no new existing users</h5>
+                        </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="1">
+                        <p-table *ngIf="!hasExistingUsers" #existingUserTable [value]="usersList"
+                            [(selection)]="selectedUsers" styleClass="p-datatable-customers p-datatable-striped"
+                            [rowHover]="true" [rows]="10" [showCurrentPageReport]="true"
+                            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row" dataKey="id"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            [filterDelay]="0" [resizableColumns]="true" [columns]="existingUsertableHeaders"
+                            [reorderableColumns]="true" [(totalRecords)]="usersList.length" [globalFilterFields]="[
+                                'userId',
+                                'companies',
+                                'userName',
+                                'roleGranted'
+                            ]" stateStorage="local" stateKey="existingUserTableState">
+                            <!-- <ng-template pTemplate="colgroup" let-columns>
+                                <colgroup>
+                                    <col style="width: 100px" />
+                                    <col style="width: 100px" />
+                                    <col style="width: 130px" />
+                                    <col style="width: 180px" />
+                                    <col style="width: 120px" />
+                                    <col style="width: 120px" />
+                                </colgroup>
+                            </ng-template> -->
+
+                            <ng-template pTemplate="caption">
+                                <div class="table-caption">
+                                    <div class="col-12 pb-0">
+                                        <div class="grid">
+                                            <div class="col-12">
+                                                <div class="grid">
+                                                    <span class="bdp-filter-elem">
+                                                        <div class="search-container mt-2">
+                                                            <input pInputText
+                                                                (input)="existingUserTable.filterGlobal($event.target.value, 'contains')"
+                                                                placeholder="Search" class="search-box" />
+                                                            <i class="pi pi-search"></i>
+                                                        </div>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-template>
+
+                            <ng-template pTemplate="header" let-columns>
+                                <tr>
+                                    <th>
+                                        Actions
+                                    </th>
+
+                                    <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+                                        <div
+                                            class="flex justify-content-between align-items-center bdp-header-container">
+                                            {{ col.header }}
+                                        </div>
+                                    </th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-assignment let-editing="editing" let-ri="rowIndex"
+                                let-columns="columns" class="bdp-body-container">
+                                <tr class="p-selectable-row">
+                                    <!-- <td style="text-align: center">
+                                        <p-tableCheckbox [value]="assignment"></p-tableCheckbox>
+                                    </td> -->
+                                    <td>
+                                        <button pButton pRipple icon="pi pi-pencil"
+                                            class="p-button-rounded p-button-text mr-2"
+                                            (click)="navigateToUserAssignment(assignment)">
+                                        </button>
+                                        <i (click)="copyToClipboard(port.portUnloc)" class="pi pi-copy"
+                                            style="cursor: pointer; font-size: 1.5rem; color: #007bff;"></i>
+                                    </td>
+                                    <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                                        <div *ngSwitchCase="'actions'">
+                                            <button (click)="
+                                                    updateUsersCompany(
+                                                        assignment,
+                                                        'existing'
+                                                    )
+                                                " pButton type="button" label="Assign"></button>
+                                        </div>
+                                        <div *ngSwitchCase="'companies'">
+                                            <ul>
+                                                <li>
+                                                    {{
+                                                    assignment[
+                                                    "companies"
+                                                    ][0]
+                                                    }}
+                                                </li>
+                                                <li *ngIf="
+                                                        assignment['companies']
+                                                            .length >= 2
+                                                    ">
+                                                    {{
+                                                    assignment[
+                                                    "companies"
+                                                    ][1]
+                                                    }}
+                                                </li>
+                                            </ul>
+                                            <div *ngIf="
+                                                    assignment['companies']
+                                                        .length > 2
+                                                ">
+                                                <div class="bdp-link" (click)="
+                                                        extraCompanies.toggle(
+                                                            $event
+                                                        )
+                                                    ">
+                                                    <a class="ml-5">...+{{
+                                                        assignment[
+                                                        "companies"
+                                                        ].length - 2
+                                                        }}
+                                                        more.</a>
+                                                </div>
+                                            </div>
+                                            <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
+                                                appendTo="body">
+                                                <div *ngFor="
+                                                            let companyName of assignment[
+                                                                'companies'
+                                                            ];
+                                                            let index = index
+                                                        ">
+                                                    <span *ngIf="index > 1">{{
+                                                        companyName
+                                                        }}</span>
+                                                </div>
+                                            </p-popover>
+                                        </div>
+                                        <div *ngSwitchDefault>
+                                            {{ assignment[col.field] }}
+                                        </div>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="8">No Data found.</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+
+                        <div *ngIf="!hasExistingUsers" class="text-center mt-5 mb-4">
+                            <img src="./../../../../../../assets/layout/images/noPendingAssignment.svg" alt />
+                            <h5>There are no new existing users</h5>
+                        </div>
+                    </p-tabpanel>
+                </p-tabs>
+            </div>
+        </div>
+    </div>
+    <!-- 
+    <p-dialog [header]="dialogTitle" [(visible)]="showAssignDialog" [style]="{ width: '50vw' }"
+        styleClass="bdp-assign-dialog" [draggable]="false">
+
+    </p-dialog> -->
+</div>

@@ -3,9 +3,12 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { ApiRouteDefinition, AuthClientConfig } from '@auth0/auth0-angular';
-import { APP_INITIALIZER, ApplicationConfig, ErrorHandler, provideZoneChangeDetection } from '@angular/core';
+import {  ApplicationConfig, ErrorHandler, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-
+import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import Aura from '@primeng/themes/aura';
+import {providePrimeNG} from 'primeng/config';
+import {definePreset} from '@primeng/themes';
 import { routes } from '../app/app.routes'
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 
@@ -13,20 +16,6 @@ export interface AppConfig {
     profiles: { [key: string]: { [key: string]: unknown } };
     activeProfile: string;
 }
-export const appConfig: ApplicationConfig = {
-  providers: [
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
-      , ErrorHandler, {
-      provide: APP_INITIALIZER,
-     useFactory: initializeAppFactory,
-      deps: [HttpBackend],
-      multi: true,
-     } ,
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes)
-  ]
-};
-
 export function initializeAppFactory(
     httpBackend: HttpBackend,
     authClientConfig: AuthClientConfig
@@ -71,3 +60,81 @@ export function initializeAppFactory(
             })
         );
 }
+
+
+const MyPreset = definePreset(Aura, {
+    semantic: {
+        primary: {
+            50: '{blue.50}',
+            100: '{blue.100}',
+            200: '{blue.200}',
+            300: '{blue.300}',
+            400: '{blue.400}',
+            500: '{blue.500}',
+            600: '{blue.600}',
+            700: '{blue.700}',
+            800: '{blue.800}',
+            900: '{blue.900}',
+            950: '{blue.950}'
+        },
+        overlay: {
+            modal: {
+                borderRadius: '1.5rem'
+            },
+            popover: {
+                borderRadius: '10px'
+            }
+        },
+        colorScheme: {
+            light: {
+                surface: {
+                    0: 'color-mix(in srgb, {primary.950}, white 100%)',
+                    50: 'color-mix(in srgb, {primary.950}, white 95%)',
+                    100: 'color-mix(in srgb, {primary.950}, white 90%)',
+                    200: 'color-mix(in srgb, {primary.950}, white 80%)',
+                    300: 'color-mix(in srgb, {primary.950}, white 70%)',
+                    400: 'color-mix(in srgb, {primary.950}, white 60%)',
+                    500: 'color-mix(in srgb, {primary.950}, white 50%)',
+                    600: 'color-mix(in srgb, {primary.950}, white 40%)',
+                    700: 'color-mix(in srgb, {primary.950}, white 30%)',
+                    800: 'color-mix(in srgb, {primary.950}, white 20%)',
+                    900: 'color-mix(in srgb, {primary.950}, white 10%)',
+                    950: 'color-mix(in srgb, {primary.950}, white 5%)'
+                }
+            },
+            dark: {
+                surface: {
+                    0: 'color-mix(in srgb, var(--surface-ground), white 100%)',
+                    50: 'color-mix(in srgb, var(--surface-ground), white 95%)',
+                    100: 'color-mix(in srgb, var(--surface-ground), white 90%)',
+                    200: 'color-mix(in srgb, var(--surface-ground), white 80%)',
+                    300: 'color-mix(in srgb, var(--surface-ground), white 70%)',
+                    400: 'color-mix(in srgb, var(--surface-ground), white 60%)',
+                    500: 'color-mix(in srgb, var(--surface-ground), white 50%)',
+                    600: 'color-mix(in srgb, var(--surface-ground), white 40%)',
+                    700: 'color-mix(in srgb, var(--surface-ground), white 30%)',
+                    800: 'color-mix(in srgb, var(--surface-ground), white 20%)',
+                    900: 'color-mix(in srgb, var(--surface-ground), white 10%)',
+                    950: 'color-mix(in srgb, var(--surface-ground), white 5%)'
+                }
+            }
+        }
+    }
+});
+
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    { provide: LocationStrategy, useClass: HashLocationStrategy }
+      , ErrorHandler, {
+      provide: provideAppInitializer,
+     useFactory: initializeAppFactory,
+      deps: [HttpBackend],
+      multi: true,
+     } ,
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+    provideAnimationsAsync(),
+    providePrimeNG({theme: {preset: MyPreset, options: {darkModeSelector: '.app-dark'}}})
+  ]
+};
