@@ -58,29 +58,29 @@
                                     </button>
                                 </div>
                                 <!-- Privileges -->
-                                <div *ngSwitchCase="'privileges'">
-                                    <span *ngIf="assignment['privileges'] && assignment['privileges'].length > 0">
-                                        <ng-container *ngIf="assignment['privileges'].length === allPrivileges.length; else partialPrivileges">
-                                            Full access ({{ assignment['privileges'].slice(0,2).join(', ') }}
-                                            <ng-container *ngIf="assignment['privileges'].length > 2">
+                                <div *ngSwitchCase="'rolePrivileges'">
+                                    <span *ngIf="assignment['rolePrivileges'] && assignment['rolePrivileges'].length > 0">
+                                        <ng-container *ngIf="assignment['rolePrivileges'].length === allPrivileges.length; else partialPrivileges">
+                                            Full access ({{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
+                                            <ng-container *ngIf="assignment['rolePrivileges'].length > 2">
                                                 ,<a class="text-blue-500 cursor-pointer ml-1"
-                                                    (click)="moreTpl.toggle($event)">+{{assignment['privileges'].length - 2}} more
+                                                    (click)="moreTpl.toggle($event)">+{{assignment['rolePrivileges'].length - 2}} more
                                                 </a>
                                             </ng-container>)
                                             <p-popover #moreTpl appendTo="body">
-                                                <div *ngFor="let privilege of assignment['privileges'].slice(4)">
+                                                <div *ngFor="let privilege of assignment['rolePrivileges'].slice(4)">
                                                     {{privilege}}
                                                 </div>
                                             </p-popover>
                                         </ng-container>
                                         <ng-template #partialPrivileges>
-                                            {{ assignment['privileges'].slice(0,2).join(', ') }}
-                                            <ng-container *ngIf="assignment['privileges'].length > 2">
+                                            {{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
+                                            <ng-container *ngIf="assignment['rolePrivileges'].length > 2">
                                                 , <a class="text-blue-500 cursor-pointer ml-1" (click)="moreTpl.toggle($event)">
-                                                    +{{assignment['privileges'].length - 2}} More
+                                                    +{{assignment['rolePrivileges'].length - 2}} More
                                                 </a>
                                                 <p-popover #moreTpl appendTo="body">
-                                                    <div *ngFor="let privilege of assignment['privileges'].slice(2)">
+                                                    <div *ngFor="let privilege of assignment['rolePrivileges'].slice(2)">
                                                         {{privilege}}
                                                     </div>
                                                 </p-popover>
