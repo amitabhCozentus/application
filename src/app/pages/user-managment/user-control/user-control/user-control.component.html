@@ -45,9 +45,9 @@
                                     </th>
 
                                     <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
-                                            {{ col.header }}
-                                            <p-sortIcon field="{{col.field}}" />
-                                            <p-columnFilter type="text" field="{{col.field}}" display="menu" />
+                                        {{ col.header }}
+                                        <p-sortIcon field="{{col.field}}" />
+                                        <p-columnFilter type="text" field="{{col.field}}" display="menu" />
                                     </th>
                                 </tr>
                             </ng-template>
@@ -223,48 +223,23 @@
                                     </td>
                                     <td *ngFor="let col of columns" [ngSwitch]="col.field">
                                         <div *ngSwitchCase="'actions'">
-                                            <button (click)="
-                                                    updateUsersCompany(
-                                                        assignment,
-                                                        'existing'
-                                                    )
-                                                " pButton type="button" label="Assign"></button>
+                                            <button (click)="updateUsersCompany(assignment,'existing')" pButton type="button" label="Assign">
+                                            </button>
                                         </div>
                                         <div *ngSwitchCase="'companies'">
                                             <ul>
                                                 <li>
-                                                    {{
-                                                    assignment[
-                                                    "companies"
-                                                    ][0]
-                                                    }}
+                                                    {{assignment["companies"][0]}}
                                                 </li>
-                                                <li *ngIf="
-                                                        assignment['companies']
-                                                            .length >= 2
-                                                    ">
-                                                    {{
-                                                    assignment[
-                                                    "companies"
-                                                    ][1]
-                                                    }}
+                                                <li *ngIf="assignment['companies'].length >= 2">
+                                                    {{assignment["companies"][1]}}
                                                 </li>
                                             </ul>
-                                            <div *ngIf="
-                                                    assignment['companies']
-                                                        .length > 2
-                                                ">
-                                                <div class="bdp-link" (click)="
-                                                        extraCompanies.toggle(
-                                                            $event
-                                                        )
-                                                    ">
-                                                    <a class="ml-5">...+{{
-                                                        assignment[
-                                                        "companies"
-                                                        ].length - 2
-                                                        }}
-                                                        more.</a>
+                                            <div *ngIf="assignment['companies'].length > 2">
+                                                <div class="bdp-link" (click)="extraCompanies.toggle($event)">
+                                                    <a class="ml-5">
+                                                        ...+{{assignment["companies"].length - 2}}more.
+                                                    </a>
                                                 </div>
                                             </div>
                                             <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
@@ -304,7 +279,7 @@
             </div>
         </div>
     </div>
-    <!-- 
+    <!--
     <p-dialog [header]="dialogTitle" [(visible)]="showAssignDialog" [style]="{ width: '50vw' }"
         styleClass="bdp-assign-dialog" [draggable]="false">
 

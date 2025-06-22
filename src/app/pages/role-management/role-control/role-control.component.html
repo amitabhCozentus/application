@@ -1,0 +1,127 @@
+<div class="grid mt-2 m-2" id="bdpUserControl">
+    <div class="col-12">
+        <div class="grid">
+            <div class="col-12">
+                <p-table #roleTable [value]="roles" [paginator]="true" [rows]="pageSize"
+                    [rowsPerPageOptions]="[10,25,50]" [(totalRecords)]="totalRecords" editMode="row" dataKey="id"
+                    [columns]="roleTableHeaders" sortField="name" [resizableColumns]="true" [reorderableColumns]="true"
+                    [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    styleClass="p-datatable-customers p-datatable-striped"
+                    [globalFilterFields]="['roleName', 'description']">
+
+                    <!-- Caption -->
+                    <ng-template #caption>
+                        <div class="flex flex-1 justify-content-between align-items-center w-100">
+                            <div class="w-full md:w-30rem">
+                                <app-common-table-search
+                                    [value]="searchTerm"
+                                    (valueChange)="searchTerm = $event"
+                                    (search)="onSearch()"
+                                    (clear)="resetSearch()"
+                                ></app-common-table-search>
+                            </div>
+                            <div class="action-buttons p-d-flex p-ai-center p-jc-end" style="display: flex; gap: 1.5rem;">
+                                <button pButton pRipple icon="pi pi-refresh" [outlined]="true"
+                                    (click)="refresh()"></button>
+                                <button pButton pRipple label="Add Role" class="p-button-primary" style="width:120px;"
+                                    *ngIf="canEdit" (click)="openAddRoleDialog()"></button>
+                            </div>
+                        </div>
+                    </ng-template>
+
+                    <!-- Header -->
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th *ngIf="canEdit">Action</th>
+                            <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+                                {{ col.header }} <p-sortIcon field="{{col.field}}" />
+                                <p-columnFilter type="text" field="{{col.field}}" display="menu" />
+                            </th>
+                        </tr>
+                    </ng-template>
+
+                    <!-- Body -->
+                    <ng-template pTemplate="body" let-assignment let-columns="columns">
+                        <tr>
+                            <td *ngIf="canEdit" class="actions">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text mr-2"
+                                    (click)="editRole(assignment)"></button>
+                            </td>
+                            <td *ngFor="let col of columns" [ngSwitch]="col.field">
+                                <!-- Status -->
+                                <div *ngSwitchCase="'status'">
+                                    <button pButton pRipple
+                                        [ngClass]="assignment.status === 'Active' ? 'status-active' : 'status-inactive'"
+                                        class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none">
+                                        {{ assignment.status }}
+                                    </button>
+                                </div>
+                                <!-- Privileges -->
+                                <div *ngSwitchCase="'privileges'">
+                                    <span *ngIf="assignment['privileges'] && assignment['privileges'].length > 0">
+                                        <ng-container *ngIf="assignment['privileges'].length === allPrivileges.length; else partialPrivileges">
+                                            Full access ({{ assignment['privileges'].slice(0,2).join(', ') }}
+                                            <ng-container *ngIf="assignment['privileges'].length > 2">
+                                                ,<a class="text-blue-500 cursor-pointer ml-1"
+                                                    (click)="moreTpl.toggle($event)">+{{assignment['privileges'].length - 2}} more
+                                                </a>
+                                            </ng-container>)
+                                            <p-popover #moreTpl appendTo="body">
+                                                <div *ngFor="let privilege of assignment['privileges'].slice(4)">
+                                                    {{privilege}}
+                                                </div>
+                                            </p-popover>
+                                        </ng-container>
+                                        <ng-template #partialPrivileges>
+                                            {{ assignment['privileges'].slice(0,2).join(', ') }}
+                                            <ng-container *ngIf="assignment['privileges'].length > 2">
+                                                , <a class="text-blue-500 cursor-pointer ml-1" (click)="moreTpl.toggle($event)">
+                                                    +{{assignment['privileges'].length - 2}} More
+                                                </a>
+                                                <p-popover #moreTpl appendTo="body">
+                                                    <div *ngFor="let privilege of assignment['privileges'].slice(2)">
+                                                        {{privilege}}
+                                                    </div>
+                                                </p-popover>
+                                            </ng-container>
+                                        </ng-template>
+                                    </span>
+                                </div>
+                                <!-- Default Landing Page -->
+                                <div *ngSwitchCase="'defaultLanding'">
+                                    {{ assignment['defaultLanding'] ? assignment['defaultLanding'] : '-' }}
+                                </div>
+                                <!-- Default field -->
+                                <div *ngSwitchDefault>
+                                    {{ assignment[col.field] }}
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+
+                    <!-- Filter -->
+                    <ng-template pTemplate="filter" let-columns>
+                        <tr>
+                            <th *ngFor="let col of columns">
+                                <input *ngIf="col.filter" pInputText type="text"
+                                    (input)="roleTable.filter($event.target.value, col.field, 'contains')"
+                                    placeholder="Filter {{col.header}}" class="p-column-filter" />
+                            </th>
+                        </tr>
+                    </ng-template>
+
+                    <!-- Empty -->
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td [attr.colspan]="(canEdit ? roleTableHeaders.length + 1 : roleTableHeaders.length)"
+                                class="text-center">
+                                No Roles found.
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</div>

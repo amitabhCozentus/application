@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { PrimengModule } from '../../../../shared/primeng/primeng.module'
-import { UserControlService } from 'src/app/shared/service/user-control/user-control.service';
+import { UserControlService } from '../../../../shared/service/user-control/user-control.service';
 
 @Component({
   selector: 'app-user-control',

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* You can add global styles to this file, and also import other style files */
 $gutter: 1rem; //for primeflex grid system
 @import url("https://fonts.googleapis.com/css?family=Montserrat:500,600,700");
@@ -191,7 +192,6 @@ body {
         }
 
 
-@charset "UTF-8";
 :root {
     --surface-a: #fdfeff;
     --surface-b: #f6f9fe;
@@ -601,7 +601,7 @@ p-datepicker.ng-dirty.ng-invalid > .p-datepicker > .p-inputtext {
 
 
 .p-multiselect-option:not(.p-multiselect-option-selected):not(.p-disabled).p-focus {
-     background: none !important; 
+     background: none !important;
    // color: #ffff !important;
 }
 .p-checkbox .p-checkbox-box .p-checkbox-icon {
@@ -5253,7 +5253,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
     outline: 0 none;
     display: flex;
     flex-direction: column;
-    gap: 18px !important; 
+    gap: 18px !important;
 }
 .p-tieredmenu-submenu{
     background: var(--bdpMenuBackgroundTop) !important;
@@ -5773,3 +5773,9 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 }
 
 
+.status-active {
+  background-color: #479e7e !important;
+}
+.status-inactive {
+  background-color: #ed1a25 !important;
+}
