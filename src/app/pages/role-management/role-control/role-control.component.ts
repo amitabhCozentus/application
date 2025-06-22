@@ -8,8 +8,8 @@ interface Role {
     id: number;
     roleName: string;
     status: "Active" | "Inactive";
-    description: string;
-    privileges: string[];
+    roleDescription: string;
+    rolePrivileges: string[];
 }
 
 interface PagedResult<T> {

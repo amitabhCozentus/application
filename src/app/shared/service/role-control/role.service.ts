@@ -6,8 +6,8 @@ export interface Role {
   id: number;
   status: 'Active' | 'Inactive';
   roleName: string;
-  description: string;
-  privileges: string[];
+  roleDescription: string;
+  rolePrivileges: string[];
   customLanding: string;
   defaultLanding?: string;
   skin: string;
@@ -30,8 +30,8 @@ export class RoleService {
       id: 1,
       roleName: 'PSA BDP IT Admin',
       status: 'Active',
-      description: 'Having all the accesses',
-      privileges: [
+      roleDescription: 'Having all the accesses',
+      rolePrivileges: [
         "List view (Download, Read)",
         "Port master data management",
         "Data Management",
@@ -55,8 +55,8 @@ export class RoleService {
       id: 2,
       roleName: 'PSA BDP User',
       status: 'Inactive',
-      description: 'Privileges for operation user',
-      privileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+      roleDescription: 'Privileges for operation user',
+      rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
       customLanding: 'Yes',
       defaultLanding: 'Tracking',
       skin: 'PSA BDP Dark',
@@ -69,8 +69,8 @@ export class RoleService {
       id: 3,
       roleName: 'Innovation Product Team',
       status: 'Inactive',
-      description: 'All access except role and user management',
-      privileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+      roleDescription: 'All access except role and user management',
+      rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
       customLanding: 'No',
       defaultLanding: '',
       skin: 'BNS Light',
@@ -83,8 +83,8 @@ export class RoleService {
       id: 4,
       roleName: 'BNS Customer User',
       status: 'Active',
-      description: 'Non PSA BDP Users',
-      privileges: [
+      roleDescription: 'Non PSA BDP Users',
+      rolePrivileges: [
         'List view (Download, Read)',
         'Port master data management',
         'Data Management'
@@ -101,8 +101,8 @@ export class RoleService {
       id: 5,
       roleName: 'PSA BDP User',
       status: 'Inactive',
-      description: 'Privileges for operation user',
-      privileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+      roleDescription: 'Privileges for operation user',
+      rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
       customLanding: 'Yes',
       defaultLanding: 'Tracking',
       skin: 'PSA BDP Dark',
@@ -115,8 +115,8 @@ export class RoleService {
       id: 6,
       roleName: 'Innovation Product Team',
       status: 'Inactive',
-      description: 'All access except role and user management',
-      privileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+      roleDescription: 'All access except role and user management',
+      rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
       customLanding: 'No',
       defaultLanding: '',
       skin: 'BNS Light',
@@ -129,8 +129,8 @@ export class RoleService {
       id: 7,
       roleName: 'BNS Customer User',
       status: 'Active',
-      description: 'Non PSA BDP Users',
-      privileges: [
+      roleDescription: 'Non PSA BDP Users',
+      rolePrivileges: [
         'List view (Download, Read)',
         'Port master data management',
         'Data Management'
@@ -147,8 +147,8 @@ export class RoleService {
       id: 8,
       roleName: 'PSA BDP User',
       status: 'Inactive',
-      description: 'Privileges for operation user',
-      privileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+      roleDescription: 'Privileges for operation user',
+      rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
       customLanding: 'Yes',
       defaultLanding: 'Tracking',
       skin: 'PSA BDP Dark',
@@ -161,8 +161,8 @@ export class RoleService {
       id: 9,
       roleName: 'Innovation Product Team',
       status: 'Inactive',
-      description: 'All access except role and user management',
-      privileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+      roleDescription: 'All access except role and user management',
+      rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
       customLanding: 'No',
       defaultLanding: '',
       skin: 'BNS Light',
@@ -175,8 +175,8 @@ export class RoleService {
       id: 10,
       roleName: 'BNS Customer User',
       status: 'Active',
-      description: 'Non PSA BDP Users',
-      privileges: [
+      roleDescription: 'Non PSA BDP Users',
+      rolePrivileges: [
         'List view (Download, Read)',
         'Port master data management',
         'Data Management'
@@ -193,8 +193,8 @@ export class RoleService {
       id: 11,
       roleName: 'PSA BDP User',
       status: 'Inactive',
-      description: 'Privileges for operation user',
-      privileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+      roleDescription: 'Privileges for operation user',
+      rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
       customLanding: 'Yes',
       defaultLanding: 'Tracking',
       skin: 'PSA BDP Dark',
@@ -207,8 +207,8 @@ export class RoleService {
       id: 12,
       roleName: 'Innovation Product Team',
       status: 'Inactive',
-      description: 'All access except role and user management',
-      privileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+      roleDescription: 'All access except role and user management',
+      rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
       customLanding: 'No',
       defaultLanding: '',
       skin: 'BNS Light',
@@ -221,8 +221,8 @@ export class RoleService {
       id: 13,
       roleName: 'BNS Customer User',
       status: 'Active',
-      description: 'Non PSA BDP Users',
-      privileges: [
+      roleDescription: 'Non PSA BDP Users',
+      rolePrivileges: [
         'List view (Download, Read)',
         'Port master data management',
         'Data Management'
@@ -241,7 +241,7 @@ export class RoleService {
    * Returns paged + filtered roles.
    * @param page zero-based page index
    * @param size number of items per page
-   * @param search global filter on roleName or description
+   * @param search global filter on roleName or roleDescription
    */
   getActiveRoles(page: number, size: number, search = ''): Observable<PagedResult<Role>> {
     return of(this.allRoles).pipe(
@@ -252,7 +252,7 @@ export class RoleService {
           const term = search.toLowerCase();
           all = all.filter(r =>
             r.roleName.toLowerCase().includes(term) ||
-            r.description.toLowerCase().includes(term)
+            r.roleDescription.toLowerCase().includes(term)
           );
         }
         const total = all.length;

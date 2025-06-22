@@ -14,8 +14,8 @@ export const USER_TABLE_HEADERS: TableHeaders[] = [
 export const ROLE_TABLE_HEADERS: TableHeaders[] = [
     { field: 'status', header: 'Role Status', sortable: true, filter: true },
     { field: 'roleName', header: 'Role Name', sortable: true, filter: true },
-    { field: 'description', header: 'Description', sortable: true, filter: true },
-    { field: 'privileges', header: 'Privileges', sortable: true, filter: true },
+    { field: 'roleDescription', header: 'Role Description', sortable: true, filter: true },
+    { field: 'rolePrivileges', header: 'Role Privileges', sortable: true, filter: true },
     { field: 'customLanding', header: 'Custom Landing', sortable: true, filter: true },
     { field: 'defaultLanding', header: 'Default Landing', sortable: true, filter: true },
     { field: 'skin', header: 'Skin', sortable: true, filter: true },
