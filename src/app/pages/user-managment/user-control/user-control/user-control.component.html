@@ -65,7 +65,7 @@
                                         </button>
                                         <button pButton pRipple icon="pi pi-copy"
                                             class="p-button-rounded p-button-text mr-2"
-                                            (click)="navigateToUserAssignment(assignment)">
+                                            (click)="onCopyClick(assignment)">
                                         </button>
                                     </td>
                                     <td *ngFor="let col of columns" [ngSwitch]="col.field">
@@ -223,7 +223,8 @@
                                     </td>
                                     <td *ngFor="let col of columns" [ngSwitch]="col.field">
                                         <div *ngSwitchCase="'actions'">
-                                            <button (click)="updateUsersCompany(assignment,'existing')" pButton type="button" label="Assign">
+                                            <button (click)="updateUsersCompany(assignment,'existing')" pButton
+                                                type="button" label="Assign">
                                             </button>
                                         </div>
                                         <div *ngSwitchCase="'companies'">
@@ -279,9 +280,48 @@
             </div>
         </div>
     </div>
-    <!--
-    <p-dialog [header]="dialogTitle" [(visible)]="showAssignDialog" [style]="{ width: '50vw' }"
-        styleClass="bdp-assign-dialog" [draggable]="false">
-
-    </p-dialog> -->
+    <p-dialog header="Copy Company Role" [(visible)]="showAssignDialog" [style]="{ width: '45vw !important'  }"
+        styleClass="bdp-assign-dialog" [draggable]="false" [modal]="true">
+        <p-divider />
+        <div class="col-12  pl-0 ">
+            <h7 class="mmt-heading">Source User Name: {{selectedUser[0]?.userName}}</h7>
+            <h7 class="mmt-heading ml-8">Role Assign: {{selectedUser[0]?.roleName}}</h7>
+        </div>
+        <div class="col-12  pl-0">
+            @if(selectedUser[0]?.companyAssign.length<=2){ <h7 class="mmt-heading">Company Assigned:
+                {{selectedUser[0]?.companyAssign}}</h7>
+                }
+                @else{
+                <div class="bdp-link" >     
+                <h7 class="mmt-heading">Company Assigned: {{selectedUser[0]?.companyAssign[0]}},{{selectedUser[0]?.companyAssign[1]}}
+                    <a (click)="extraCompanies.toggle($event)" class="z-0">
+                        ...+{{selectedUser[0]?.companyAssign.length - 2}}more.
+                    </a>
+                </h7>
+                </div>
+        <p-popover #extraCompanies styleClass="bdp-extracompanies-panel" class="z-0">
+            <div *ngFor="let companyName of selectedUser[0]?.companyAssign
+                    let index = index">
+                    {{companyName}}
+                <span *ngIf="index > 1">{{
+                    companyName
+                    }}</span>
+            </div>
+        </p-popover>
+        }
+</div>
+<div class="col-12 md:col-4 pl-0">
+    <label for="traget_user" class="required-label">Target User <span class="required-star">*</span></label>
+    <p-select [options]="Users" [(ngModel)]="selectedCity" optionLabel="name" placeholder="Select a User"
+        class="w-full md:w-56" />
+</div>
+<div class="card bg-[#FDEB8F]">
+    <p><i class="fa-light fa-circle-info mr-2"></i>The selected Target Users Already Have Existing Role And Company
+        Assign</p>
+</div>
+<ng-template #footer>
+    <p-button label="Cancel" [outlined]="true" severity="secondary" (click)="visible = false" />
+    <p-button label="Apply" [outlined]="true" severity="primary" (click)="visible = false" />
+</ng-template>
+</p-dialog>
 </div>

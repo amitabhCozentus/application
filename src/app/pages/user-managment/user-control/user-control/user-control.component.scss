@@ -1,37 +1,61 @@
-#bdpUserControl{
-    background-color: white;
+#bdpUserControl {
+    background-color: #ffff;
+
+
+
 
     ::ng-deep {
         .p-inputtext {
-    width:100%;
-    font-family: "Montserrat";
-    font-size: 1rem;
-    color: #515c66;
-    background: #fdfeff;
-    padding: 0.5rem 0.5rem;
-    border: 1px solid #d7d8d9;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s,
-        box-shadow 0.2s;
-    appearance: none;
-    border-radius: 5px;
-}
-   .p-inputicon {
-    position: relative;
-    top: 52%;
-    line-height: 1;
-}
+            width: 100%;
+            font-family: "Montserrat";
+            font-size: 1rem;
+            color: #515c66;
+            background: #fdfeff;
+            padding: 0.5rem 0.5rem;
+            border: 1px solid #d7d8d9;
+            transition: background-color 0.2s, color 0.2s, border-color 0.2s,
+                box-shadow 0.2s;
+            appearance: none;
+            border-radius: 5px;
+        }
 
-.p-badge {
-    background: #1b74c5;
-    color: #f8fafc;
-    font-size: 0.75rem;
-    font-weight: 700;
-    min-width: 1.5rem;
-    height: 1.5rem;
-    line-height: 1.5rem;
-}
-      .p-tab{
-        border-width: 0px;
-      }
+        .p-dialog-mask.p-overlay-mask.p-overlay-mask-enter {
+            z-index: 0 !important
+        }
+
+        .p-inputicon {
+            position: relative;
+            top: 52%;
+            line-height: 1;
+        }
+
+        .p-badge {
+            background: #1b74c5;
+            color: #f8fafc;
+            font-size: 0.75rem;
+            font-weight: 700;
+            min-width: 1.5rem;
+            height: 1.5rem;
+            line-height: 1.5rem;
+        }
+
+        .p-tab {
+            border-width: 0px;
+        }
+
+        .p-dialog {
+            .required-label {
+                font-weight: 500;
+            }
+
+            .required-star {
+                color: #ff0000;
+                margin-left: 4px;
+            }
+        }
+
+        .card {
+            background: #FDEB8F;
+        }
     }
 }

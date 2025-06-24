@@ -1,0 +1,19 @@
+#userConfiguration {
+    .br-info-ctr {
+        display: flex;
+        flex-direction: row-reverse;
+    }
+    .mmt-save{
+        margin-right: 4px;
+    }
+    .br-info-cmmt{
+        display: flex;
+       justify-content: flex-end;
+       gap: 0.5%;
+    }
+    ::ng-deep{
+    .company-tabview .p-tablist-tab-list{
+          background: none !important;
+    }
+}
+    }

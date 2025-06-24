@@ -1,7 +1,15 @@
 import { Component } from '@angular/core';
 import { PrimengModule } from '../../../../shared/primeng/primeng.module'
-import { UserControlService } from '../../../../shared/service/user-control/user-control.service';
+import { UserControlService } from 'src/app/shared/service/user-control/user-control.service';
+import { AppRoutes } from '../../../../shared/lib/api-constant';
+import { CommonService } from '../../../../shared/service/common/common.service';
 
+
+interface userInfo{
+  userName:String,
+  roleName:String,
+  companyAssign:string[];
+}
 @Component({
   selector: 'app-user-control',
   imports: [PrimengModule],
@@ -9,12 +17,16 @@ import { UserControlService } from '../../../../shared/service/user-control/user
   styleUrl: './user-control.component.scss'
 })
 export class UserControlComponent {
+  
   hasExistingUsers:boolean=true;
   usersTableHeader:any=[];
   inActiveTableHeader:any=[];
   activeIndex:any=0;
   usersList:any[]=[];
-constructor(private userControlService:UserControlService) {
+  Users:any[]=[];
+  selectedUser:userInfo[]=[]
+  showAssignDialog:boolean=false;
+constructor(private userControlService:UserControlService,private commonService:CommonService) {
     this.usersTableHeader = this.userControlService.getTableHeaders(0);
     this.inActiveTableHeader = this.userControlService.getTableHeaders(1);
     this.usersList=[ {
@@ -99,5 +111,32 @@ constructor(private userControlService:UserControlService) {
         "roleId": 2,
         "userName": "Madhu Sudan Murmu"
     },]
+    this.Users=[{name:"Abhishek"},{name:"Dibya"}]
+    this.selectedUser=[{userName:"Abhishek Kumar",roleName:"Admin",companyAssign: ["GLYCOL ETHERS",
+            "DOW WOLFF CELLULOSICS",
+            "DUPONT MATERIAL SCIENCE",
+            "ELECTRICAL & TELECOMMUNICATIONS",
+            "EO TECHNOLOGY",
+            "EO/EG",
+            "EPOXY SYSTEMS",
+            "FLEXIBLE FOOD & SPECIALTY PACKAGING",
+            "FLEXIBLE PRODUCTS COMPANY",
+            "GENERIC",
+            "DOW WOLFF CELLULOSICS",
+            "GROWTH TECHNOLOGIES",
+            "HDOW MATERIAL SCIENCE",
+            "DOW SADARA",
+            "DOW TURKIYE KIMYA SAN. VE TIC.LTD.STI"]}]
+  }
+  onCopyClick(){
+    this.showAssignDialog=true;
+  }
+
+  navigateToUserAssignment(selectedUser: any) {
+    this.commonService.navigateRouteWithState({
+       route: AppRoutes.User.USER_MANAGEMENT_CONFIG,
+      type: 'Manager',
+      routeData: selectedUser
+    });
   }
 }

@@ -140,15 +140,9 @@ export namespace AppRoutes {
         public static readonly CONTRACT_AGREEMENT = "contract-agreement";
         public static readonly CONTRACT_AGREEMENT_APPROVAL = User.CONTRACT_AGREEMENT + '/' + "contract-agreement-approval";
         public static readonly CONTRACT_AGREEMENT_CREATION = User.CONTRACT_AGREEMENT + '/' + "contract-agreement-creation";
-        public static readonly MASTER_DATA_MANAGEMENT = "master-management";
-        public static readonly ROLE_MANAGEMENT = User.MASTER_DATA_MANAGEMENT + '/' + "role-management";
         public static readonly ALERT_SUBSCRIPTION = "alert-subscription";
         public static readonly CONTRACT_CSV_UPLOAD = User.CONTRACT_AGREEMENT + '/' + "contract-csv-upload";
-        public static readonly USER_MANAGEMENT = User.MASTER_DATA_MANAGEMENT + '/' + "user-control";
-        public static readonly USER_MANAGEMENT_CONFIG = User.MASTER_DATA_MANAGEMENT + '/' + "user-configuration";
-        public static readonly CURRENCY_MANAGEMNT = User.MASTER_DATA_MANAGEMENT + '/' + "currency-management";
-        public static readonly PORT_MASTER_DATA_MANAGEMENT = User.MASTER_DATA_MANAGEMENT + '/' + "port-masterdata-management";
-        public static readonly COMPANY_MANAGEMENT = User.MASTER_DATA_MANAGEMENT + '/' + "company-management";
+        public static readonly USER_MANAGEMENT_CONFIG = "user-configuration";
         public static readonly CONTRACT_CSV_HISTORY = User.CONTRACT_AGREEMENT + '/' + "contract-csv-history";
         public static readonly RELEASE_NOTES = User.PROFILE + '/' + "data-upload-download";
         public static readonly FILTER_PAGE = User.PROFILE + '/' + "filterpanel";

@@ -1,1 +1,146 @@
-<h1> hello mmt new project </h1>
+<div id="userConfiguration">
+    <div class="col-12">
+        <div class="card">
+            <p-tabs [value]="selectedIndex" (valueChange)="onTabChange($event)">
+                <p-tablist>
+                    <p-tab value="0">Information</p-tab>
+                    <p-tab value="1">Role Type</p-tab>
+                    <p-tab value="2">Company</p-tab>
+                </p-tablist>
+                <p-tabpanels>
+                    <p-tabpanel value="0">
+                        <div class="mmt-info">
+                            <div class="m-3" style="display: flex;justify-content: space-between;">
+                                <div>
+                                    <h5 class="mmt-heading">Email: {{selectedUser?.userId}}</h5>
+                                </div>
+                                <div style="display:flex">
+                                    <p-toggleswitch [(ngModel)]="checked" />
+                                    <p class="ml-2">User is a BDP Empolyee?</p>
+                                </div>
+                            </div>
+                            <div class="br-info-cmmt col-12">
+                                <button *ngIf="isExternalAccess" pButton label="Go Back" (click)="goBack()"
+                                    class="p-button-outlined action-button-width p-back-button">
+                                </button>
+                                <button pButton label="Cancel" class="p-button-outlined mmt-cancel" (click)="goBack()">
+                                </button>
+                                <button pButton (click)="continueSetup('userSetup')" label="Continue"
+                                    class="p-button-primary mmt-save"></button>
+                            </div>
+                        </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="1">
+                        <div class="mmt-info mt-4">
+                            <div class="user-type-header">Select Role Type</div>
+                            <div class="mmt-user-type flex flex-wrap">
+                                <div class="col-12" *ngFor="let type of userTypeList">
+                                    <div class="p-field-radiobutton">
+                                        <p-radiobutton name="userType" [value]="type?.id" [(ngModel)]="userType"
+                                            [inputId]="type?.id" [disabled]="type?.disabled"
+                                            (onClick)="setCoreFeatures($event)">
+                                        </p-radiobutton>
+                                        <label class="mmt-label ml-2" [for]="type?.id">{{type.roleName}}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mmt-user-type flex">
+                                <div class="col-12 md:col-12">
+                                    <div class="br-form-sep"></div>
+                                    <div class="br-info-cmmt">
+                                        <button *ngIf="isExternalAccess" pButton label="Go Back" (click)="goBack()"
+                                            class="p-button-outlined action-button-width p-back-button">
+                                        </button>
+                                        <button pButton label="Cancel" class="p-button-outlined mmt-cancel"
+                                            (click)="goBack()"></button>
+                                        <button pButton (click)="continueSetup('userType')" label="Continue"
+                                            class="p-button-primary mmt-save"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </p-tabpanel>
+                    <p-tabpanel value="2">
+                        <p-tabs [value]="selectedCompanyIndex" (valueChange)="onCompanyTabChange($event)">
+                            <p-tablist class="company-tabview">
+                                <p-tab value="0">PSA BDP Companies</p-tab>
+                                <p-tab value="1">Non PSA BDP Companies</p-tab>
+                            </p-tablist>
+                            <p-tabpanels>
+                                <p-tabpanel value="0">
+                                    <div class="mmt-info">
+                                        <div class="mmt-user-type flex">
+                                        </div>
+                                        <div class="mmt-user-type flex">
+                                            <div class="col-12 md:col-12">
+                                                <div class="br-form-sep"></div>
+                                                <div class="br-info-cmmt">
+                                                    <button *ngIf="isExternalAccess" pButton label="Go Back"
+                                                        (click)="goBack()"
+                                                        class="p-button-outlined action-button-width p-back-button">
+                                                    </button>
+                                                    <button pButton label="Cancel" class="p-button-outlined mmt-cancel"
+                                                        (click)="goBack()">
+                                                    </button>
+                                                    <button pButton (click)="continueSetup('confirmCompanySelection')"
+                                                        label="Save" class="p-button-primary mmt-save"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p-tabpanel>
+                                <p-tabpanel value="1">
+                                    <div class="mmt-info">
+                                        <div class="mmt-user-type flex">
+                                            <div class="col-12 px-0">
+                                                <p-treetable [value]="files" [columns]="cols" selectionMode="checkbox"
+                                                    [(selectionKeys)]="selectionKeys" dataKey="key" [scrollable]="true"
+                                                    [tableStyle]="{ 'min-width': '50rem' }">
+                                                    <ng-template #header let-columns>
+                                                        <tr>
+                                                            <th *ngFor="let col of columns">
+                                                                {{ col.header }}
+                                                            </th>
+                                                        </tr>
+                                                    </ng-template>
+                                                    <ng-template #body let-rowNode let-rowData="rowData"
+                                                        let-columns="columns">
+                                                        <tr [ttRow]="rowNode" [ttSelectableRow]="rowNode">
+                                                            <td *ngFor="let col of columns; let i = index">
+                                                                <p-treetable-toggler [rowNode]="rowNode"
+                                                                    />
+                                                                <p-treetable-checkbox [value]="rowNode"
+                                                                    *ngIf="i === 0" />
+                                                                {{ rowData[col.field] }}
+                                                            </td>
+                                                        </tr>
+                                                    </ng-template>
+                                                </p-treetable>
+                                            </div>
+                                        </div>
+                                        <div class="mmt-user-type flex">
+                                            <div class="col-12 md:col-12">
+                                                <div class="br-form-sep"></div>
+                                                <div class="br-info-cmmt">
+                                                    <button *ngIf="isExternalAccess" pButton label="Go Back"
+                                                        (click)="goBack()"
+                                                        class="p-button-outlined action-button-width p-back-button">
+                                                    </button>
+                                                    <button pButton label="Cancel" class="p-button-outlined mmt-cancel"
+                                                        (click)="goBack()">
+                                                    </button>
+                                                    <button pButton (click)="continueSetup('confirmCompanySelection')"
+                                                        label="Save" class="p-button-primary mmt-save"></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </p-tabpanel>
+                            </p-tabpanels>
+                        </p-tabs>
+                    </p-tabpanel>
+                </p-tabpanels>
+            </p-tabs>
+        </div>
+    </div>
+</div>

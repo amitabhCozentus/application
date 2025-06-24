@@ -3849,6 +3849,9 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
     outline-offset: 0;
     /* box-shadow: 0 0 0 0.2rem #4d9fdc; */
 }
+.p-tab{
+    border-width:0 !important;
+}
 
 .p-tabview
     .p-tabview-nav
@@ -3954,7 +3957,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
     border-top-right-radius: 5px;
     border-top-left-radius: 5px;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 .p-dialog .p-dialog-header .p-dialog-title {
     font-weight: 600;
