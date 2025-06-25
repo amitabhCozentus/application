@@ -1,8 +1,9 @@
 import { PrimengModule } from './../../../shared/primeng/primeng.module';
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { RoleService } from "../../../shared/service/role-control/role.service";
 import { ROLE_TABLE_HEADERS, TableHeaders } from "../../../shared/lib/constants";
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
+import { RoleConfigurationComponent } from '../role-configuration/role-configuration.component';
 
 interface Role {
     id: number;
@@ -20,7 +21,7 @@ interface PagedResult<T> {
 @Component({
     selector: "app-role-control",
     standalone: true,
-    imports: [PrimengModule, CommonTableSearchComponent],
+    imports: [PrimengModule, CommonTableSearchComponent, RoleConfigurationComponent],
     templateUrl: "./role-control.component.html",
     styleUrls: ["./role-control.component.scss"],
 })
@@ -45,6 +46,7 @@ export class RoleControlComponent implements OnInit {
         "Routing",
         "3PL Analytics",
     ];
+    @ViewChild(RoleConfigurationComponent, { static: true }) roleConfig!: RoleConfigurationComponent;
 
     constructor(private roleService: RoleService) {}
 
@@ -90,6 +92,6 @@ export class RoleControlComponent implements OnInit {
     }
 
     openAddRoleDialog() {
-        console.log("Add Role");
+        this.roleConfig.open();
     }
 }

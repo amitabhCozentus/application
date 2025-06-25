@@ -14,18 +14,17 @@
                     <ng-template #caption>
                         <div class="flex flex-1 justify-content-between align-items-center w-100">
                             <div class="w-full md:w-30rem">
-                                <app-common-table-search
-                                    [value]="searchTerm"
-                                    (valueChange)="searchTerm = $event"
-                                    (search)="onSearch()"
-                                    (clear)="resetSearch()"
-                                ></app-common-table-search>
+                                <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
+                                    (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
                             </div>
-                            <div class="action-buttons p-d-flex p-ai-center p-jc-end" style="display: flex; gap: 1.5rem;">
+                            <div class="action-buttons p-d-flex p-ai-center p-jc-end"
+                                style="display: flex; gap: 1.5rem;">
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true"
                                     (click)="refresh()"></button>
+                                @if (canEdit) {
                                 <button pButton pRipple label="Add Role" class="p-button-primary" style="width:120px;"
-                                    *ngIf="canEdit" (click)="openAddRoleDialog()"></button>
+                                    (click)="openAddRoleDialog()"></button>
+                                }
                             </div>
                         </div>
                     </ng-template>
@@ -33,81 +32,105 @@
                     <!-- Header -->
                     <ng-template pTemplate="header" let-columns>
                         <tr>
-                            <th *ngIf="canEdit">Action</th>
-                            <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
+                            @if (canEdit) {
+                            <th>Action</th>
+                            }
+                            @for (col of columns; track col) {
+                            <th pSortableColumn="{{col.field}}">
                                 {{ col.header }} <p-sortIcon field="{{col.field}}" />
                                 <p-columnFilter type="text" field="{{col.field}}" display="menu" />
                             </th>
+                            }
                         </tr>
                     </ng-template>
 
                     <!-- Body -->
                     <ng-template pTemplate="body" let-assignment let-columns="columns">
                         <tr>
-                            <td *ngIf="canEdit" class="actions">
+                            @if (canEdit) {
+                            <td class="actions">
                                 <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text mr-2"
                                     (click)="editRole(assignment)"></button>
                             </td>
-                            <td *ngFor="let col of columns" [ngSwitch]="col.field">
-                                <!-- Status -->
-                                <div *ngSwitchCase="'status'">
+                            }
+                            @for (col of columns; track col) {
+                            <td>
+                                @switch (col.field) {
+                                @case ('status') {
+                                <div>
                                     <button pButton pRipple
                                         [ngClass]="assignment.status === 'Active' ? 'status-active' : 'status-inactive'"
                                         class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none">
                                         {{ assignment.status }}
                                     </button>
                                 </div>
-                                <!-- Privileges -->
-                                <div *ngSwitchCase="'rolePrivileges'">
-                                    <span *ngIf="assignment['rolePrivileges'] && assignment['rolePrivileges'].length > 0">
-                                        <ng-container *ngIf="assignment['rolePrivileges'].length === allPrivileges.length; else partialPrivileges">
-                                            Full access ({{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
-                                            <ng-container *ngIf="assignment['rolePrivileges'].length > 2">
-                                                ,<a class="text-blue-500 cursor-pointer ml-1"
-                                                    (click)="moreTpl.toggle($event)">+{{assignment['rolePrivileges'].length - 2}} more
-                                                </a>
-                                            </ng-container>)
-                                            <p-popover #moreTpl appendTo="body">
-                                                <div *ngFor="let privilege of assignment['rolePrivileges'].slice(4)">
-                                                    {{privilege}}
-                                                </div>
-                                            </p-popover>
-                                        </ng-container>
-                                        <ng-template #partialPrivileges>
-                                            {{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
-                                            <ng-container *ngIf="assignment['rolePrivileges'].length > 2">
-                                                , <a class="text-blue-500 cursor-pointer ml-1" (click)="moreTpl.toggle($event)">
-                                                    +{{assignment['rolePrivileges'].length - 2}} More
-                                                </a>
-                                                <p-popover #moreTpl appendTo="body">
-                                                    <div *ngFor="let privilege of assignment['rolePrivileges'].slice(2)">
-                                                        {{privilege}}
-                                                    </div>
-                                                </p-popover>
-                                            </ng-container>
-                                        </ng-template>
+                                }
+                                @case ('rolePrivileges') {
+                                <div>
+                                    @if (assignment['rolePrivileges'] && assignment['rolePrivileges'].length > 0) {
+                                    <span>
+                                        @if (assignment['rolePrivileges'].length === allPrivileges.length) {
+                                        Full access ({{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
+                                        @if (assignment['rolePrivileges'].length > 2) {
+                                        ,<a class="text-blue-500 cursor-pointer ml-1"
+                                            (click)="moreTpl.toggle($event)">+{{assignment['rolePrivileges'].length
+                                            - 2}} more
+                                        </a>
+                                        })
+                                        <p-popover #moreTpl appendTo="body">
+                                            @for (privilege of assignment['rolePrivileges'].slice(4); track privilege) {
+                                            <div>
+                                                {{privilege}}
+                                            </div>
+                                            }
+                                        </p-popover>
+                                        } @else {
+                                        {{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
+                                        @if (assignment['rolePrivileges'].length > 2) {
+                                        , <a class="text-blue-500 cursor-pointer ml-1" (click)="moreTpl.toggle($event)">
+                                            +{{assignment['rolePrivileges'].length - 2}} More
+                                        </a>
+                                        <p-popover #moreTpl appendTo="body">
+                                            @for (privilege of assignment['rolePrivileges'].slice(2); track privilege) {
+                                            <div>
+                                                {{privilege}}
+                                            </div>
+                                            }
+                                        </p-popover>
+                                        }
+                                        }
                                     </span>
+                                    }
                                 </div>
-                                <!-- Default Landing Page -->
-                                <div *ngSwitchCase="'defaultLanding'">
+                                }
+                                @case ('defaultLanding') {
+                                <div>
                                     {{ assignment['defaultLanding'] ? assignment['defaultLanding'] : '-' }}
                                 </div>
-                                <!-- Default field -->
-                                <div *ngSwitchDefault>
+                                }
+                                @default {
+                                <div>
                                     {{ assignment[col.field] }}
                                 </div>
+                                }
+                                }
                             </td>
+                            }
                         </tr>
                     </ng-template>
 
                     <!-- Filter -->
                     <ng-template pTemplate="filter" let-columns>
                         <tr>
-                            <th *ngFor="let col of columns">
-                                <input *ngIf="col.filter" pInputText type="text"
+                            @for (col of columns; track col) {
+                            <th>
+                                @if (col.filter) {
+                                <input pInputText type="text"
                                     (input)="roleTable.filter($event.target.value, col.field, 'contains')"
                                     placeholder="Filter {{col.header}}" class="p-column-filter" />
+                                }
                             </th>
+                            }
                         </tr>
                     </ng-template>
 
@@ -121,6 +144,8 @@
                         </tr>
                     </ng-template>
                 </p-table>
+
+                <app-role-configuration #roleConfig></app-role-configuration>
             </div>
         </div>
     </div>

@@ -1122,8 +1122,14 @@ p-toggleswitch.ng-dirty.ng-invalid > .p-toggleswitch {
     background: var(--bdpTabListBackGround) !important;
 }
 
+.p-multiselect {
+    height: 42px !important;
+    align-items: center;
+}
+
 .p-inputtext {
     width:100%;
+    height: 42px;
     font-family: "Montserrat";
     font-size: 1rem;
     color: #515c66;
@@ -1834,7 +1840,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
     border-radius: 2rem;
 }
 .p-button.p-button-icon-only {
-    width: 2.357rem;
+    width: 3rem;
     padding: 0.5rem 0;
 }
 .p-button.p-button-icon-only .p-button-icon-left,
@@ -3044,6 +3050,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 .p-paginator .p-select {
     margin-left: 0.5rem;
     height: 2.357rem;
+    align-items: center;
 }
 .p-paginator .p-select .p-select-label {
     padding-right: 0;
@@ -3941,12 +3948,13 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 }
 
 .p-dialog {
-    border-radius: 5px;
+    border-radius: 3px !important;
     box-shadow: 0px 11px 15px -7px rgba(0, 0, 0, 0.2),
         0px 24px 38px 3px rgba(0, 0, 0, 0.14),
         0px 9px 46px 8px rgba(0, 0, 0, 0.12);
     border: 0 none;
-    width: 50% !important;
+    width: 52rem !important;
+    height: 100vh !important;
     z-index: 99999999;
 }
 .p-dialog .p-dialog-header {
@@ -5780,5 +5788,8 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
   background-color: #479e7e !important;
 }
 .status-inactive {
-  background-color: #ed1a25 !important;
+  background-color: #ed1a24 !important;
+}
+.required-star {
+    color: #ff0000;
 }

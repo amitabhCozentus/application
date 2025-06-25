@@ -1,7 +1,7 @@
 import { definePreset } from '@primeng/themes';
-import Aura from '@primeng/themes/aura';
+import Material from '@primeng/themes/material';
 
-export const MyPreset = definePreset(Aura, {
+export const MyPreset = definePreset(Material, {
     semantic: {
         colorScheme: {
             light: {
@@ -85,7 +85,7 @@ export const MyPreset = definePreset(Aura, {
                         boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)'
                     },
                     submenuItem: {
-                        background: '#273444', 
+                        background: '#273444',
                         color: '#ffffff',
                         hoverBackground: '#2e3b4d'
                     }

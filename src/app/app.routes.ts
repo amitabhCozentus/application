@@ -4,17 +4,16 @@ import { UserControlComponent } from "./pages/user-managment/user-control/user-c
 import { UserConfigurationComponent } from "./pages/user-managment/user-configuration/user-configuration/user-configuration.component";
 export const routes: Routes = [
     {
-        path: '',
+        path: "",
         component: UserControlComponent,
-        pathMatch: 'full'
+        pathMatch: "full",
     },
     {
-        path: 'role',
-        component: RoleControlComponent
+        path: "role",
+        component: RoleControlComponent,
     },
     {
-        path: 'user-configuration',
-        component: UserConfigurationComponent
-
-    }
+        path: "user-configuration",
+        component: UserConfigurationComponent,
+    },
 ];
