@@ -108,6 +108,16 @@
                                     {{ assignment['defaultLanding'] ? assignment['defaultLanding'] : '-' }}
                                 </div>
                                 }
+                                @case ('createdOn') {
+                                <div>
+                                    {{ assignment['createdOn'] | date:'MM-dd-yyyy HH:mm' }}
+                                </div>
+                                }
+                                @case ('updatedOn') {
+                                <div>
+                                    {{ assignment['updatedOn'] | date:'MM-dd-yyyy HH:mm' }}
+                                </div>
+                                }
                                 @default {
                                 <div>
                                     {{ assignment[col.field] }}
