@@ -1,17 +1,15 @@
 <p-dialog [(visible)]="display" header="Add Role" [modal]="true" [closable]="true" (onHide)="close()"
 [resizable]="false" [draggable]="false" [dismissableMask]="true" [focusOnShow]="false">
-    <div class="formgrid grid">
+    <form [formGroup]="form" class="formgrid grid">
         <div class="col-12 pb-3">
             <label class="p-required">Status<span class="required-star">*</span></label>
             <div class="p-formgroup-inline flex flex-wrap gap-4" style="padding-top: 0.05rem">
                 <div class="p-field-radiobutton">
-                    <p-radiobutton name="status" value="Active" label="Active" [(ngModel)]="role.status"
-                        inputId="status-active" />
+                    <p-radiobutton formControlName="status" value="Active" label="Active" inputId="status-active" />
                     <label for="status-active" class="ml-2">Active</label>
                 </div>
                 <div class="p-field-radiobutton">
-                    <p-radiobutton name="status" value="Inactive" label="Inactive" [(ngModel)]="role.status"
-                        inputId="status-inactive" />
+                    <p-radiobutton formControlName="status" value="Inactive" label="Inactive" inputId="status-inactive" />
                     <label for="status-inactive" class="ml-2">Inactive</label>
                 </div>
             </div>
@@ -19,14 +17,14 @@
         <div class="col-12 md:col-6 pb-3">
             <label class="p-required">Role Name<span class="required-star">*</span></label>
             <div class="flex" style="padding-top: 0.05rem">
-                <input type="text" pInputText [(ngModel)]="role.name" placeholder="Enter Role Name" />
+                <input type="text" pInputText formControlName="name" placeholder="Enter Role Name" />
             </div>
         </div>
         <div class="col-12 md:col-6 pb-3">
             <label class="p-required">Role Privilege<span class="required-star">*</span></label>
             <div class="flex" style="padding-top: 0.05rem">
-                <p-multiselect class="w-full h-full" [options]="allPrivileges" [(ngModel)]="role.rolePrivileges"
-                    optionLabel="label" placeholder="Select Role Privilege" [filter]="true"
+                <p-multiselect class="w-full h-full" [options]="privilegeOptions" formControlName="rolePrivileges"
+                    optionLabel="label" optionValue="value" placeholder="Select Role Privilege" [filter]="true"
                     filterPlaceholder="Search" />
             </div>
         </div>
@@ -34,13 +32,11 @@
             <label class="p-required">Custom landing<span class="required-star">*</span></label>
             <div class="p-formgroup-inline flex flex-wrap gap-4" style="padding-top: 0.05rem">
                 <div class="p-field-radiobutton">
-                    <p-radiobutton name="customLanding" value="Yes" label="Yes" [(ngModel)]="role.customLanding"
-                        inputId="custom-yes" />
+                    <p-radiobutton formControlName="customLanding" value="Yes" label="Yes" inputId="custom-yes" />
                     <label for="custom-yes" class="ml-2">Yes</label>
                 </div>
                 <div class="p-field-radiobutton">
-                    <p-radiobutton name="customLanding" value="No" label="No" [(ngModel)]="role.customLanding"
-                        inputId="custom-no" />
+                    <p-radiobutton formControlName="customLanding" value="No" label="No" inputId="custom-no" />
                     <label for="custom-no" class="ml-2">No</label>
                 </div>
             </div>
@@ -48,22 +44,19 @@
         <div class="col-12 md:col-6 pb-3">
             <label class="p-required">Default Landing Page<span class="required-star">*</span></label>
             <div class="flex" style="padding-top: 0.05rem">
-                <p-select [options]="landingPages" [(ngModel)]="role.defaultLanding" optionLabel="label"
-                    placeholder="Select Default Landing Page" class="w-full"
-                    [disabled]="role.customLanding !== 'Yes'"></p-select>
+                <p-select [options]="landingPages" formControlName="defaultLanding" optionLabel="label" optionValue="value"
+                    placeholder="Select Default Landing Page" class="w-full"></p-select>
             </div>
         </div>
         <div class="col-12 pb-3">
             <label class="p-required">Role Type<span class="required-star">*</span></label>
             <div class="p-formgroup-inline flex flex-wrap gap-4 pt-1">
                 <div class="p-field-radiobutton">
-                    <p-radiobutton name="roleType" value="PSA BDP" label="PSA BDP" [(ngModel)]="role.roleType"
-                        inputId="role-psa" />
+                    <p-radiobutton formControlName="roleType" value="PSA BDP" label="PSA BDP" inputId="role-psa" />
                     <label for="role-psa" class="ml-2">PSA BDP</label>
                 </div>
                 <div class="p-field-radiobutton">
-                    <p-radiobutton name="roleType" value="BNS" label="BNS" [(ngModel)]="role.roleType"
-                        inputId="role-bns" />
+                    <p-radiobutton formControlName="roleType" value="BNS" label="BNS" inputId="role-bns" />
                     <label for="role-bns" class="ml-2">BNS</label>
                 </div>
             </div>
@@ -71,19 +64,19 @@
         <div class="col-12 md:col-6 pb-3">
             <label class="p-required">Skin<span class="required-star">*</span></label>
             <div class="flex" style="padding-top: 0.05rem">
-                <p-select [options]="skinOptions" [(ngModel)]="role.skin" optionLabel="label" placeholder="Select Skin"
+                <p-select [options]="skinOptions" formControlName="skin" optionLabel="label" optionValue="value" placeholder="Select Skin"
                     class="w-full"></p-select>
             </div>
         </div>
         <div class="col-12 pb-3">
             <label>Role Description</label>
             <div class="flex" style="padding-top: 0.05rem">
-                <textarea pInputTextarea rows="4" [(ngModel)]="role.description" maxlength="200"
+                <textarea pInputTextarea rows="4" formControlName="description" maxlength="200"
                     placeholder="Enter Description" class="w-full h-5rem"></textarea>
             </div>
             <div class="text-right">{{ role.description.length }}/200</div>
         </div>
-    </div>
+    </form>
     <div class="flex justify-content-end gap-2">
         <button pButton label="Cancel" class="p-button-outlined text-gray-900" (click)="close()"></button>
         <button pButton label="Add" class="p-button-primary" [disabled]="!isFormValid()" (click)="save()"></button>

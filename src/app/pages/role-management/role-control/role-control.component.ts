@@ -1,22 +1,9 @@
 import { PrimengModule } from './../../../shared/primeng/primeng.module';
 import { Component, OnInit, ViewChild } from "@angular/core";
 import { RoleService } from "../../../shared/service/role-control/role.service";
-import { ROLE_TABLE_HEADERS, TableHeaders } from "../../../shared/lib/constants";
+import { ROLE_TABLE_HEADERS, RoleConfigData, TableHeaders } from "../../../shared/lib/constants";
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
 import { RoleConfigurationComponent } from '../role-configuration/role-configuration.component';
-
-interface Role {
-    id: number;
-    roleName: string;
-    status: "Active" | "Inactive";
-    roleDescription: string;
-    rolePrivileges: string[];
-}
-
-interface PagedResult<T> {
-    data: T[];
-    total: number;
-}
 
 @Component({
     selector: "app-role-control",
@@ -30,12 +17,12 @@ export class RoleControlComponent implements OnInit {
     pageSize: number = 10;
 
     roleTableHeaders: TableHeaders[] = ROLE_TABLE_HEADERS;
-    roles: Role[] = [];
+    roles: RoleConfigData[] = [];
     totalRecords: number = 0;
     loading: boolean = false;
     searchTerm: string = "";
     allPrivileges: string[] = [
-        "List view (Download, Read)",
+        "List view",
         "Port master data management",
         "Data Management",
         "Tracking list",
@@ -87,8 +74,9 @@ export class RoleControlComponent implements OnInit {
         this.loadRoles(0, this.pageSize);
     }
 
-    editRole(role: Role) {
-        console.log("Edit", role);
+    /** Open configuration dialog prefilled for editing */
+    editRole(role: RoleConfigData): void {
+        this.roleConfig.open(role);
     }
 
     openAddRoleDialog() {

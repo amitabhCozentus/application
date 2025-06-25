@@ -24,3 +24,25 @@ export const ROLE_TABLE_HEADERS: TableHeaders[] = [
     { field: 'updatedBy', header: 'Updated By', sortable: true, filter: true },
     { field: 'updatedOn', header: 'Updated On', sortable: true, filter: true }
 ];
+
+export interface SelectOption {
+    label: string;
+    value: string;
+}
+
+/** Data shape for prefilling the Role Configuration dialog form */
+export interface RoleConfigData {
+    id: number;
+    status: 'Active' | 'Inactive';
+    roleName: string;
+    roleDescription: string;
+    rolePrivileges: string[];
+    customLanding: 'Yes' | 'No';
+    defaultLanding: string | null;
+    roleType: string;
+    skin: string | null;
+    createdBy: string;
+    createdOn: string;
+    updatedBy: string;
+    updatedOn: string;
+}
