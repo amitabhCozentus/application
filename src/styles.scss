@@ -205,6 +205,8 @@ body {
     --primary-color-text: #f8fafc;
     --primary-dark-color: #135aa9;
     --font-family: Montserrat;
+    --p-radiobutton-width: 1.5rem !important;
+    --p-radiobutton-height: 1.5rem !important;
 }
 
 /* Add your variable customizations of theme here */
@@ -3954,7 +3956,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
         0px 9px 46px 8px rgba(0, 0, 0, 0.12);
     border: 0 none;
     width: 52rem !important;
-    height: 100vh !important;
+    // height: 100vh !important;
     z-index: 99999999;
 }
 .p-dialog .p-dialog-header {
