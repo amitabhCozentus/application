@@ -8,12 +8,14 @@ export class UserControlService {
     private existingUsertableHeaders: any[] = [
         { field: 'userName', header: 'Name' },
         { field: 'userId', header: 'User Email Id' },
+        { field: 'userType', header: 'User Type' },
         { field: 'companies', header: 'Company Name' },
         { field: 'roleGranted', header: 'Role Granted' }
       ];
       private pendingUsertableHeaders: any[] = [ 
         { field: 'userName', header: 'Name' },
         { field: 'userId', header: 'User Email Id' },
+        { field: 'userType', header: 'User Type' },
         { field: 'companies', header: 'Company Name' },
         { field: 'roleGranted', header: 'Role Granted' }
       ];

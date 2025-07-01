@@ -1,0 +1,76 @@
+<div class="grid mt-2 m-2" id="subscription">
+    <div class="col-12">
+        <div class="grid">
+            <div class="col-12">
+                <div class="card">
+                    <p-table #existingUserTable [value]="subscriptionList" [(selection)]="selectedUsers"
+                        styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" [rows]="10"
+                        [showCurrentPageReport]="true" [scrollable]="true" scrollHeight="400px"
+                        [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row" dataKey="id"
+                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                        [filterDelay]="0" [resizableColumns]="true" [columns]="subscriptionTableHeader"
+                        [reorderableColumns]="true" [(totalRecords)]="subscriptionList.length" [globalFilterFields]="[
+                                'userId',
+                                'companies',
+                                'userName',
+                                'roleGranted'
+                            ]" stateStorage="local" stateKey="existingUserTableState">
+                        <ng-template #caption>
+                            <div class="flex justify-content-between">
+                                <div class="w-full md:w-30rem">
+                                    <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
+                                        (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
+                                </div>
+                                <button pButton  label="subscription Tier" 
+                                    (click)="refresh()"></button>
+                            </div>
+                        </ng-template>
+
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
+                                <th>
+                                    Actions
+                                </th>
+
+                                <th *ngFor="let col of subscriptionTableHeader" pSortableColumn="{{col.field}}">
+                                    {{ col.header }}
+                                    <p-sortIcon field="{{col.field}}" />
+                                    <p-columnFilter type="text" field="{{col.field}}" display="menu" />
+                                </th>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="body" let-assignment let-editing="editing" let-ri="rowIndex"
+                            let-columns="columns" class="bdp-body-container">
+                            <tr class="p-selectable-row" >
+                                <td>
+                                    <p-tableCheckbox [value]="subscriptionList" />
+                                </td>
+                                <td>
+                                    <button pButton pRipple icon="pi pi-pencil"
+                                        class="p-button-rounded p-button-text mr-2"
+                                        (click)="navigateToSubscription(assignment)">
+                                    </button>
+                                    <button pButton pRipple icon="pi pi-copy"
+                                        class="p-button-rounded p-button-text mr-2" (click)="onCopyClick(assignment)">
+                                    </button>
+                                </td>
+                                <td *ngFor="let col of subscriptionTableHeader">
+                                    {{ assignment[col.field] }}
+                                </td>
+                            </tr>
+                        </ng-template>
+
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="8">No Data found.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                    <app-subscription-dialog></app-subscription-dialog>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

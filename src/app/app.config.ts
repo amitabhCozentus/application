@@ -6,7 +6,7 @@ import { ApiRouteDefinition, AuthClientConfig } from '@auth0/auth0-angular';
 import {  ApplicationConfig, ErrorHandler, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
-import Aura from '@primeng/themes/aura';
+import Aura from '@primeng/themes/Aura';
 import {providePrimeNG} from 'primeng/config';
 import {definePreset} from '@primeng/themes';
 import { routes } from '../app/app.routes'

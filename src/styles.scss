@@ -3956,7 +3956,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
         0px 9px 46px 8px rgba(0, 0, 0, 0.12);
     border: 0 none;
     width: 52rem !important;
-    // height: 100vh !important;
+   // height: 100vh !important;
     z-index: 99999999;
 }
 .p-dialog .p-dialog-header {
@@ -4034,6 +4034,7 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 }
 
 .p-popover {
+     z-index: 99999 !important;
     background: #fdfeff;
     color: #515c66;
     border: 0 none;
@@ -5791,6 +5792,9 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 }
 .status-inactive {
   background-color: #ed1a24 !important;
+}
+.status-new {
+  background-color: #FFD500 !important;
 }
 .required-star {
     color: #ff0000;

@@ -3,6 +3,7 @@ import { PrimengModule } from '../../../../shared/primeng/primeng.module'
 import { UserControlService } from 'src/app/shared/service/user-control/user-control.service';
 import { AppRoutes } from '../../../../shared/lib/api-constant';
 import { CommonService } from '../../../../shared/service/common/common.service';
+import { CommonTableSearchComponent } from 'src/app/shared/component/table-search/common-table-search.component';
 
 
 interface userInfo{
@@ -12,7 +13,7 @@ interface userInfo{
 }
 @Component({
   selector: 'app-user-control',
-  imports: [PrimengModule],
+  imports: [PrimengModule,CommonTableSearchComponent],
   templateUrl: './user-control.component.html',
   styleUrl: './user-control.component.scss'
 })
@@ -27,10 +28,19 @@ export class UserControlComponent {
   selectedUser:userInfo[]=[]
   showAssignDialog:boolean=false;
 constructor(private userControlService:UserControlService,private commonService:CommonService) {
-    this.usersTableHeader = this.userControlService.getTableHeaders(0);
-    this.inActiveTableHeader = this.userControlService.getTableHeaders(1);
+    this.usersTableHeader =  [
+        { field: 'userName', header: 'Name' },  
+        { field: 'userType', header: 'User Type' },
+        { field: 'userId', header: 'User Email Id' },
+        { field: 'companies', header: 'Company Name' },
+        { field: 'roleGranted', header: 'Role Granted' },
+        { field: 'updatedBy', header: 'Updated By' },
+        { field: 'updatedOn', header: 'Updated On' }
+      ];
+    //this.inActiveTableHeader = this.userControlService.getTableHeaders(1);
     this.usersList=[ {
         "userId": "madhusudhan.murmu@bdpint.com",
+        "userType":"Existing",
         "companies": [
             "GLYCOL ETHERS",
             "DOW WOLFF CELLULOSICS",
@@ -110,7 +120,58 @@ constructor(private userControlService:UserControlService,private commonService:
         "roleGranted": "testing",
         "roleId": 2,
         "userName": "Madhu Sudan Murmu"
-    },]
+    },
+  {
+        "userId": "Abhishek.kumar@bdpint.com",
+        "userType":"New",
+        "companies": [
+            "GLYCOL ETHERS",
+            "DOW WOLFF CELLULOSICS",
+            "DUPONT MATERIAL SCIENCE",
+            "ELECTRICAL & TELECOMMUNICATIONS",
+            "EO TECHNOLOGY",
+            "EO/EG",
+            "EPOXY SYSTEMS",
+            "FLEXIBLE FOOD & SPECIALTY PACKAGING",
+            "FLEXIBLE PRODUCTS COMPANY",
+            "GENERIC",
+            "DOW WOLFF CELLULOSICS",
+            "GROWTH TECHNOLOGIES",
+            "HDOW MATERIAL SCIENCE",
+            "DOW SADARA",
+            "DOW TURKIYE KIMYA SAN. VE TIC.LTD.STI",
+            "POLYOLS",
+            "ROHM AND HAAS KIMYASAL URUNLER DAGITIM",
+            "SIAM POLYETHYLENE COMPANY LTD",
+            "SIAM POLYSTYRENE CO. LTD",
+            "BUILDING SOLUTIONS",
+            "SABIC PETROCHEMICALS CANADA INC",
+            "SHPP US LLC",
+            "THE DOW CHEMICAL COMPANY",
+            "ACRYLIC MONOMERS",
+            "ADHESIVES & FUNCTIONAL MATERIALS",
+            "AMINES",
+            "ARCHITECTURAL COATINGS",
+            "BP LICENSING & CATALYST",
+            "SABIC AMERICAS  INC",
+            "CHLORINATED ORGANICS BUS",
+            "CONSTRUCTION CHEMICALS",
+            "DA ADHESIVES",
+            "DCM INDUSTRIAL",
+            "DOW HOME & PERSONAL CARE",
+            "DOW MICROBIAL CONTROL",
+            "DOW MIDEAST SYSTEM",
+            "DOW WATER AND PROCESS SOLUTIONS",
+            "UF - ULTRAFILTRATION",
+            "REVERSE OSMOSIS",
+            "RIGID PACKAGING",
+            "SAFECHEM",
+            "SB LATEX"
+        ],
+        "roleGranted": "testing",
+        "roleId": 2,
+        "userName": "Abhishek kumar"
+    }]
     this.Users=[{name:"Abhishek"},{name:"Dibya"}]
     this.selectedUser=[{userName:"Abhishek Kumar",roleName:"Admin",companyAssign: ["GLYCOL ETHERS",
             "DOW WOLFF CELLULOSICS",
