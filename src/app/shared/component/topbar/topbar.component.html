@@ -1,0 +1,33 @@
+<div class="topbar-container">
+  <!-- Row 1: logo, section, and action controls -->
+  <p-toolbar>
+    <ng-template pTemplate="start">
+        <img class="bdp-logo" src="./../../../../assets/bdp/images/Smart Navigator_White.svg" alt="Smart Navigator" />
+    </ng-template>
+    <ng-template pTemplate="center">
+      <span class="current-section">{{ currentSection }}</span>
+    </ng-template>
+    <ng-template pTemplate="end" class="tools">4
+      <p-dropdown
+        [options]="companies"
+        [(ngModel)]="selectedCompany"
+        placeholder="Saved Companies"
+        styleClass="company-dropdown">
+      </p-dropdown>
+      <button pButton type="button" icon="pi pi-sitemap" class="p-button-text support-btn"></button>
+      <button pButton type="button" icon="pi pi-bell" class="p-button-text notification-btn">
+        <p-badge [value]="unreadCount" severity="danger" class="notification-badge"></p-badge>
+      </button>
+      <p-avatar
+        label="{{ userInitials }}"
+        shape="circle"
+        styleClass="user-avatar"
+        (click)="userMenu.toggle($event)">
+      </p-avatar>
+      <p-tieredMenu #userMenu [model]="userMenuItems" popup="true"></p-tieredMenu>
+    </ng-template>
+  </p-toolbar>
+
+  <!-- Row 2: navigation menu -->
+  <p-menubar [model]="navMenuItems" class="navigation-bar"></p-menubar>
+</div>

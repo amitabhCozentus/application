@@ -26,11 +26,11 @@
             </div>
         </div>
         <div class="col-12 md:col-6 pb-3">
-            <label class="p-required">Role Privilege<span class="required-star">*</span></label>
+            <label class="p-required">Role Privileges<span class="required-star">*</span></label>
             <div class="flex" style="padding-top: 0.05rem">
-                <p-multiselect class="w-full h-full" [options]="privilegeOptions" formControlName="rolePrivileges"
-                    optionLabel="label" optionValue="value" placeholder="Select Role Privilege" [filter]="true"
-                    filterPlaceholder="Search" />
+                <p-treeselect class="w-full md:w-80" containerStyleClass="w-full"
+                    [options]="privilegeTreeOptions" formControlName="privPermissions" display="chip" [metaKeySelection]="false"
+                    selectionMode="checkbox" placeholder="Select Role Privilege" />
             </div>
         </div>
         <div class="col-12 pb-3">
@@ -79,7 +79,7 @@
                 <textarea pInputTextarea rows="4" formControlName="description" maxlength="200"
                     placeholder="Enter Description" class="w-full h-5rem"></textarea>
             </div>
-            <div class="text-right">{{ role.description.length }}/200</div>
+            <div class="text-right">{{ form.get('description')?.value?.length || 0 }}/200</div>
         </div>
     </form>
     <div class="flex justify-content-end gap-2">
@@ -87,3 +87,4 @@
         <button pButton label="Add" class="p-button-primary" [disabled]="!isFormValid()" (click)="save()"></button>
     </div>
 </p-dialog>
+<app-toast-component></app-toast-component>

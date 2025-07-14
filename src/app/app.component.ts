@@ -1,11 +1,13 @@
+import { AppMainComponent } from './shared/component/main-panel/app.main.component';
 import { Component, OnInit, AfterViewInit, ChangeDetectorRef, SimpleChanges, DoCheck } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgHttpLoaderComponent } from 'ng-http-loader';
+import { TopbarComponent } from './shared/component/topbar/topbar.component';
 //import { PrimeNGConfig } from 'primeng/api';
 
 @Component({
     selector: 'app-root',
-    imports:[RouterOutlet,NgHttpLoaderComponent],
+    imports:[RouterOutlet, NgHttpLoaderComponent, TopbarComponent, AppMainComponent],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })
@@ -27,14 +29,13 @@ export class AppComponent implements OnInit, AfterViewInit {
     ripple: boolean = true;
     isRefresh: boolean; //For US 8229
 
-    
 
     constructor(
     ) {
     }
 
 
-    ngOnInit() {      
+    ngOnInit() {
     }
     ngAfterViewInit() {
 }

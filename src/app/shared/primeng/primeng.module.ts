@@ -63,11 +63,13 @@ import { ToggleButtonModule } from 'primeng/togglebutton';
 import { ToolbarModule } from 'primeng/toolbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { TreeModule } from 'primeng/tree';
+import { TreeSelectModule } from 'primeng/treeselect';
 import { TreeTableModule } from 'primeng/treetable';
 import { TimelineModule } from 'primeng/timeline';
 import { BadgeModule } from 'primeng/badge';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DividerModule } from 'primeng/divider';
+import { OverlayBadgeModule } from 'primeng/overlaybadge';
 
 const primengModules = [
     CommonModule,
@@ -136,10 +138,12 @@ const primengModules = [
     TooltipModule,
     TreeModule,
     TreeTableModule,
+    TreeSelectModule,
     TimelineModule,
     BadgeModule,
     ProgressSpinnerModule,
-    DividerModule
+    DividerModule,
+    OverlayBadgeModule
 ]
 @NgModule({
   declarations: [],

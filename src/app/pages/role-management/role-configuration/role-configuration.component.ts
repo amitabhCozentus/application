@@ -1,32 +1,25 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PrimengModule } from '../../../shared/primeng/primeng.module';
 import { RoleService } from '../../../shared/service/role-control/role.service';
 import { SelectOption, RoleConfigData } from '../../../shared/lib/constants';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { ToastComponent } from '../../../shared/component/toast-component/toast.component';
 
 @Component({
   selector: 'app-role-configuration',
   standalone: true,
-  imports: [PrimengModule, ReactiveFormsModule],
+  imports: [PrimengModule, ReactiveFormsModule, FormsModule, ToastComponent],
+  providers: [RoleService],
   templateUrl: './role-configuration.component.html',
   styleUrls: ['./role-configuration.component.scss']
 })
 export class RoleConfigurationComponent implements OnInit {
+  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+
   display = false;
   form!: FormGroup;
-
-  role = {
-    status: '',
-    name: '',
-    rolePrivileges: [] as string[],
-    customLanding: '',
-    defaultLanding: null as string | null,
-    roleType: '',
-    skin: null as string | null,
-    description: ''
-  };
-
-  privilegeOptions: SelectOption[] = [];
+  privilegeGroups: { label: string; privileges: string[] }[] = [];
+  privilegeTreeOptions: any[] = []; // Tree structure for p-treeselect
 
   landingPages: SelectOption[] = [];
   skinOptions: SelectOption[] = [];
@@ -38,52 +31,64 @@ export class RoleConfigurationComponent implements OnInit {
     this.form = this.fb.group({
       status: ['', Validators.required],
       name: ['', Validators.required],
-      rolePrivileges: [[], Validators.required],
       customLanding: ['', Validators.required],
       defaultLanding: [{ value: null, disabled: true }],
       roleType: ['', Validators.required],
       skin: [null, Validators.required],
-      description: ['']
+      description: [''],
+      privPermissions: [[], Validators.required]
     });
-    // load options once
+    // load privilege options and build privilegeGroups
+    this.roleService.getPrivilegeOptions().subscribe(privs => {
+      this.privilegeGroups = [{ label: 'Features', privileges: privs }];
+
+      this.privilegeTreeOptions = [{
+        label: 'Features',
+        key: 'features',
+        children: privs.map(priv => ({
+          label: priv,
+          key: priv,
+          data: priv
+        }))
+      }];
+    });
+    // load config options
     this.roleService.getConfigOptions().subscribe(opts => {
       this.skinOptions = opts.skins.map(s => ({ label: s, value: s }));
       this.landingPages = opts.defaultLandings.map(l => ({ label: l, value: l }));
     });
-    // load privilege options
-    this.roleService.getPrivilegeOptions().subscribe(privs => {
-      this.privilegeOptions = privs.map(p => ({ label: p, value: p }));
-    });
     // enable/disable defaultLanding on customLanding changes
     this.form.get('customLanding')?.valueChanges.subscribe(val => {
       const ctrl = this.form.get('defaultLanding');
-      if (val === 'Yes') ctrl?.enable(); else ctrl?.disable();
+      val === 'Yes' ? ctrl?.enable() : ctrl?.disable();
     });
   }
 
   /** Open dialog; if data provided, prefill form for editing, otherwise reset */
   open(data?: RoleConfigData): void {
+        this.showErrorNotification("BNS Super Admin");
+
     if (data) {
       this.form.get('customLanding')?.setValue(data.customLanding, { emitEvent: true });
       this.form.patchValue({
         status: data.status,
         name: data.roleName,
-        rolePrivileges: data.rolePrivileges,
         defaultLanding: data.defaultLanding,
         roleType: data.roleType,
         skin: data.skin,
-        description: data.roleDescription
+        description: data.roleDescription,
+        privPermissions: data.rolePrivileges || []
       });
     } else {
       this.form.reset({
         status: '',
         name: '',
-        rolePrivileges: [],
         customLanding: '',
         defaultLanding: null,
         roleType: '',
         skin: null,
-        description: ''
+        description: '',
+        privPermissions: []
       });
       this.form.get('defaultLanding')?.disable({ emitEvent: false });
     }
@@ -93,11 +98,57 @@ export class RoleConfigurationComponent implements OnInit {
   close(): void { this.display = false; }
 
   isFormValid(): boolean {
-    return this.form.valid;
+    const privPermissions = this.form.get('privPermissions')?.value;
+    const hasSelectedPrivileges = privPermissions && privPermissions.length > 0;
+    return this.form.valid && hasSelectedPrivileges;
   }
 
   save(): void {
-    console.log('Saved role:', this.form.value);
-    this.close();
+    const privPermissions = this.form.get('privPermissions')?.value;
+    const roleName = this.form.get('name')?.value;
+    const formData = {
+      ...this.form.value,
+      rolePrivileges: privPermissions
+    };
+
+    console.log('Saved role:', formData);
+
+    // Simulate save operation - replace this with actual service call
+    try {
+      // TODO: Replace with actual service call
+      // this.roleService.saveRole(formData).subscribe({
+      //   next: (response) => {
+      //     this.close();
+      //     this.showSuccessNotification();
+      //   },
+      //   error: (error) => {
+      //     this.close();
+      //     this.showErrorNotification(roleName);
+      //   }
+      // });
+
+      // For now, simulate success
+      const isSuccess = true; // Change this to false to test error scenario
+
+      this.close();
+
+      if (isSuccess) {
+        this.showSuccessNotification();
+      } else {
+        this.showErrorNotification(roleName);
+      }
+
+    } catch (error) {
+      this.close();
+      this.showErrorNotification(roleName);
+    }
+  }
+
+  private showSuccessNotification(): void {
+    this.toastComponent.showSuccess('The Role is added successfully');
+  }
+
+  private showErrorNotification(roleName: string): void {
+    this.toastComponent.showError(`${roleName} role has not added. Please try again.`);
   }
 }
