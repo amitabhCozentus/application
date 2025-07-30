@@ -76,7 +76,7 @@ export class SubscriptionComponent {
 
    onCopyClick(){
       this.showAssignDialog=true;
-        this.enableSubscriptionDialog.next(this.showAssignDialog);
+       // this.enableSubscriptionDialog.next(this.showAssignDialog);
     }
 
     navigateToUserAssignment(selectedUser: any) {
