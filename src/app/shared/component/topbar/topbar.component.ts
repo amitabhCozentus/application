@@ -13,6 +13,7 @@ import Aura from '@primeng/themes/aura';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
 import { LayoutService } from 'src/app/shared/service/layout/layout.service';
 import { TopbarsService } from '../../service/topbars/topbars.service';
+import { TranslationService } from '../../service/translationService/translation.service';
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
     Aura
@@ -35,51 +36,57 @@ declare type SurfacesType = {
     };
 }
 @Component({
-  standalone: true,
-  selector: 'app-topbar',
-  imports: [CommonModule, FormsModule, ToolbarModule, MenubarModule, DropdownModule, ButtonModule, AvatarModule, TieredMenuModule, PrimengModule],
-  templateUrl: './topbar.component.html',
-  styleUrls: ['./topbar.component.scss']
+    standalone: true,
+    selector: 'app-topbar',
+    imports: [CommonModule, FormsModule, ToolbarModule, MenubarModule, DropdownModule, ButtonModule, AvatarModule, TieredMenuModule, PrimengModule],
+    templateUrl: './topbar.component.html',
+    styleUrls: ['./topbar.component.scss']
 })
 export class TopbarComponent {
-  applicationTitle = 'SMART + NAVIGATOR';
-  currentSection = 'MARITIME + INSIGHTS';
-  
-      layoutService: LayoutService = inject(LayoutService);
-      topbarService: TopbarsService = inject(TopbarsService);
-      darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
-      menuThemeOptions: { name: string; value: string }[] = [];
-      primaryColors = computed<SurfacesType[]>(() => {
-          const presetPalette = presets[this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>].primitive;
-          const colors = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
-          const palettes: SurfacesType[] = [{ name: 'noir', palette: {} }];
-  
-          colors.forEach((color) => {
-              palettes.push({
-                  name: color,
-                  palette: presetPalette?.[color as KeyOfType<typeof presetPalette>] as SurfacesType['palette']
-              });
-          });
-  
-          return palettes;
-      });
-  companyItems: SelectItem[] = [
-    { label: 'Saved Companies', value: null }
-  ];
-  selectedCompany: any;
+    applicationTitle = 'SMART + NAVIGATOR';
+    currentSection = 'MARITIME + INSIGHTS';
+    fenchLanguage: any[] = [];
+    englishLanguage: any[] = [];
 
-  navMenuItems: MenuItem[] = [];
-  userMenuItems: MenuItem[] = [];
+    layoutService: LayoutService = inject(LayoutService);
+    topbarService: TopbarsService = inject(TopbarsService);
+    translationService: TranslationService = inject(TranslationService);
+    darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
+    menuThemeOptions: { name: string; value: string }[] = [];
+    primaryColors = computed<SurfacesType[]>(() => {
+        const presetPalette = presets[this.layoutService.layoutConfig().preset as KeyOfType<typeof presets>].primitive;
+        const colors = ['emerald', 'green', 'lime', 'orange', 'amber', 'yellow', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose'];
+        const palettes: SurfacesType[] = [{ name: 'noir', palette: {} }];
 
-  userName = 'Solution User';
-  get userInitials(): string {
-    return this.userName
-      .split(' ')
-      .map((n) => n.charAt(0))
-      .join('');
-  }
+        colors.forEach((color) => {
+            palettes.push({
+                name: color,
+                palette: presetPalette?.[color as KeyOfType<typeof presetPalette>] as SurfacesType['palette']
+            });
+        });
 
-  updateColors(event: any, type: string) {
+        return palettes;
+    });
+    companyItems: SelectItem[] = [
+        { label: 'Saved Companies', value: null }
+    ];
+    selectedCompany: any;
+    languageOptions: SelectItem[] = [
+        { label: 'English', value: 'en' },
+        { label: 'French', value: 'fr' }
+    ];
+    navMenuItems: MenuItem[] = [];
+    userMenuItems: MenuItem[] = [];
+
+    userName = 'Solution User';
+    get userInitials(): string {
+        return this.userName
+            .split(' ')
+            .map((n) => n.charAt(0))
+            .join('');
+    }
+
+    updateColors(event: any, type: string) {
         if (type === 'primary') {
             this.layoutService.layoutConfig.update((state) => ({
                 ...state,
@@ -97,6 +104,22 @@ export class TopbarComponent {
         } else if (type === 'surface') {
             updateSurfacePalette(color.palette);
         }
+    }
+
+    buildNavMenu() {
+        const t = (key: string) => this.translationService.translate(key);
+
+        this.navMenuItems = [
+            { label: t('LIT.LBL.MENU.HOME'), icon: 'pi pi-home', routerLink: '/home' },
+            { label: t('LIT.LBL.MENU.TRACKING_LIST'), icon: 'pi pi-list', routerLink: '/tracking-list' },
+            { label: t('LIT.LBL.MENU.FAVORITES'), icon: 'pi pi-star', routerLink: '/favorites' },
+            { label: t('LIT.LBL.MENU.ALERTS'), icon: 'pi pi-bell', routerLink: '/alerts' },
+            { label: t('LIT.LBL.MENU.REPORTING'), icon: 'pi pi-chart-line', routerLink: '/reporting' },
+            { label: t('LIT.LBL.MENU.3PL'), icon: 'pi pi-refresh', items: [] },
+            { label: t('LIT.LBL.MENU.DATA_MANAGEMENT'), icon: 'pi pi-database', items: [] },
+            { label: t('LIT.LBL.MENU.USER_MANAGEMENT'), icon: 'pi pi-users', items: [] },
+            { label: t('LIT.LBL.MENU.MASTER_DATA'), icon: 'pi pi-cog', items: [] }
+        ];
     }
 
 
@@ -249,43 +272,45 @@ export class TopbarComponent {
     selectedPrimaryColor = computed(() => {
         return this.layoutService.layoutConfig().primary;
     });
+    onLanguageChange(event: any) {
+        const selectedLanguage = event.value;
+        selectedLanguage==='en' ? this.translationService.setLanguage(selectedLanguage, this.englishLanguage) : this.translationService.setLanguage(selectedLanguage, this.fenchLanguage);
+        this.buildNavMenu();
+    }
+    ngOnInit(): void {
+        this.navMenuItems = [
+            { label: 'Home', icon: 'pi pi-home', routerLink: '/home' },
+            { label: 'Tracking List', icon: 'pi pi-list', routerLink: '/tracking-list' },
+            { label: 'Favorites', icon: 'pi pi-star', routerLink: '/favorites' },
+            { label: 'Alerts', icon: 'pi pi-bell', routerLink: '/alerts' },
+            { label: 'Reporting', icon: 'pi pi-chart-line', routerLink: '/reporting' },
+            { label: '3PL', icon: 'pi pi-refresh', items: [] },
+            { label: 'Data Management', icon: 'pi pi-database', items: [] },
+            { label: 'User Management', icon: 'pi pi-users', items: [] },
+            { label: 'Master Data', icon: 'pi pi-cog', items: [] }
+        ];
 
-  ngOnInit(): void {
-    this.navMenuItems = [
-      { label: 'Home', icon: 'pi pi-home', routerLink: '/home' },
-      { label: 'Tracking List', icon: 'pi pi-list', routerLink: '/tracking-list' },
-      { label: 'Favorites', icon: 'pi pi-star', routerLink: '/favorites' },
-      { label: 'Alerts', icon: 'pi pi-bell', routerLink: '/alerts' },
-      { label: 'Reporting', icon: 'pi pi-chart-line', routerLink: '/reporting' },
-      { label: '3PL', icon: 'pi pi-refresh', items: [] },
-      { label: 'Data Management', icon: 'pi pi-database', items: [] },
-      { label: 'User Management', icon: 'pi pi-users', items: [] },
-      { label: 'Master Data', icon: 'pi pi-cog', items: [] }
-    ];
+        this.userMenuItems = [
+            { label: 'Profile', icon: 'pi pi-user' },
+            { label: 'Settings', icon: 'pi pi-cog' },
+            { separator: true },
+            { label: 'Logout', icon: 'pi pi-sign-out' }
+        ];
 
-    this.userMenuItems = [
-      { label: 'Profile', icon: 'pi pi-user' },
-      { label: 'Settings', icon: 'pi pi-cog' },
-      { separator: true },
-      { label: 'Logout', icon: 'pi pi-sign-out' }
-    ];
+        this.topbarService.getFrenchItemTranslation('topbar.company').subscribe((translation: any) => {
+            if (translation && translation.success && translation.data) {
+                this.fenchLanguage = translation.data[0];
+            }
+        });
 
-    this.topbarService.getFrenchItemTranslation('topbar.company').subscribe((translation: any) => {
-        if(translation && translation.success && translation.data) {
-            const frenchTranslation=translation.data[0].translation
-      this.navMenuItems.map(item => {
-        if (item.label === translation.data) {
-          item.label = item.label || frenchTranslation;
-        return item;
-      }});
-    }});
-    
 
-    this.topbarService.getEnglishItemTranslation('topbar.company').subscribe((translation: string) => {
-      this.navMenuItems.map(item => {
-          item.label = translation;
-        return item;
-      });
-    });
-  }
+        this.topbarService.getEnglishItemTranslation('topbar.company').subscribe((translation: any) => {
+            if (translation && translation.success && translation.data) {
+                this.englishLanguage = translation.data[0];
+                this.translationService.setLanguage(this.englishLanguage[0].languageCode, this.englishLanguage);
+                this.buildNavMenu();
+
+            }
+        });
+    }
 }

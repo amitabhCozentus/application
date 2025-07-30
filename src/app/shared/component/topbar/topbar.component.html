@@ -8,7 +8,14 @@
       <span class="current-section">{{ currentSection }}</span>
     </ng-template>
     <ng-template pTemplate="end" class="tools">
-     
+      <p-select class="mr-4"
+        [options]="languageOptions"
+        (onChange)="onLanguageChange($event)"
+        placeholder="Select Language"
+        optionLabel="label"
+        optionValue="value"
+        style="width: 25%;">
+      </p-select>
       <p-select class="mr-4"
         [options]="primaryColors()"
         [(ngModel)]="selectedCompany"
