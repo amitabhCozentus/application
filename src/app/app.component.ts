@@ -7,7 +7,7 @@ import { TopbarComponent } from './shared/component/topbar/topbar.component';
 
 @Component({
     selector: 'app-root',
-    imports:[RouterOutlet, NgHttpLoaderComponent, TopbarComponent, AppMainComponent],
+    imports:[RouterOutlet, NgHttpLoaderComponent, AppMainComponent],
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
 })

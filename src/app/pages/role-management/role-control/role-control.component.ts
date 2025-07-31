@@ -90,12 +90,18 @@ export class RoleControlComponent implements OnInit {
         this.loading = true;
         this.roleService
             .getActiveRoles(pageIndex, pageSize, this.searchTerm)
-            .subscribe((res) => {
-                this.roles = res.data;
-                this.totalRecords = res.total;
-                this.loading = false;
+            .subscribe({
+                next: (res) => {
+                    this.roles = res.data;
+                    this.totalRecords = res.total;
+                    this.loading = false;
 
-                console.log("Roles loaded:", this.roles);
+                    console.log("Roles loaded:", this.roles);
+                },
+                error: (error) => {
+                    this.loading = false;
+                    console.error("Error loading roles:", error);
+                }
             });
     }
 

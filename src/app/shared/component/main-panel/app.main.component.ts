@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { TopbarComponent } from '../topbar/topbar.component';
-import { appendFile } from 'fs';
 import { AppFooterComponent } from '../../../app.footer.component';
 import { RouterOutlet } from '@angular/router';
 

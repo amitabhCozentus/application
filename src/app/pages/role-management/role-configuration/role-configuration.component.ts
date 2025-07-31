@@ -66,7 +66,7 @@ export class RoleConfigurationComponent implements OnInit {
 
   /** Open dialog; if data provided, prefill form for editing, otherwise reset */
   open(data?: RoleConfigData): void {
-        this.showErrorNotification("BNS Super Admin");
+        // this.showErrorNotification("BNS Super Admin");
 
     if (data) {
       this.form.get('customLanding')?.setValue(data.customLanding, { emitEvent: true });
