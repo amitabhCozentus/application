@@ -27,12 +27,12 @@ const authConfig: AuthConfig = {
     appIconBaseUrl:'',
     ump_url:'',
     ump_endpoint_url: '',
-    baseurl: 'http://localhost:8080',
+    baseurl: 'https://private-1cf213-itt.apiary-mock.com/',
     authConfig:authConfig,
     auth: authConfig,
     mapbox: {
         accessToken: '',
     },
-    
+
 };
 

@@ -46,3 +46,52 @@ export interface RoleConfigData {
     updatedBy: string;
     updatedOn: string;
 }
+// API response shapes for RoleService
+export interface ApiPagination {
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+}
+export interface ApiRoleType { id: number; key: string; name: string; }
+export interface ApiLandingPage { id: number; key: string; name: string; }
+export interface ApiPrivilege {
+  privilegeId: number;
+  privilegeName: string;
+  privilegeKey: string;
+  mapCatFeatPrivId: number;
+  isSelected: boolean;
+}
+export interface ApiFeature {
+  featureId: number;
+  featureName: string;
+  featureKey: string;
+  privileges: ApiPrivilege[];
+}
+export interface ApiCategory {
+  categoryId: number;
+  categoryName: string;
+  categoryKey: string;
+  features: ApiFeature[];
+}
+export interface ApiSkinConfig { id: number; key: string; name: string; }
+export interface ApiRole {
+  id: number;
+  name: string;
+  description: string;
+  isActive: boolean;
+  roleType: ApiRoleType;
+  landingPage?: ApiLandingPage;
+  privilegeHierarchy: ApiCategory[];
+  skinConfigs: ApiSkinConfig[];
+  createdBy?: string;
+  createdOn?: string;
+  updatedBy?: string;
+  updatedOn?: string;
+}
+export interface ApiResponse {
+  success: boolean;
+  data: { content: ApiRole[]; pagination: ApiPagination };
+  timestamp: string;
+}
