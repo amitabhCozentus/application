@@ -121,44 +121,7 @@ export class RoleControlComponent implements OnInit {
             updateSurfacePalette(color.palette);
         }
     }
-    toggleDarkMode() {
-        this.executeDarkModeToggle();
-    }
-
-     executeDarkModeToggle() {
-        this.layoutService.layoutConfig.update((state) => ({
-            ...state,
-            darkTheme: !state.darkTheme
-        }));
-        if (this.darkTheme()) {
-            this.setMenuTheme('dark');
-        }
-        this.updateMenuThemeOptions();
-        this.layoutService.updateBodyBackground(this.layoutService.layoutConfig().primary);
-    }
-
-    updateMenuThemeOptions() {
-        if (this.darkTheme()) {
-            this.menuThemeOptions = [
-                { name: 'Dark', value: 'dark' },
-                { name: 'Primary', value: 'primary' }
-            ];
-        } else {
-            this.menuThemeOptions = [
-                { name: 'Light', value: 'light' },
-                { name: 'Dark', value: 'dark' },
-                { name: 'Primary', value: 'primary' }
-            ];
-        }
-    }
-
-     setMenuTheme(theme: string) {
-        this.layoutService.layoutConfig.update((state) => ({
-            ...state,
-            menuTheme: theme
-        }));
-    }
-
+    
     getPresetExt() {
         const color: SurfacesType = this.primaryColors().find((c) => c.name === this.selectedPrimaryColor()) || {};
 

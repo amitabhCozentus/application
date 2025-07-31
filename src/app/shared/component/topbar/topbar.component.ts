@@ -271,6 +271,42 @@ export class TopbarComponent {
             };
         }
     }
+    toggleDarkMode() {
+        this.executeDarkModeToggle();
+    }
+    executeDarkModeToggle() {
+        this.layoutService.layoutConfig.update((state) => ({
+            ...state,
+            darkTheme: !state.darkTheme
+        }));
+        if (this.darkTheme()) {
+            this.setMenuTheme('dark');
+        }
+        this.updateMenuThemeOptions();
+        this.layoutService.updateBodyBackground(this.layoutService.layoutConfig().primary);
+    }
+
+    updateMenuThemeOptions() {
+        if (this.darkTheme()) {
+            this.menuThemeOptions = [
+                { name: 'Dark', value: 'dark' },
+                { name: 'Primary', value: 'primary' }
+            ];
+        } else {
+            this.menuThemeOptions = [
+                { name: 'Light', value: 'light' },
+                { name: 'Dark', value: 'dark' },
+                { name: 'Primary', value: 'primary' }
+            ];
+        }
+    }
+
+     setMenuTheme(theme: string) {
+        this.layoutService.layoutConfig.update((state) => ({
+            ...state,
+            menuTheme: theme
+        }));
+    }
 
     selectedPrimaryColor = computed(() => {
         return this.layoutService.layoutConfig().primary;
