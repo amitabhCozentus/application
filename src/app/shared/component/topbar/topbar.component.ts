@@ -11,7 +11,7 @@ import { MenuItem, SelectItem } from 'primeng/api';
 import { PrimengModule } from '../../primeng/primeng.module';
 import Aura from '@primeng/themes/aura';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
-import { LayoutService } from 'src/app/shared/service/layout/layout.service';
+import { LayoutService } from '../../service/layout/layout.service';
 import { TopbarsService } from '../../service/topbars/topbars.service';
 import { TranslationService } from '../../service/translationService/translation.service';
 import { CommonService } from '../../service/common/common.service';
@@ -284,7 +284,7 @@ export class TopbarComponent {
          this.auth0Service.logout({ returnTo: window.location.origin }
     );
         }
-    
+
     ngOnInit(): void {
         this.navMenuItems = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/home' },
