@@ -17,7 +17,7 @@
         "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w",
         "auth": {
           "domain": "devlogin.bdpsmart.com",
-          "clientId": "UrdJyZAIIjP15ahBa358JwJWSLIwMqk0",
+          "clientId": "i8fOE8os0ccf5z6u2vpj4M36y45Devwc",
           "authorizationParams": {
               "audience": "https://bdpint-smarthub-dev.us.auth0.com/api/v2/"
           },
@@ -36,7 +36,7 @@
           "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w",
           "auth": {
             "domain": "testlogin.bdpsmart.com",
-            "clientId": "JVzEjARXN1zhxgpmUiLQ8nycx8KQCzFu",
+            "clientId": "i8fOE8os0ccf5z6u2vpj4M36y45Devwc",
             "authorizationParams": {
                 "audience": "https://bdpint-smarthub-test.us.auth0.com/api/v2/"
             },
@@ -74,7 +74,7 @@
         "mapBoxAccessToken": "pk.eyJ1IjoibWFoZW5kcmE5MzI5IiwiYSI6ImNrcHpld25pNzBsdGEycG82aTh2NjI0YnAifQ.AD4EUC9iCaDZMT36sNq50w",
         "auth": {
           "domain": "login.bdpsmart.com",
-          "clientId": "bg7X3FMUdviqmck7iZm6CQJaoXMy4gdy",
+          "clientId": "i8fOE8os0ccf5z6u2vpj4M36y45Devwc",
           "authorizationParams": {
               "audience": "https://bdpint-smarthub-prod.us.auth0.com/api/v2/"
           },

@@ -14,6 +14,8 @@ import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
 import { LayoutService } from 'src/app/shared/service/layout/layout.service';
 import { TopbarsService } from '../../service/topbars/topbars.service';
 import { TranslationService } from '../../service/translationService/translation.service';
+import { CommonService } from '../../service/common/common.service';
+import { AuthService as Auth0Service } from '@auth0/auth0-angular';
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
     Aura
@@ -51,6 +53,7 @@ export class TopbarComponent {
     layoutService: LayoutService = inject(LayoutService);
     topbarService: TopbarsService = inject(TopbarsService);
     translationService: TranslationService = inject(TranslationService);
+    auth0Service: Auth0Service = inject(Auth0Service);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuThemeOptions: { name: string; value: string }[] = [];
     primaryColors = computed<SurfacesType[]>(() => {
@@ -274,9 +277,14 @@ export class TopbarComponent {
     });
     onLanguageChange(event: any) {
         const selectedLanguage = event.value;
-        selectedLanguage==='en' ? this.translationService.setLanguage(selectedLanguage, this.englishLanguage) : this.translationService.setLanguage(selectedLanguage, this.fenchLanguage);
+        selectedLanguage === 'en' ? this.translationService.setLanguage(selectedLanguage, this.englishLanguage) : this.translationService.setLanguage(selectedLanguage, this.fenchLanguage);
         this.buildNavMenu();
     }
+    public logoutRedirect() {
+         this.auth0Service.logout({ returnTo: window.location.origin }
+    );
+        }
+    
     ngOnInit(): void {
         this.navMenuItems = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/home' },
@@ -294,7 +302,7 @@ export class TopbarComponent {
             { label: 'Profile', icon: 'pi pi-user' },
             { label: 'Settings', icon: 'pi pi-cog' },
             { separator: true },
-            { label: 'Logout', icon: 'pi pi-sign-out' }
+            { label: 'Logout', icon: 'pi pi-sign-out', command: (event) => this.logoutRedirect() }
         ];
 
         this.topbarService.getFrenchItemTranslation('topbar.company').subscribe((translation: any) => {
@@ -302,6 +310,8 @@ export class TopbarComponent {
                 this.fenchLanguage = translation.data[0];
             }
         });
+
+
 
 
         this.topbarService.getEnglishItemTranslation('topbar.company').subscribe((translation: any) => {
@@ -312,5 +322,7 @@ export class TopbarComponent {
 
             }
         });
+
+
     }
 }

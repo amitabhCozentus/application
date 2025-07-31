@@ -4,6 +4,20 @@
 // The list of which env maps to which file can be found in `angular-cli.json`.
 import { AuthConfig } from '@auth0/auth0-angular';
 
+const authConfig: AuthConfig = {
+  domain: 'devlogin.bdpsmart.com',
+  clientId: 'i8fOE8os0ccf5z6u2vpj4M36y45Devwc',
+  authorizationParams: {
+      redirect_uri: window.location.origin,
+  },
+  httpInterceptor: {
+      allowedList: [
+          {
+              uri: 'http://localhost:3000/*',
+          },
+      ],
+  },
+};
 
   export const environment = {
     production: false,
@@ -14,6 +28,8 @@ import { AuthConfig } from '@auth0/auth0-angular';
     ump_url:'',
     ump_endpoint_url: '',
     baseurl: 'http://localhost:8080',
+    authConfig:authConfig,
+    auth: authConfig,
     mapbox: {
         accessToken: '',
     },

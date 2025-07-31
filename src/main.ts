@@ -6,6 +6,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import {appConfig} from '../src/app/app.config'
 import{AppComponent} from '../src/app/app.component'
 import { provideHttpClient } from '@angular/common/http';
+import { AuthModule } from '@auth0/auth0-angular';
 if (environment.production) {
     enableProdMode();
 }
@@ -13,7 +14,11 @@ bootstrapApplication(AppComponent, {
   ...appConfig,
   providers: [
     ...(appConfig.providers || []),
-    provideHttpClient(),  // <-- Add this to enable HttpClient support
+    provideHttpClient(),
+    ...AuthModule.forRoot({
+      domain: environment.auth.domain,
+      clientId: environment.auth.clientId,
+    }).providers,
   ],
 })
 .catch((err) => console.error(err));

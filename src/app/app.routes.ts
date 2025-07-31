@@ -3,14 +3,12 @@ import { RoleControlComponent } from "./pages/role-management/role-control/role-
 import { UserControlComponent } from "./pages/user-managment/user-control/user-control/user-control.component";
 import { UserConfigurationComponent } from "./pages/user-managment/user-configuration/user-configuration/user-configuration.component";
 import { SubscriptionComponent } from "./pages/subscription-management/subscription/subscription.component";
+import { AuthGuard } from "@auth0/auth0-angular";
+import { AuthGuard as Auth0Guard } from '@auth0/auth0-angular';
 export const routes: Routes = [
     {
         path: "",
-        component: UserControlComponent,
-        pathMatch: "full",
-    },
-    {
-        path: "role",
+        canActivate: [Auth0Guard,AuthGuard],
         component: RoleControlComponent,
     },
     {
