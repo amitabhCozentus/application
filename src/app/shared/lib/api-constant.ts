@@ -5,12 +5,12 @@
 
 export namespace UserEndPoint {
 
-   
 
 
 
 
-  
+
+
 
     export abstract class LeadTimePoints {
         public static readonly LEAD_TIME = "Leadtime";
@@ -36,9 +36,9 @@ export namespace UserEndPoint {
         public static readonly UPDATE_USER = "user/updateUser";
     }
 
- 
 
-   
+
+
     export abstract class CodeData {
 
         // public static readonly BDP_SBUS = "common/sbus";
@@ -52,26 +52,26 @@ export namespace UserEndPoint {
         // public static readonly EXCEPTIONS_LIST = "common/exceptionsList";
     }
 
-    
-    
-  
 
 
-   
-   
-    
-   
-    
+
+
+
+
+
+
+
+
 }
 //Related to existing Admin Endpoints for DND
 export namespace AdminEndPoint {
 
-   
 
-  
+
+
     export abstract class RoleManagement {
         public static readonly GET_ROLE = "role-management";
-        public static readonly ROLE_LIST = RoleManagement.GET_ROLE + "/" + "get-roleDetails";
+        public static readonly ROLE_LIST = "all-details";
         public static readonly ROLE_LIST_DROPDOWN = RoleManagement.GET_ROLE + "/" + "get-roleDetails";
         public static readonly SAVE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE + "/" + "role/save-role-management";
         public static readonly UPDATE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE + "/" + "role/update-role-management";
@@ -90,7 +90,7 @@ export namespace AdminEndPoint {
     }
     export abstract class CommanyManagement {
         public static readonly GET_COMPANY = "companies";
-        public static readonly UPDATE_COMPANY = CommanyManagement.GET_COMPANY +"/"+ "update-company";     
+        public static readonly UPDATE_COMPANY = CommanyManagement.GET_COMPANY +"/"+ "update-company";
         public static readonly PSA_COMPANIES = "companies/users/getPsaCompany";
         public static readonly NON_PSA_COMPANIES = "companies/users/getNonPsaCompany";
 
@@ -150,7 +150,7 @@ export namespace AppRoutes {
     }
 
 
-  
+
 
     export abstract class AuthAbstract {
         public static readonly DOMAIN = '/';
@@ -172,7 +172,7 @@ export namespace AppRoutes {
         public static readonly REACTIVATE_ACCOUNT = "reactivate-account";
     }
 
-   
+
 
     export abstract class Manager {
         public static readonly ROOT = "app";
@@ -180,13 +180,7 @@ export namespace AppRoutes {
 
     }
 
-   
 
- 
+
+
 }
-//Only for DND Portal  endpoints
-
-//To be used only when role-privilege is implemented
-
-
-
