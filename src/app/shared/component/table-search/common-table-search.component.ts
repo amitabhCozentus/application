@@ -9,7 +9,7 @@ import { PrimengModule } from "../../primeng/primeng.module";
     styleUrls: ["./common-table-search.component.scss"],
 })
 export class CommonTableSearchComponent {
-    @Input() placeholder: string = "Type min 3 characters and press enter to Search";
+    @Input() placeholder: string = "Search";
     @Input() value: string = "";
     @Output() valueChange = new EventEmitter<string>();
     @Output() search = new EventEmitter<void>();

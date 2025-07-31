@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { RoleConfigData, ApiResponse } from '../../lib/constants';
-import { environment } from '../../../../environments/environment';
-import { AdminEndPoint } from '../../lib/api-constant';
-
+import { Observable, of } from 'rxjs';
+import { delay, map } from 'rxjs/operators';
+import { RoleConfigData } from '../../lib/constants';
 
 export interface Role {
   id: number;
@@ -29,76 +25,276 @@ export interface PagedResult<T> {
 
 @Injectable({ providedIn: 'root' })
 export class RoleService {
-  // Base URL for roles API
-  private apiUrl = environment.baseurl + AdminEndPoint.RoleManagement.ROLE_LIST;
+  /** static in-memory dataset */
+  private allRoles: RoleConfigData[] = [
+    {
+        id: 1,
+        roleName: 'PSA BDP IT Admin',
+        status: 'Active',
+        roleDescription: 'Having all the accesses',
+        rolePrivileges: [
+            "List view",
+            "Port master data management",
+            "Data Management",
+            "Tracking list",
+            "No KPIs",
+            "No Map",
+            "Shipment details",
+            "Scheduling",
+            "Routing",
+            "3PL Analytics"
+        ],
+        customLanding: 'No',
+        defaultLanding: '',
+        skin: 'PSA BDP Light',
+        createdBy: 'admin@psabdp.com',
+        createdOn: '2025-06-01 10:15:00',
+        updatedBy: 'admin@psabdp.com',
+        updatedOn: '2025-06-05 14:30:00',
+        roleType: 'PSA BDP'
+    },
+    {
+        id: 2,
+        roleName: 'PSA BDP User',
+        status: 'Inactive',
+        roleDescription: 'Privileges for operation user',
+        rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+        customLanding: 'Yes',
+        defaultLanding: 'Tracking',
+        skin: 'PSA BDP Dark',
+        createdBy: 'ops@psabdp.com',
+        createdOn: '2025-05-20 09:00:00',
+        updatedBy: 'ops@psabdp.com',
+        updatedOn: '2025-06-02 11:45:00',
+        roleType: 'PSA BDP'
+    },
+    {
+        id: 3,
+        roleName: 'Innovation Product Team',
+        status: 'Inactive',
+        roleDescription: 'All access except role and user management',
+        rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+        customLanding: 'No',
+        defaultLanding: '',
+        skin: 'BNS Light',
+        createdBy: 'prodteam@psabdp.com',
+        createdOn: '2025-04-10 08:30:00',
+        updatedBy: 'prodteam@psabdp.com',
+        updatedOn: '2025-06-04 16:00:00',
+        roleType: 'PSA BDP'
+    },
+    {
+        id: 4,
+        roleName: 'BNS Customer User',
+        status: 'Active',
+        roleDescription: 'Non PSA BDP Users',
+        rolePrivileges: [
+            'List view',
+            'Port master data management',
+            'Data Management'
+        ],
+        customLanding: 'Yes',
+        defaultLanding: 'Dashboard',
+        skin: 'BNS Dark',
+        createdBy: 'custadmin@psabdp.com',
+        createdOn: '2025-06-03 12:20:00',
+        updatedBy: 'custadmin@psabdp.com',
+        updatedOn: '2025-06-06 09:10:00',
+        roleType: 'BNS'
+    },
+     {
+         id: 5,
+         roleName: 'PSA BDP User',
+         status: 'Inactive',
+         roleDescription: 'Privileges for operation user',
+         rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+         customLanding: 'Yes',
+         defaultLanding: 'Tracking',
+         skin: 'PSA BDP Dark',
+         createdBy: 'ops@psabdp.com',
+         createdOn: '2025-05-20 09:00:00',
+         updatedBy: 'ops@psabdp.com',
+         updatedOn: '2025-06-02 11:45:00',
+         roleType: 'BNS'
+     },
+    {
+        id: 6,
+        roleName: 'Innovation Product Team',
+        status: 'Inactive',
+        roleDescription: 'All access except role and user management',
+        rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+        customLanding: 'No',
+        defaultLanding: '',
+        skin: 'BNS Light',
+        createdBy: 'prodteam@psabdp.com',
+        createdOn: '2025-04-10 08:30:00',
+        updatedBy: 'prodteam@psabdp.com',
+        updatedOn: '2025-06-04 16:00:00',
+        roleType: 'PSA BDP'
+    },
+    {
+        id: 7,
+        roleName: 'BNS Customer User',
+        status: 'Active',
+        roleDescription: 'Non PSA BDP Users',
+        rolePrivileges: [
+            'List view',
+            'Port master data management',
+            'Data Management'
+        ],
+        customLanding: 'Yes',
+        defaultLanding: 'Dashboard',
+        skin: 'BNS Dark',
+        createdBy: 'custadmin@psabdp.com',
+        createdOn: '2025-06-03 12:20:00',
+        updatedBy: 'custadmin@psabdp.com',
+        updatedOn: '2025-06-06 09:10:00',
+        roleType: 'PSA BDP'
+    },
+     {
+         id: 8,
+         roleName: 'PSA BDP User',
+         status: 'Inactive',
+         roleDescription: 'Privileges for operation user',
+         rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+         customLanding: 'Yes',
+         defaultLanding: 'Tracking',
+         skin: 'PSA BDP Dark',
+         createdBy: 'ops@psabdp.com',
+         createdOn: '2025-05-20 09:00:00',
+         updatedBy: 'ops@psabdp.com',
+         updatedOn: '2025-06-02 11:45:00',
+         roleType: 'PSA BDP'
+     },
+    {
+        id: 9,
+        roleName: 'Innovation Product Team',
+        status: 'Inactive',
+        roleDescription: 'All access except role and user management',
+        rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+        customLanding: 'No',
+        defaultLanding: '',
+        skin: 'BNS Light',
+        createdBy: 'prodteam@psabdp.com',
+        createdOn: '2025-04-10 08:30:00',
+        updatedBy: 'prodteam@psabdp.com',
+        updatedOn: '2025-06-04 16:00:00',
+        roleType: 'PSA BDP'
+    },
+    {
+        id: 10,
+        roleName: 'BNS Customer User',
+        status: 'Active',
+        roleDescription: 'Non PSA BDP Users',
+        rolePrivileges: [
+            'List view',
+            'Port master data management',
+            'Data Management'
+        ],
+        customLanding: 'Yes',
+        defaultLanding: 'Dashboard',
+        skin: 'BNS Dark',
+        createdBy: 'custadmin@psabdp.com',
+        createdOn: '2025-06-03 12:20:00',
+        updatedBy: 'custadmin@psabdp.com',
+        updatedOn: '2025-06-06 09:10:00',
+        roleType: 'PSA BDP'
+    },
+     {
+         id: 11,
+         roleName: 'PSA BDP User',
+         status: 'Inactive',
+         roleDescription: 'Privileges for operation user',
+         rolePrivileges: ['Tracking list', 'No KPIs', 'No Map', 'Shipment details'],
+         customLanding: 'Yes',
+         defaultLanding: 'Tracking',
+         skin: 'PSA BDP Dark',
+         createdBy: 'ops@psabdp.com',
+         createdOn: '2025-05-20 09:00:00',
+         updatedBy: 'ops@psabdp.com',
+         updatedOn: '2025-06-02 11:45:00',
+         roleType: 'PSA BDP'
+     },
+    {
+        id: 12,
+        roleName: 'Innovation Product Team',
+        status: 'Inactive',
+        roleDescription: 'All access except role and user management',
+        rolePrivileges: ['Tracking list', 'Data Management', '3PL Analytics'],
+        customLanding: 'No',
+        defaultLanding: '',
+        skin: 'BNS Light',
+        createdBy: 'prodteam@psabdp.com',
+        createdOn: '2025-04-10 08:30:00',
+        updatedBy: 'prodteam@psabdp.com',
+        updatedOn: '2025-06-04 16:00:00',
+        roleType: 'PSA BDP'
+    },
+    {
+        id: 13,
+        roleName: 'BNS Customer User',
+        status: 'Active',
+        roleDescription: 'Non PSA BDP Users',
+        rolePrivileges: [
+            'List view',
+            'Port master data management',
+            'Data Management'
+        ],
+        customLanding: 'Yes',
+        defaultLanding: 'Dashboard',
+        skin: 'BNS Dark',
+        createdBy: 'custadmin@psabdp.com',
+        createdOn: '2025-06-03 12:20:00',
+        updatedBy: 'custadmin@psabdp.com',
+        updatedOn: '2025-06-06 09:10:00',
+        roleType: 'PSA BDP'
+    },
+  ];
 
-  constructor(private http: HttpClient) {}
-
-  /** Fetch paged + filtered roles from API */
-  /** Fetch paged + filtered roles from API */
+  /**
+   * Returns paged + filtered roles.
+   * @param page zero-based page index
+   * @param size number of items per page
+   * @param search global filter on roleName or roleDescription
+   */
   getActiveRoles(page: number, size: number, search = ''): Observable<PagedResult<RoleConfigData>> {
-    // Build request payload according to API spec
-    const requestBody: any = {
-      pagination: { page, size },
-      columns: [ { columnName: 'name', sort: 'asc' } ]
-    };
-    // Optionally include search filter
-    if (search.length >= 3) {
-      requestBody.search = search;
-    }
-    return this.http
-      .post<ApiResponse>(this.apiUrl, requestBody)
-      .pipe(
-        map(res => {
-          const roles: RoleConfigData[] = res.data.content.map(item => {
-            // collect selected privileges from nested hierarchy
-            const privileges = item.privilegeHierarchy
-              .flatMap(cat => cat.features)
-              .flatMap(feat => feat.privileges)
-              .filter(p => p.isSelected)
-              .map(p => p.privilegeName);
-            return {
-              id: item.id,
-              status: item.isActive ? 'Active' : 'Inactive',
-              roleName: item.name,
-              roleDescription: item.description,
-              rolePrivileges: privileges,
-              customLanding: item.landingPage ? 'Yes' : 'No',
-              defaultLanding: item.landingPage?.name || null,
-              roleType: item.roleType.name,
-              skin: item.skinConfigs.map(s => s.name).join(', ') || null,
-              createdBy: item.createdBy || '',
-              createdOn: item.createdOn || '',
-              updatedBy: item.updatedBy || '',
-              updatedOn: item.updatedOn || ''
-            } as RoleConfigData;
-          });
-          return { data: roles, total: res.data.pagination.totalElements };
-        })
-      );
+    return of(this.allRoles).pipe(
+      delay(100),                        // simulate latency
+      map(all => {
+        // apply search if 3+ chars
+        if (search.length >= 3) {
+          const term = search.toLowerCase();
+          all = all.filter(r =>
+            r.roleName.toLowerCase().includes(term) ||
+            r.roleDescription.toLowerCase().includes(term)
+          );
+        }
+        const total = all.length;
+        const start = page * size;
+        const data = all;
+        return { data, total };
+      })
+    );
   }
 
-  /** Fetch unique skin and default landing options from API data */
+  /** Fetch unique skin and default landing options */
   getConfigOptions(): Observable<{ skins: string[]; defaultLandings: string[] }> {
-    return this.getActiveRoles(0, 1000).pipe(
-      map(res => {
-        // filter out null or empty strings
-        const skinsRaw = res.data.map(r => r.skin).filter(s => !!s);
-        const skins = Array.from(new Set(skinsRaw)) as string[];
-        const landsRaw = res.data.map(r => r.defaultLanding).filter(l => !!l);
-        const defaultLandings = Array.from(new Set(landsRaw)) as string[];
-        return { skins, defaultLandings };
-      })
+    const skins = Array.from(new Set(this.allRoles.map(r => r.skin))).filter((s): s is string => s !== null && s !== undefined);
+    const defaultLandings = Array.from(
+      new Set(
+        this.allRoles
+          .map(r => r.defaultLanding)
+          .filter(l => l !== undefined && l !== null && l !== '') as string[]
+      )
     );
+    return of({ skins, defaultLandings }).pipe(delay(300));
   }
 
-  /** Fetch unique privilege options from API data */
+  /** Fetch unique privilege options */
   getPrivilegeOptions(): Observable<string[]> {
-    return this.getActiveRoles(0, 1000).pipe(
-      map(res => {
-        const privRaw = res.data.flatMap(r => r.rolePrivileges || []);
-        return Array.from(new Set(privRaw)) as string[];
-      })
+    const privs = Array.from(
+      new Set(this.allRoles.flatMap(r => r.rolePrivileges))
     );
+    return of(privs).pipe(delay(300));
   }
 }

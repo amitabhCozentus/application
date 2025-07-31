@@ -6,7 +6,7 @@ import { CommonTableSearchComponent } from '../../../shared/component/table-sear
 import { RoleConfigurationComponent } from '../role-configuration/role-configuration.component';
 import Aura from '@primeng/themes/aura';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
-import { LayoutService } from '../../../shared/service/layout/layout.service';
+import { LayoutService } from 'src/app/shared/service/layout/layout.service';
 import {appConfig, AppConfig} from '../../../app.config';
 
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
@@ -94,8 +94,6 @@ export class RoleControlComponent implements OnInit {
                 this.roles = res.data;
                 this.totalRecords = res.total;
                 this.loading = false;
-
-                console.log("Roles loaded:", this.roles);
             });
     }
 

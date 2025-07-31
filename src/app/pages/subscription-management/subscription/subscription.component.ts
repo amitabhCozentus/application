@@ -3,7 +3,7 @@ import { PrimengModule } from '../../../shared/primeng/primeng.module';
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
 import { CommonService } from '../../../shared/service/common/common.service';
 import { AppRoutes } from '../../../shared/lib/api-constant';
-// import { SubscriptionDialogComponent } from 'src/app/shared/component/dialog/subscription-dialog/subscription-dialog.component';
+import { SubscriptionDialogComponent } from 'src/app/shared/component/dialog/subscription-dialog/subscription-dialog.component';
 interface Header{
 field:string,
 header:string
@@ -20,7 +20,7 @@ interface Subscription {
 }
 @Component({
   selector: 'app-subscription',
-  imports: [PrimengModule,CommonTableSearchComponent],
+  imports: [PrimengModule,CommonTableSearchComponent,SubscriptionDialogComponent],
   templateUrl: './subscription.component.html',
   styleUrl: './subscription.component.scss'
 })
@@ -33,7 +33,7 @@ export class SubscriptionComponent {
   subscriptionList:Subscription[];
   constructor(private commonService:CommonService){
   this.subscriptionTableHeader =  [
-        { field: 'customerName', header: 'Customer Name' },
+        { field: 'customerName', header: 'Customer Name' },  
         { field: 'customerCode', header: 'Customer Code' },
         { field: 'subscriptionType', header: 'subscriptionType' },
         { field: 'onBoardedOn', header: 'Onboarded On' },
@@ -47,28 +47,28 @@ export class SubscriptionComponent {
           "customerCode": 'CUST123',
           "subscriptionType": 'Premium',
           "onBoardedOn": '2023-01-01',
-          "onBoardedSource": 'Website',
+          "onBoardedSource": 'Website', 
         },
          {
           "customerName": 'John lee',
           "customerCode": 'CUST123',
           "subscriptionType": 'Premium',
           "onBoardedOn": '2023-01-01',
-          "onBoardedSource": 'Website',
+          "onBoardedSource": 'Website', 
         },
          {
           "customerName": 'Don Doe',
           "customerCode": 'CUST123',
           "subscriptionType": 'Premium',
           "onBoardedOn": '2023-01-01',
-          "onBoardedSource": 'Website',
+          "onBoardedSource": 'Website', 
         },
          {
           "customerName": 'acryle Doe',
           "customerCode": 'CUST123',
           "subscriptionType": 'Premium',
           "onBoardedOn": '2023-01-01',
-          "onBoardedSource": 'Website',
+          "onBoardedSource": 'Website', 
         }
       ];
 
@@ -86,6 +86,6 @@ export class SubscriptionComponent {
         routeData: selectedUser
       });
     }
-
+ 
 
 }
