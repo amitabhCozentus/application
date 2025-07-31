@@ -5803,3 +5803,13 @@ p-togglebutton.ng-dirty.ng-invalid > .p-togglebutton.p-button {
 .required-star {
     color: #ff0000;
 }
+
+.layout-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #FFFFFF;
+  text-align: center;
+  padding: 10px;
+}
