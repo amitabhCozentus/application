@@ -30,13 +30,13 @@
             <div class="flex" style="padding-top: 0.05rem">
                 <p-treeselect class="w-full md:w-80" containerStyleClass="w-full" [filter]="true"
                     [options]="privilegeTreeOptions" formControlName="privPermissions" display="chip" [metaKeySelection]="false"
-                    selectionMode="radio" placeholder="Select Role Privilege" >
-                    <ng-template let-node pTemplate="item">
+                    selectionMode="radio" placeholder="Select Role Privilege" ></p-treeselect>
+                    <!-- <ng-template let-node pTemplate="item">
                         <div class="flex align-items-center">
                             <p-radiobutton [value]="node" [(ngModel)]="selectedPrivileges" (onChange)="onPrivilegeSelect($event, node)" [disabled]="isReadOnly(node)"></p-radiobutton>
                             <span class="ml-2">{{ node.label }}</span>
                         </div>
-                    </ng-template>
+                    </ng-template> -->
             </div>
         </div>
         <div class="col-12 pb-3">
