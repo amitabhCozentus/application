@@ -8,18 +8,13 @@
       <span class="current-section">{{ currentSection }}</span>
     </ng-template>
     <ng-template pTemplate="end" class="tools">
-      <div class="mr-4" >
-        <div style="display: flex; align-items: center;">
           <p-toggleswitch [ngModel]="darkTheme()" (ngModelChange)="toggleDarkMode()" [options]="menuThemeOptions"
             optionLabel="name" optionValue="value" [allowEmpty]="false">
           </p-toggleswitch>
 
-          <span class="text-lg text-muted-color font-semibold" style="margin-left: 10px; display: flex;">
+          <span class="font-semibold m-2">
             Dark Mode
           </span>
-        </div>
-
-      </div>
       <p-select class="mr-4" [options]="languageOptions" (onChange)="onLanguageChange($event)"
         placeholder="Select Language" optionLabel="label" optionValue="value" style="width: 25%;">
       </p-select>
@@ -35,8 +30,8 @@
       </p-select>
       <button pButton type="button" icon="pi pi-sitemap" class="p-button-text support-btn"></button>
       <button pButton type="button" icon="pi pi-bell" class="p-button-text notification-btn">
-        <p-badge [value]="unreadCount" severity="danger" class="notification-badge"></p-badge>
       </button>
+        <p-badge [value]="unreadCount" severity="danger" class="notification-badge"></p-badge>
       <p-avatar label="{{ userInitials }}" shape="circle" styleClass="user-avatar" (click)="userMenu.toggle($event)">
       </p-avatar>
       <p-tieredMenu #userMenu [model]="userMenuItems" popup="true"></p-tieredMenu>

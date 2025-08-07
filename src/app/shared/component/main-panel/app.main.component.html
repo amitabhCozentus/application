@@ -1,3 +1,10 @@
 <app-topbar></app-topbar>
-<router-outlet></router-outlet>
-<app-footer></app-footer>
+<div class="layout-main">
+        <!-- <app-breadcrumb></app-breadcrumb> -->
+
+        <div class="layout-content">
+            <app-content-header></app-content-header>
+            <router-outlet></router-outlet>
+        </div>
+        <app-footer></app-footer>
+    </div>

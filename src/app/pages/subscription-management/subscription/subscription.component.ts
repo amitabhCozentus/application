@@ -1,4 +1,4 @@
-import { Component, Output, output } from '@angular/core';
+import { Component, EventEmitter, Output, output } from '@angular/core';
 import { PrimengModule } from '../../../shared/primeng/primeng.module';
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
 import { CommonService } from '../../../shared/service/common/common.service';
@@ -27,6 +27,7 @@ interface Subscription {
 
 
 export class SubscriptionComponent {
+  @Output() enableSubscriptionDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
   showAssignDialog:boolean = false;
   subscription:any[];
   subscriptionTableHeader:Header[];
@@ -76,7 +77,7 @@ export class SubscriptionComponent {
 
    onCopyClick(){
       this.showAssignDialog=true;
-       // this.enableSubscriptionDialog.next(this.showAssignDialog);
+       this.enableSubscriptionDialog.next(this.showAssignDialog);
     }
 
     navigateToUserAssignment(selectedUser: any) {

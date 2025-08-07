@@ -1,14 +1,47 @@
-<p-dialog header="Edit Profile" [modal]="true" [(visible)]="visible" [style]="{ width: '25rem' }" [draggable]="false">
-    <span class="p-text-secondary block mb-8">Edit Subscription</span>
-    <p-divider />
-    <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()">
-         <div>
-        <label for="username" class="font-semibold w-24">Customer Name</label>
-        <input pInputText id="username" class="flex-auto" autocomplete="off" />
-    </div>
-    <div >
-        <label for="email" class="font-semibold w-24">Customer Code</label>
-        <input pInputText id="email" class="flex-auto" autocomplete="off" />
-    </div>
-    </form>
+<p-dialog header="Edit Subscription" [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }"
+    [draggable]="false">
+    <ng-template pTemplate="body">
+        <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()">
+            <div style="display:flex" class="mb-2">
+                <div>
+                    <label for="customerName" class="font-semibold w-24">Customer Name</label>
+                    <input pInputText id="customerName" class="flex-auto" autocomplete="off" formControlName="customerName" />
+                </div>
+                <div>
+                    <label for="customerCode" class="font-semibold w-24">Customer Code</label>
+                    <input pInputText id="customerCode" class="flex-auto" autocomplete="off" formControlName="customerCode" />
+                </div>
+            </div>
+            <div class="mb-2">
+                <h4 class="font-semibold">Subscription Type</h4>
+                <span>
+                    <p-radioButton name="subscriptionType" value="standard" label="Standard"
+                        formControlName="subscriptionType"></p-radioButton>
+                    <label class="ml-2">Standard</label>
+                </span>
+                <span>
+                    <p-radioButton name="subscriptionType" value="premium" label="Premium"
+                        formControlName="subscriptionType" class="ml-2"></p-radioButton>
+                    <label class="ml-2">Premium</label>
+                </span>
+                <div>
+                    <h6 style="font-weight: bold;">Feature Toggle</h6>
+                    <ul>
+                        @for(feature of features; track feature.id){
+                        <li  class="mb-2">
+                            <p-checkbox [value]="feature.id" [formControlName]="'feature_' + feature.id" [binary]="true"
+                                [label]="feature.name"></p-checkbox>
+                        </li>
+                    }
+                    </ul>
+                </div>
+            </div>
+
+        </form>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton type="button" label="Cancel" class="p-button-text" (click)="onCancel()"></button>
+        <button pButton type="submit" label="Submit" class="p-button-primary" [disabled]="!subscriptionForm.valid"
+            (click)="onSubmit()"></button>
+    </ng-template>
 </p-dialog>

@@ -1,4 +1,4 @@
-<p-dialog [(visible)]="display" header="Add Role" [modal]="true" [closable]="true" (onHide)="close()"
+<p-dialog [(visible)]="display" header="Add Role" [modal]="true" [closable]="true" (onHide)="close()" [style]="{ width: '40rem' }"
 [resizable]="false" [draggable]="false" [dismissableMask]="true" [focusOnShow]="false">
     <ng-template pTemplate="closeicon">
       <button type="button" class="p-dialog-header-icon p-dialog-header-close p-link shadow-none" (click)="close()">
@@ -28,9 +28,15 @@
         <div class="col-12 md:col-6 pb-3">
             <label class="p-required">Role Privileges<span class="required-star">*</span></label>
             <div class="flex" style="padding-top: 0.05rem">
-                <p-treeselect class="w-full md:w-80" containerStyleClass="w-full"
+                <p-treeselect class="w-full md:w-80" containerStyleClass="w-full" [filter]="true"
                     [options]="privilegeTreeOptions" formControlName="privPermissions" display="chip" [metaKeySelection]="false"
-                    selectionMode="checkbox" placeholder="Select Role Privilege" />
+                    selectionMode="radio" placeholder="Select Role Privilege" >
+                    <ng-template let-node pTemplate="item">
+                        <div class="flex align-items-center">
+                            <p-radiobutton [value]="node" [(ngModel)]="selectedPrivileges" (onChange)="onPrivilegeSelect($event, node)" [disabled]="isReadOnly(node)"></p-radiobutton>
+                            <span class="ml-2">{{ node.label }}</span>
+                        </div>
+                    </ng-template>
             </div>
         </div>
         <div class="col-12 pb-3">
@@ -69,7 +75,7 @@
         <div class="col-12 md:col-6 pb-3">
             <label class="p-required">Skin<span class="required-star">*</span></label>
             <div class="flex" style="padding-top: 0.05rem">
-                <p-select [options]="skinOptions" formControlName="skin" optionLabel="label" optionValue="value" placeholder="Select Skin"
+                <p-select [options]="skinOptions" formControlName="skin" optionLabel="label" optionValue="value"  placeholder="Select Skin"
                     class="w-full"></p-select>
             </div>
         </div>

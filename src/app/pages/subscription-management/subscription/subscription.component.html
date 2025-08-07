@@ -68,7 +68,8 @@
                             </tr>
                         </ng-template>
                     </p-table>
-                    <app-subscription-dialog></app-subscription-dialog>
+                        <app-subscription-dialog [visible]="isDialogOpen"
+                            [subscription]="selectedSubscription"></app-subscription-dialog> 
                 </div>
             </div>
         </div>
