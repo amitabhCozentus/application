@@ -19,6 +19,14 @@ interface Subscription {
   updatedOn?: string;
   updatedBy?: string;
 }
+interface PaginationState {
+  first: number;
+  rows: number;
+  pageIndex: number;
+  pageCount: number;
+  totalRecords: number;
+}
+
 @Component({
   selector: 'app-subscription',
   imports: [PrimengModule,CommonTableSearchComponent],
@@ -33,6 +41,15 @@ export class SubscriptionComponent {
   subscription:any[];
   subscriptionTableHeader:Header[];
   subscriptionList:Subscription[];
+  totalRecords: number ;
+  
+   paginationState: PaginationState = {
+    first: 0,
+    rows: 10,
+    pageIndex: 0,
+    pageCount: 0,
+    totalRecords: 0
+  };
   constructor(private commonService:CommonService,private subscriptionService: SubscriptionService){
   this.subscriptionTableHeader =  [
         { field: 'customerName', header: 'Customer Name' },
@@ -85,8 +102,10 @@ export class SubscriptionComponent {
     };
     try {
       this.subscriptionService.getCustomerSubscriptionList(requestBody).subscribe({
-        next: (response: { data: { content: Array<any> } }) => {
+        next: (response: { data: { content: Array<any>, totalElements: number } }) => {
           const content = response?.data?.content || [];
+          this.totalRecords = response?.data?.totalElements || 0;
+          this.subscriptionList = [...content];
           this.subscriptionList = content.map((item): Subscription => ({
             customerName: item.customerName,
             customerCode: item.customerCode,
@@ -118,6 +137,41 @@ export class SubscriptionComponent {
         routeData: selectedUser
       });
     }
+  onPageChange(event: any) {
+    console.log('Page change event:', event);
+    this.paginationState.first = event.first;
+    this.paginationState.rows = event.rows;
+    this.paginationState.pageIndex = event.page;
+    this.paginationState.pageCount = Math.ceil(this.totalRecords / this.paginationState.rows);
+    this.paginationState.totalRecords = this.totalRecords;
+
+    const requestBody = {
+      pagination: { page: this.paginationState.first, size: this.paginationState.rows }
+      // searchFilter: { searchText: '', columns: [] as String[] },
+      // columns: [] as any[],
+      // sortFieldValidator: { validSortFields: [] as String[] }
+    };
+    
+    this.subscriptionService.getCustomerSubscriptionList(requestBody).subscribe({
+      next: (response: { data: { content: Array<any>, totalElements: number } }) => {
+        const content = response?.data?.content || [];
+        this.totalRecords = response?.data?.totalElements || 0;
+        this.subscriptionList = [...content];
+        this.subscriptionList = content.map((item): Subscription => ({
+          customerName: item.customerName,
+          customerCode: item.customerCode,
+          subscriptionType: item.subscriptionTypeName,
+          onBoardedOn: item.onboardedOn,
+          onBoardedSource: item.onboardedSourceName,
+          updatedOn: item.updatedOn,
+          updatedBy: item.updatedBy
+        }));
+      },
+      error: (error) => {
+        console.error('Error fetching subscription list', error);
+      }
+    });
+  }
 
 
 }

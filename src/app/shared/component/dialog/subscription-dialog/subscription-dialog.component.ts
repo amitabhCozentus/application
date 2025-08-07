@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { PrimengModule } from 'src/app/shared/primeng/primeng.module';
+import { PrimengModule } from '../../../primeng/primeng.module';
 
 @Component({
   selector: 'app-subscription-dialog',

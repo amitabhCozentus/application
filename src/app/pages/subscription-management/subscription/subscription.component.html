@@ -5,15 +5,15 @@
                 <div class="card">
                     <p-table #existingUserTable [value]="subscriptionList" [(selection)]="selectedUsers"
                         styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" [rows]="10"
-                        [showCurrentPageReport]="true" [scrollable]="true" scrollHeight="400px"
+                        [showCurrentPageReport]="true" [scrollable]="true" scrollHeight="600px" (onPage)="onPageChange($event)"
                         [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row" dataKey="id"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                         [filterDelay]="0" [resizableColumns]="true" [columns]="subscriptionTableHeader"
-                        [reorderableColumns]="true" [(totalRecords)]="subscriptionList.length" [globalFilterFields]="[
-                                'userId',
-                                'companies',
-                                'userName',
-                                'roleGranted'
+                        [reorderableColumns]="true" [totalRecords]="totalRecords" [lazy]="true" [globalFilterFields]="[
+                                'customerName',
+                                'customerCode',
+                                'subscriptionType',
+                                'onBoardedSource'
                             ]" stateStorage="local" stateKey="existingUserTableState">
                         <ng-template #caption>
                             <div class="flex justify-content-between">
