@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Output, output } from '@angular/core';
 import { PrimengModule } from '../../../shared/primeng/primeng.module';
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
+import { SubscriptionDialogComponent } from '../../../shared/component/dialog/subscription-dialog/subscription-dialog.component';
 import { CommonService } from '../../../shared/service/common/common.service';
 import { AppRoutes } from '../../../shared/lib/api-constant';
 import { SubscriptionService } from '../../../shared/service/subscription/subscription.service';
@@ -29,7 +30,7 @@ interface PaginationState {
 
 @Component({
   selector: 'app-subscription',
-  imports: [PrimengModule,CommonTableSearchComponent],
+  imports: [PrimengModule, CommonTableSearchComponent, SubscriptionDialogComponent],
   templateUrl: './subscription.component.html',
   styleUrl: './subscription.component.scss'
 })
@@ -38,9 +39,16 @@ interface PaginationState {
 export class SubscriptionComponent {
   @Output() enableSubscriptionDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
   showAssignDialog:boolean = false;
+  isDialogOpen: boolean = false;
+  selectedSubscription: Subscription | null = null;
   subscription:any[];
   subscriptionTableHeader:Header[];
-  subscriptionList:Subscription[];
+  subscriptionList:Subscription[] = [];
+  selectedRows: Subscription[] = [];
+  
+  onSelectionChange(event: any) {
+    console.log('Selected Rows:', this.selectedRows);
+  }
   totalRecords: number ;
   
    paginationState: PaginationState = {
@@ -130,12 +138,14 @@ export class SubscriptionComponent {
        this.enableSubscriptionDialog.next(this.showAssignDialog);
     }
 
-    navigateToUserAssignment(selectedUser: any) {
-      this.commonService.navigateRouteWithState({
-         route: AppRoutes.User.USER_MANAGEMENT_CONFIG,
-        type: 'Manager',
-        routeData: selectedUser
-      });
+    handleDialogClose() {
+      this.isDialogOpen = false;
+      this.selectedSubscription = null;
+    }
+
+    navigateToSubscription(subscription: Subscription) {
+      this.selectedSubscription = subscription;
+      this.isDialogOpen = true;
     }
   onPageChange(event: any) {
     console.log('Page change event:', event);

@@ -1,15 +1,26 @@
 <p-dialog header="Edit Subscription" [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }"
-    [draggable]="false">
+    [draggable]="false" (onHide)="hideDialog()">
+    <p-divider class="mt-0"></p-divider>
     <ng-template pTemplate="body">
         <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()">
             <div style="display:flex" class="mb-2">
                 <div>
                     <label for="customerName" class="font-semibold w-24">Customer Name</label>
-                    <input pInputText id="customerName" class="flex-auto" autocomplete="off" formControlName="customerName" />
+                    <input pInputText 
+                           id="customerName" 
+                           class="flex-auto p-disabled" 
+                           autocomplete="off" 
+                           formControlName="customerName" 
+                           [disabled]="true" />
                 </div>
                 <div>
                     <label for="customerCode" class="font-semibold w-24">Customer Code</label>
-                    <input pInputText id="customerCode" class="flex-auto" autocomplete="off" formControlName="customerCode" />
+                    <input pInputText 
+                           id="customerCode" 
+                           class="flex-auto p-disabled" 
+                           autocomplete="off" 
+                           formControlName="customerCode" 
+                           [disabled]="true" />
                 </div>
             </div>
             <div class="mb-2">
@@ -40,8 +51,8 @@
         </form>
     </ng-template>
     <ng-template pTemplate="footer">
-        <button pButton type="button" label="Cancel" class="p-button-text" (click)="onCancel()"></button>
-        <button pButton type="submit" label="Submit" class="p-button-primary" [disabled]="!subscriptionForm.valid"
+        <button pButton type="button" label="Cancel" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton type="submit" label="Update" class="p-button-primary" [disabled]="!subscriptionForm.valid"
             (click)="onSubmit()"></button>
     </ng-template>
 </p-dialog>
