@@ -8,7 +8,8 @@
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                     styleClass="p-datatable-customers p-datatable-striped"
-                    [globalFilterFields]="['roleName', 'description']">
+                    [globalFilterFields]="['roleName', 'description']" [lazy]="true" (onPage)="onPage($event)"
+                    [loading]="loading">
 
                     <!-- Caption -->
                     <ng-template #caption>

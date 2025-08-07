@@ -1,6 +1,6 @@
 <div class="topbar-container">
   <!-- Row 1: logo, section, and action controls -->
-  <p-toolbar>
+  <p-toolbar class="topbar" [styleClass]="'topbar-container'" [style]="{'border-radius': '0', 'border': '0'}">
     <ng-template pTemplate="start">
       <img class="bdp-logo" src="./../../../../assets/bdp/images/Smart Navigator_White.svg" alt="Smart Navigator" />
     </ng-template>
@@ -25,18 +25,16 @@
           <span class="color-name">{{ color.name }}</span>
         </ng-template>
       </p-select>
-      <p-select [options]="companies" [(ngModel)]="selectedCompany" placeholder="select company"
+      <p-select class="mr-4" [options]="companies" [(ngModel)]="selectedCompany" placeholder="select company"
         styleClass="company-dropdown">
       </p-select>
-      <button pButton type="button" icon="pi pi-sitemap" class="p-button-text support-btn"></button>
-      <button pButton type="button" icon="pi pi-bell" class="p-button-text notification-btn">
-      </button>
-        <p-badge [value]="unreadCount" severity="danger" class="notification-badge"></p-badge>
-      <p-avatar label="{{ userInitials }}" shape="circle" styleClass="user-avatar" (click)="userMenu.toggle($event)">
-      </p-avatar>
-      <p-tieredMenu #userMenu [model]="userMenuItems" popup="true"></p-tieredMenu>
+      <div class="mr-4">
+        <p-avatar label="{{ userInitials }}" shape="circle" styleClass="user-avatar" (click)="userMenu.toggle($event)">
+        </p-avatar>
+        <p-tieredMenu #userMenu [model]="userMenuItems" popup="true"></p-tieredMenu>
+      </div>
     </ng-template>
   </p-toolbar>
 
-  <p-menubar [model]="navMenuItems" class="navigation-bar"></p-menubar>
+  <p-menubar [model]="navMenuItems" class="navigation-bar" [style]="{'border-radius': '0', 'border': '0'}"></p-menubar>
 </div>

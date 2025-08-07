@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { of, throwError } from 'rxjs';
+import { first, of, throwError } from 'rxjs';
 import { RoleControlComponent } from './role-control.component';
 import { RoleService, PagedResult } from '../../../shared/service/role-control/role.service';
 import { RoleConfigData } from '../../../shared/lib/constants';
@@ -85,7 +85,7 @@ describe('RoleControlComponent', () => {
 
     // Manually inject the mock service to ensure it's available
     (component as any).roleService = mockRoleService;
-    
+
     fixture.detectChanges();
   });
 
@@ -429,7 +429,7 @@ describe('RoleControlComponent', () => {
     it('should call loadRoles with page and rows from event', () => {
       // Arrange
       const loadRolesSpy = spyOn(component, 'loadRoles');
-      const pageEvent = { page: 2, rows: 20 };
+      const pageEvent = { page: 2, rows: 20, first: 10 };
 
       // Act
       component.onPage(pageEvent);
@@ -441,7 +441,7 @@ describe('RoleControlComponent', () => {
     it('should handle page 0 with default page size', () => {
       // Arrange
       const loadRolesSpy = spyOn(component, 'loadRoles');
-      const pageEvent = { page: 0, rows: 10 };
+      const pageEvent = { page: 0, rows: 10,  first: 10 };
 
       // Act
       component.onPage(pageEvent);

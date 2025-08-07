@@ -5,3 +5,16 @@
 .p-select{
     background: #2C3A52 !important;
 }
+
+:host {
+    display: block;
+    width: 100%;
+}
+
+topbar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 0%;
+    border: 0;
+}

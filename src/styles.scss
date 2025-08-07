@@ -24,7 +24,7 @@ $gutter: 1rem; //for primeflex grid system
 html,
 body {
     height: 100%;
-    font-family: "Montserrat";
+    font-family: "Montserrat", sans-serif !important;
 }
 
 .p-toolbar {
@@ -41,8 +41,6 @@ body {
   justify-content: flex-end !important;
 }
 
-
-
 .status-active {
   background-color: #479e7e !important;
 }
@@ -55,4 +53,3 @@ body {
 .required-star {
     color: #ff0000;
 }
-

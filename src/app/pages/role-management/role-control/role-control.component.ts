@@ -41,6 +41,7 @@ declare type SurfacesType = {
 export class RoleControlComponent implements OnInit {
     canEdit: boolean = true; // set from auth context
     pageSize: number = 10;
+    currentPage: number = 0;
     layoutService: LayoutService = inject(LayoutService);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuThemeOptions: { name: string; value: string }[] = [];
@@ -106,7 +107,9 @@ export class RoleControlComponent implements OnInit {
     }
 
     /** Pagination callback */
-    onPage(event: { page: number; rows: number }) {
+    onPage(event: { page: number; rows: number; first: number }) {
+        this.currentPage = event.page;
+        this.pageSize = event.rows;
         this.loadRoles(event.page, event.rows);
     }
 
@@ -129,7 +132,7 @@ export class RoleControlComponent implements OnInit {
             updateSurfacePalette(color.palette);
         }
     }
-    
+
     getPresetExt() {
         const color: SurfacesType = this.primaryColors().find((c) => c.name === this.selectedPrimaryColor()) || {};
 
@@ -279,17 +282,19 @@ export class RoleControlComponent implements OnInit {
     /** Search on Enter (min 3 chars) */
     onSearch() {
         if (this.searchTerm.length >= 3) {
+            this.currentPage = 0;
             this.loadRoles(0, this.pageSize);
         }
     }
 
     resetSearch() {
         this.searchTerm = "";
+        this.currentPage = 0;
         this.loadRoles(0, this.pageSize);
     }
 
     refresh() {
-        this.loadRoles(0, this.pageSize);
+        this.loadRoles(this.currentPage, this.pageSize);
     }
 
     selectedPrimaryColor = computed(() => {
