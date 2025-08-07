@@ -11,10 +11,18 @@
     width: 100%;
 }
 
+.mmt-icon{
+    margin:10px;
+}
+
 topbar-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
     border-radius: 0%;
     border: 0;
+}
+
+.p-avatar-lg {
+    width:100px !important;
 }

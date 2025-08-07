@@ -16,6 +16,7 @@ import { TopbarsService } from '../../service/topbars/topbars.service';
 import { TranslationService } from '../../service/translationService/translation.service';
 import { CommonService } from '../../service/common/common.service';
 import { AuthService as Auth0Service } from '@auth0/auth0-angular';
+import { Router } from '@angular/router';
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
     Aura
@@ -49,8 +50,9 @@ export class TopbarComponent {
     currentSection = 'MARITIME + INSIGHTS';
     fenchLanguage: any[] = [];
     englishLanguage: any[] = [];
-
+    selectedLanguageLabel='English';
     layoutService: LayoutService = inject(LayoutService);
+    router = inject(Router);
     topbarService: TopbarsService = inject(TopbarsService);
     translationService: TranslationService = inject(TranslationService);
     auth0Service: Auth0Service = inject(Auth0Service);
@@ -120,8 +122,10 @@ export class TopbarComponent {
             { label: t('LIT.LBL.MENU.REPORTING'), icon: 'pi pi-chart-line', routerLink: '/reporting' },
             { label: t('LIT.LBL.MENU.3PL'), icon: 'pi pi-refresh', items: [] },
             { label: t('LIT.LBL.MENU.DATA_MANAGEMENT'), icon: 'pi pi-database', items: [] },
-            { label: t('LIT.LBL.MENU.USER_MANAGEMENT'), icon: 'pi pi-users', items: [] },
-            { label: t('LIT.LBL.MENU.MASTER_DATA'), icon: 'pi pi-cog', items: [] }
+                { label: t('LIT.LBL.MENU.USER_MANAGEMENT'), icon: 'pi pi-users',  command: () => {
+                        this.router.navigate(['/user-control']);
+                    }},
+            { label: t('LIT.LBL.MENU.MASTER_DATA'), icon: 'pi pi-cog', items: [], routerLink: '/user-control' }
         ];
     }
 
@@ -330,8 +334,14 @@ export class TopbarComponent {
             { label: 'Reporting', icon: 'pi pi-chart-line', routerLink: '/reporting' },
             { label: '3PL', icon: 'pi pi-refresh', items: [] },
             { label: 'Data Management', icon: 'pi pi-database', items: [] },
-            { label: 'User Management', icon: 'pi pi-users', items: [] },
-            { label: 'Master Data', icon: 'pi pi-cog', items: [] }
+            { label: 'User Management', icon: 'pi pi-users', command: () => {
+                    this.router.navigate(['/user-control']);
+                 }},
+            { label: 'Master Data', icon: 'pi pi-cog', items: [{
+                label:'subscription', icon:'pi pi-fw pi-plus', routerLink:'/subscription'
+            },{
+                label:'role-management', icon:'pi pi-fw pi-plus', routerLink:'/role-management'
+            }] }
         ];
 
         this.userMenuItems = [

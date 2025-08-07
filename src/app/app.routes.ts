@@ -28,4 +28,8 @@ export const routes: Routes = [
         path: "subscription-dialog",
         component: SubscriptionDialogComponent,
     },
+     {
+        path: "role-management",
+        component: RoleControlComponent,
+    },
 ];

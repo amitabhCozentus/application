@@ -1,6 +1,6 @@
 <div class="topbar-container">
   <!-- Row 1: logo, section, and action controls -->
-  <p-toolbar class="topbar" [styleClass]="'topbar-container'" [style]="{'border-radius': '0', 'border': '0'}">
+  <p-toolbar>
     <ng-template pTemplate="start">
       <img class="bdp-logo" src="./../../../../assets/bdp/images/Smart Navigator_White.svg" alt="Smart Navigator" />
     </ng-template>
@@ -25,16 +25,19 @@
           <span class="color-name">{{ color.name }}</span>
         </ng-template>
       </p-select>
-      <p-select class="mr-4" [options]="companies" [(ngModel)]="selectedCompany" placeholder="select company"
+      <p-select [options]="companies" [(ngModel)]="selectedCompany" placeholder="select company"
         styleClass="company-dropdown">
       </p-select>
-      <div class="mr-4">
-        <p-avatar label="{{ userInitials }}" shape="circle" styleClass="user-avatar" (click)="userMenu.toggle($event)">
-        </p-avatar>
-        <p-tieredMenu #userMenu [model]="userMenuItems" popup="true"></p-tieredMenu>
-      </div>
+      <img src="../../../../assets/bdp/images/notifications.svg"
+                  pTooltip='notification' tooltipPosition="top" alt
+                  class="mmt-icon" />
+      <img src="../../../../assets/bdp/images/announcements.svg"
+                  pTooltip='announcements' tooltipPosition="top" alt
+                  class="mmt-icon" />
+     <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/xuxuefeng.png" size="large" shape="circle" (click)="userMenu.toggle($event)"/>
+      <p-tieredMenu #userMenu [model]="userMenuItems" popup="true"></p-tieredMenu>
     </ng-template>
   </p-toolbar>
 
-  <p-menubar [model]="navMenuItems" class="navigation-bar" [style]="{'border-radius': '0', 'border': '0'}"></p-menubar>
+  <p-menubar [model]="navMenuItems" class="navigation-bar"></p-menubar>
 </div>
