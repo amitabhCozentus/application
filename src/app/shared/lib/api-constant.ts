@@ -5,26 +5,10 @@
 
 export namespace UserEndPoint {
 
-
-
-
-
-
-
-
-    export abstract class LeadTimePoints {
-        public static readonly LEAD_TIME = "Leadtime";
-        public static readonly DOWNLOAD_REPORT = "LeadTime/DownloadReport";
-        public static readonly CAREER_RELIABILITY = "LeadTime/CareerReliability";
-        public static readonly TRADE_LANE_CONTAINERS = "Leadtime/TradeLaneContainers";
+    export abstract class CustomerSubscription {
+        public static readonly GET_COMPANY_SUBSCRIPTION_LIST = "customer-subscriptions/list";
     }
 
-    export abstract class CongestionPoints {
-        public static readonly PORT_CONGESTION_PERIOD = "PortOfCongestion/WorldMap";
-        public static readonly ARRIVAL_DEPARTURE = "PortOfCongestion/ArrivalDeparture";
-        public static readonly TIME_AT_ANCHORAGE_AND_PORT = "PortOfCongestion/TimeAtAnchorageAndPort";
-        public static readonly TIME_AT_ANCHORAGE_AND_PORT_DIFF = "PortOfCongestion/TimeAtAnchorageAndPortDifference";
-    }
 
     export abstract class AuthPoints {
         public static readonly ADD_USER = "user/addUser";
@@ -39,22 +23,6 @@ export namespace UserEndPoint {
 
 
 
-    export abstract class CodeData {
-
-        // public static readonly BDP_SBUS = "common/sbus";
-        // public static readonly SERVICE_CODE = "common/serviceCode";
-        // public static readonly METHOD_OF_TRANSPORT_CODE = "common/mots";
-        // public static readonly CARGO_TYPES = "common/cargoType";
-        // public static readonly CARRIERS = "common/carriers";
-        // public static readonly VESSLES = "common/vessles";
-        // public static readonly PLACE_OF_RECEIPT = "common/placeOfReceipt";
-        // public static readonly PLACE_OF_DEPARTURE = "common/placeOfDeparture";
-        // public static readonly EXCEPTIONS_LIST = "common/exceptionsList";
-    }
-
-
-
-
 
 
 
@@ -63,7 +31,7 @@ export namespace UserEndPoint {
 
 
 }
-//Related to existing Admin Endpoints for DND
+
 export namespace AdminEndPoint {
 
 
@@ -77,33 +45,9 @@ export namespace AdminEndPoint {
         public static readonly UPDATE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE + "/" + "role/update-role-management";
         public static readonly ROLE_FEATURE_PRIVILAGE = RoleManagement.GET_ROLE + "/" + "get-featureDropdown";
     }
-    export abstract class PortManagement {
-        public static readonly GET_PORT = "port";
-        public static readonly PORT_GETAILS = PortManagement.GET_PORT + "/" + "get-viewPortDetails";
+    
 
-    }
-    export abstract class CurrencyManagement {
-        public static readonly GET_CURRENCY = "currency";
-        public static readonly CURRENCY_LIST = CurrencyManagement.GET_CURRENCY + "/" + "get-viewCurrencyDetails";
-        public static readonly UPDATE_CURRENCY = CurrencyManagement.GET_CURRENCY + "/" + "update-currency";
-
-    }
-    export abstract class CommanyManagement {
-        public static readonly GET_COMPANY = "companies";
-        public static readonly UPDATE_COMPANY = CommanyManagement.GET_COMPANY +"/"+ "update-company";
-        public static readonly PSA_COMPANIES = "companies/users/getPsaCompany";
-        public static readonly NON_PSA_COMPANIES = "companies/users/getNonPsaCompany";
-
-    }
-
-    export abstract class Cache {
-        public static readonly CACHE_COMPANY = "cache/clearCacheCompanyListForUser";
-    }
-
-    export abstract class Ump {
-        public static readonly UMP= "ump";
-        public static readonly GET_ALL_USER = Ump.UMP+"/"+"user/allUsers";
-    }
+    
 }
 
 export namespace AppRoutes {
