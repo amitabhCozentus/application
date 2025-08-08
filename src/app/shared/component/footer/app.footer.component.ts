@@ -15,11 +15,11 @@ export class AppFooterComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.currentYear = new Date().getFullYear();
-        this.updateUTCTime();
+        // this.updateUTCTime();
         // Update time every second
-        this.timeInterval = setInterval(() => {
-            this.updateUTCTime();
-        }, 1000);
+        // this.timeInterval = setInterval(() => {
+        //     this.updateUTCTime();
+        // }, 1000);
     }
 
     ngOnDestroy() {

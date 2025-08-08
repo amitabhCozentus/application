@@ -8,17 +8,16 @@
       <span class="current-section">{{ currentSection }}</span>
     </ng-template>
     <ng-template pTemplate="end" class="tools">
-          <p-toggleswitch [ngModel]="darkTheme()" (ngModelChange)="toggleDarkMode()" [options]="menuThemeOptions"
-            optionLabel="name" optionValue="value" [allowEmpty]="false">
+          <p-toggleswitch [ngModel]="darkTheme()" (ngModelChange)="toggleDarkMode()">
           </p-toggleswitch>
 
           <span class="font-semibold m-2">
             Dark Mode
           </span>
-      <p-select class="mr-4" [options]="languageOptions" (onChange)="onLanguageChange($event)"
+      <p-select class="mr-4" [options]="languageOptions" [(ngModel)]="selectedLanguage" (onChange)="onLanguageChange($event)"
         placeholder="Select Language" optionLabel="label" optionValue="value" style="width: 25%;">
       </p-select>
-      <p-select class="mr-4" [options]="primaryColors()" [(ngModel)]="selectedCompany" placeholder="select skin"
+      <p-select class="mr-4" [options]="primaryColors()" [(ngModel)]="selectedCompany" placeholder="Select Skin"
         optionLabel="name" (onChange)="updateColors($event, 'primary')" style="width: 50%;">
         <ng-template let-color pTemplate="item">
           <span class="color-swatch" [style.backgroundColor]="color.palette"></span>

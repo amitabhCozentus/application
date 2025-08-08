@@ -18,7 +18,7 @@ export const ROLE_TABLE_HEADERS: TableHeaders[] = [
     { field: 'rolePrivileges', header: 'Role Privileges', sortable: true, filter: true },
     { field: 'customLanding', header: 'Custom Landing', sortable: true, filter: true },
     { field: 'defaultLanding', header: 'Default Landing', sortable: true, filter: true },
-    { field: 'skin', header: 'Skin', sortable: true, filter: true },
+    { field: 'skin', header: 'Skins', sortable: true, filter: true },
     { field: 'createdBy', header: 'Created By', sortable: true, filter: true },
     { field: 'createdOn', header: 'Created On', sortable: true, filter: true },
     { field: 'updatedBy', header: 'Updated By', sortable: true, filter: true },
@@ -92,6 +92,13 @@ export interface ApiRole {
 }
 export interface ApiResponse {
   success: boolean;
-  data: { content: ApiRole[]; pagination: ApiPagination };
+  data: {
+    content: ApiRole[];
+    page: number;
+    size: number;
+    totalElements: number;
+    totalPages: number;
+    last: boolean;
+  };
   timestamp: string;
 }

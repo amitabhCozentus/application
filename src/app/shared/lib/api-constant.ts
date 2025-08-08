@@ -38,16 +38,19 @@ export namespace AdminEndPoint {
 
 
     export abstract class RoleManagement {
-        public static readonly GET_ROLE = "role-management";
-        public static readonly ROLE_LIST = "all-details";
+        public static readonly GET_ROLE = "roles";
+        public static readonly ROLE_LIST = RoleManagement.GET_ROLE + "/" + "all-details";
         public static readonly ROLE_LIST_DROPDOWN = RoleManagement.GET_ROLE + "/" + "get-roleDetails";
         public static readonly SAVE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE + "/" + "role/save-role-management";
         public static readonly UPDATE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE + "/" + "role/update-role-management";
         public static readonly ROLE_FEATURE_PRIVILAGE = RoleManagement.GET_ROLE + "/" + "get-featureDropdown";
+        public static readonly SKINS = RoleManagement.GET_ROLE + "/" + "skins";
+        public static readonly PRIVILEGE_HIERARCHY = RoleManagement.GET_ROLE + "/" + "privilege-hierarchy";
+        public static readonly LANDING_PAGES = RoleManagement.GET_ROLE + "/" + "landing-pages";
     }
-    
 
-    
+
+
 }
 
 export namespace AppRoutes {

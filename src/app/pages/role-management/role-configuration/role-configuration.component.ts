@@ -38,29 +38,64 @@ export class RoleConfigurationComponent implements OnInit {
       description: [''],
       privPermissions: [[], Validators.required]
     });
-    // load privilege options and build privilegeGroups
-    this.roleService.getPrivilegeOptions().subscribe(privs => {
-      this.privilegeGroups = [{ label: 'Features', privileges: privs }];
 
-      this.privilegeTreeOptions = [{
-        label: 'Features',
-        key: 'features',
-        children: privs.map(priv => ({
-          label: priv,
-          key: priv,
-          data: priv
-        }))
-      }];
-    });
-    // load config options
-    this.roleService.getConfigOptions().subscribe(opts => {
-      this.skinOptions = opts.skins.map(s => ({ label: s, value: s }));
-      this.landingPages = opts.defaultLandings.map(l => ({ label: l, value: l }));
-    });
+    // Load data from separate APIs
+    this.loadPrivilegeHierarchy();
+    this.loadSkinsAndLandingPages();
+
     // enable/disable defaultLanding on customLanding changes
     this.form.get('customLanding')?.valueChanges.subscribe(val => {
       const ctrl = this.form.get('defaultLanding');
       val === 'Yes' ? ctrl?.enable() : ctrl?.disable();
+    });
+  }
+
+  /** Load privilege hierarchy from dedicated API */
+  private loadPrivilegeHierarchy(): void {
+    this.roleService.getPrivilegeHierarchy().subscribe(privilegeData => {
+      // Flatten the privilege hierarchy for simple privileges array
+      const privs = privilegeData.flatMap(category =>
+        category.features.flatMap(feature =>
+          feature.privileges.map(privilege => privilege.privilegeName)
+        )
+      );
+      const uniquePrivs = Array.from(new Set(privs));
+
+      this.privilegeGroups = [{ label: 'Features', privileges: uniquePrivs }];
+
+      // Build tree structure based on the actual API hierarchy
+      this.privilegeTreeOptions = privilegeData.map(category => ({
+        label: category.categoryName,
+        key: category.categoryKey,
+        children: category.features.map(feature => ({
+          label: feature.featureName,
+          key: feature.featureKey,
+          children: feature.privileges.map(privilege => ({
+            label: privilege.privilegeName,
+            key: privilege.privilegeKey,
+            data: privilege.privilegeName
+          }))
+        }))
+      }));
+    });
+  }
+
+  /** Load skins and landing pages from dedicated APIs */
+  private loadSkinsAndLandingPages(): void {
+    // Load skins
+    this.roleService.getSkins().subscribe(skinData => {
+      const allSkins = skinData.flatMap(roleType =>
+        roleType.skins.map(skin => ({ label: skin.name, value: skin.key }))
+      );
+      this.skinOptions = allSkins;
+    });
+
+    // Load landing pages
+    this.roleService.getLandingPages().subscribe(landingPages => {
+      this.landingPages = landingPages.map(page => ({
+        label: page.name,
+        value: page.key
+      }));
     });
   }
 
@@ -70,10 +105,18 @@ export class RoleConfigurationComponent implements OnInit {
 
     if (data) {
       this.form.get('customLanding')?.setValue(data.customLanding, { emitEvent: true });
+
+      // Convert defaultLanding name to key for dropdown selection
+      let defaultLandingKey = null;
+      if (data.defaultLanding) {
+        const landingPageOption = this.landingPages.find(page => page.label === data.defaultLanding);
+        defaultLandingKey = landingPageOption ? landingPageOption.value : null;
+      }
+
       this.form.patchValue({
         status: data.status,
         name: data.roleName,
-        defaultLanding: data.defaultLanding,
+        defaultLanding: defaultLandingKey,
         roleType: data.roleType,
         skin: data.skin,
         description: data.roleDescription,

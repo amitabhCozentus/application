@@ -48,9 +48,10 @@ declare type SurfacesType = {
 export class TopbarComponent {
     applicationTitle = 'SMART + NAVIGATOR';
     currentSection = 'MARITIME + INSIGHTS';
-    fenchLanguage: any[] = [];
-    englishLanguage: any[] = [];
+    fenchLanguage: any = {};
+    englishLanguage: any = {};
     selectedLanguageLabel='English';
+    selectedLanguage: string = 'en'; // Default to English
     layoutService: LayoutService = inject(LayoutService);
     router = inject(Router);
     topbarService: TopbarsService = inject(TopbarsService);
@@ -361,11 +362,23 @@ export class TopbarComponent {
 
 
         this.topbarService.getEnglishItemTranslation('topbar.company').subscribe((translation: any) => {
+            console.log('English translation response:', translation);
             if (translation && translation.success && translation.data) {
                 this.englishLanguage = translation.data[0];
-                this.translationService.setLanguage(this.englishLanguage[0].languageCode, this.englishLanguage);
-                this.buildNavMenu();
+                console.log('English language data:', this.englishLanguage);
 
+                // Check if englishLanguage exists and has languageCode before accessing it
+                if (this.englishLanguage && this.englishLanguage.languageCode) {
+                    this.translationService.setLanguage(this.englishLanguage.languageCode, this.englishLanguage);
+                    this.buildNavMenu();
+                } else {
+                    console.warn('English language data missing languageCode, using fallback');
+                    // Fallback: use default English language code
+                    this.translationService.setLanguage('en', this.englishLanguage);
+                    this.buildNavMenu();
+                }
+            } else {
+                console.error('Invalid English translation response structure');
             }
         });
 

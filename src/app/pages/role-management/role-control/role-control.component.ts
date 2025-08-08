@@ -1,13 +1,13 @@
 import { PrimengModule } from './../../../shared/primeng/primeng.module';
-import { Component, OnInit, ViewChild,computed,inject } from "@angular/core";
-import { RoleService } from "../../../shared/service/role-control/role.service";
-import { ROLE_TABLE_HEADERS, RoleConfigData, TableHeaders } from "../../../shared/lib/constants";
+import { Component, OnInit, ViewChild,computed,inject, ChangeDetectorRef, AfterViewInit } from "@angular/core";
+import { PagedResult, RoleService } from "../../../shared/service/role-control/role.service";
+import { ApiResponse, ApiRole, ROLE_TABLE_HEADERS, RoleConfigData, TableHeaders } from "../../../shared/lib/constants";
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
 import { RoleConfigurationComponent } from '../role-configuration/role-configuration.component';
+import { Table } from 'primeng/table';
 import Aura from '@primeng/themes/aura';
-import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
+import { updatePreset, updateSurfacePalette } from '@primeng/themes';
 import { LayoutService } from '../../../shared/service/layout/layout.service';
-import {appConfig, AppConfig} from '../../../app.config';
 
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
@@ -42,7 +42,8 @@ export class RoleControlComponent implements OnInit {
     canEdit: boolean = true; // set from auth context
     pageSize: number = 10;
     currentPage: number = 0;
-    layoutService: LayoutService = inject(LayoutService);
+    private layoutService: LayoutService = inject(LayoutService);
+    private roleService: RoleService = inject(RoleService);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuThemeOptions: { name: string; value: string }[] = [];
     primaryColors = computed<SurfacesType[]>(() => {
@@ -65,39 +66,30 @@ export class RoleControlComponent implements OnInit {
     totalRecords: number = 0;
     loading: boolean = false;
     searchTerm: string = "";
-    allPrivileges: string[] = [
-        "List view",
-        "Port master data management",
-        "Data Management",
-        "Tracking list",
-        "No KPIs",
-        "No Map",
-        "Shipment details",
-        "Scheduling",
-        "Routing",
-        "3PL Analytics",
-    ];
+    allPrivileges: string[] = []; // Add this to prevent template errors
     @ViewChild(RoleConfigurationComponent, { static: true }) roleConfig!: RoleConfigurationComponent;
 
-    constructor(private roleService: RoleService) {}
-
     ngOnInit() {
-        this.loadRoles(0, this.pageSize);
-        console.log('Primary Colors:', this.primaryColors());
+        // Let PrimeNG handle the initial lazy load naturally
     }
 
     /** Load one page from server */
-    loadRoles(pageIndex: number, pageSize: number) {
+    loadRoles(pageIndex: number, pageSize: number, searchTerm: string = "") {
         this.loading = true;
+        const trimmedSearchTerm = searchTerm;
         this.roleService
-            .getActiveRoles(pageIndex, pageSize, this.searchTerm)
+            .getActiveRoles(pageIndex, pageSize, trimmedSearchTerm)
             .subscribe({
-                next: (res) => {
-                    this.roles = res.data;
-                    this.totalRecords = res.total;
+                next: (res:PagedResult<RoleConfigData>) => {
+                    if (res && res.data) {
+                        this.roles = res.data;
+                        this.totalRecords = res.total;
+                    } else {
+                        this.roles = [];
+                        this.totalRecords = 0;
+                    }
                     this.loading = false;
 
-                    console.log("Roles loaded:", this.roles);
                 },
                 error: (error) => {
                     this.loading = false;
@@ -110,7 +102,17 @@ export class RoleControlComponent implements OnInit {
     onPage(event: { page: number; rows: number; first: number }) {
         this.currentPage = event.page;
         this.pageSize = event.rows;
-        this.loadRoles(event.page, event.rows);
+        this.loadRoles(event.page, event.rows, this.searchTerm);
+    }
+
+    /** Lazy loading callback for PrimeNG table */
+    onLazyLoad(event: any) {
+        console.log("Lazy load event:", event);
+        const page = event.first / event.rows;
+        this.currentPage = page;
+        this.pageSize = event.rows;
+        console.log(`Loading page ${page} with ${event.rows} rows per page`);
+        this.loadRoles(page, event.rows, this.searchTerm);
     }
 
     updateColors(event: any, type: string, color: any) {
@@ -281,20 +283,21 @@ export class RoleControlComponent implements OnInit {
 
     /** Search on Enter (min 3 chars) */
     onSearch() {
-        if (this.searchTerm.length >= 3) {
+        const trimmedTerm = this.searchTerm.trim();
+        if (trimmedTerm.length >= 3) {
             this.currentPage = 0;
-            this.loadRoles(0, this.pageSize);
+            this.loadRoles(0, this.pageSize, trimmedTerm);
         }
     }
 
     resetSearch() {
         this.searchTerm = "";
         this.currentPage = 0;
-        this.loadRoles(0, this.pageSize);
+        this.loadRoles(0, this.pageSize, "");
     }
 
     refresh() {
-        this.loadRoles(this.currentPage, this.pageSize);
+        this.loadRoles(this.currentPage, this.pageSize, this.searchTerm);
     }
 
     selectedPrimaryColor = computed(() => {

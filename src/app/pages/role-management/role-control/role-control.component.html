@@ -3,16 +3,16 @@
         <div class="grid">
             <div class="col-12">
                 <p-table #roleTable [value]="roles" [paginator]="true" [rows]="pageSize"
-                    [rowsPerPageOptions]="[10,25,50]" [(totalRecords)]="totalRecords" editMode="row" dataKey="id"
-                    [columns]="roleTableHeaders" sortField="name" [resizableColumns]="true" [reorderableColumns]="true"
+                    [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
+                    [columns]="roleTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                     styleClass="p-datatable-customers p-datatable-striped"
-                    [globalFilterFields]="['roleName', 'description']" [lazy]="true" (onPage)="onPage($event)"
-                    [loading]="loading">
+                    [globalFilterFields]="['roleName', 'roleDescription']" [lazy]="true"
+                    (onLazyLoad)="onLazyLoad($event)" [loading]="loading">
 
                     <!-- Caption -->
-                    <ng-template #caption>
+                    <ng-template pTemplate="caption">
                         <div class="flex flex-1 justify-content-between align-items-center w-100">
                             <div class="w-full md:w-30rem">
                                 <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
