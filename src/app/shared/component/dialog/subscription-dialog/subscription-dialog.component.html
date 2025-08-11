@@ -1,4 +1,4 @@
-<p-dialog header="Edit Subscription" [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }"
+<p-dialog header="Edit Subscription" [value]="features" [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }"
     [draggable]="false" (onHide)="hideDialog()">
     <p-divider class="mt-0"></p-divider>
     <ng-template pTemplate="body">
@@ -37,13 +37,13 @@
                 </span>
                 <div>
                     <h6 style="font-weight: bold;">Feature Toggle</h6>
-                    <ul>
-                        @for(feature of features; track feature.id){
-                        <li  class="mb-2">
-                            <p-checkbox [value]="feature.id" [formControlName]="'feature_' + feature.id" [binary]="true"
-                                [label]="feature.name"></p-checkbox>
-                        </li>
-                    }
+                    <ul class="feature-grid">
+                        @for(feature of features; track feature.id){   
+                        <p-toggleSwitch 
+                            formControlName="featureToggle">
+                        </p-toggleSwitch>
+                        <label for="toggle-{{feature.id}}" class="flex">{{ feature.name }}</label>
+                        }
                     </ul>
                 </div>
             </div>

@@ -1,0 +1,12 @@
+.feature-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.feature-item {
+  flex: 0 0 calc(33.333% - 1rem); /* 3 items per row */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}

@@ -71,6 +71,7 @@
                     </p-table>
                         <app-subscription-dialog 
                             [visible]="isDialogOpen"
+                            [features]="features"
                             [subscription]="selectedSubscription"
                             (onClose)="handleDialogClose()">
                         </app-subscription-dialog> 

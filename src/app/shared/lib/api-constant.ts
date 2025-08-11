@@ -7,6 +7,8 @@ export namespace UserEndPoint {
 
     export abstract class CustomerSubscription {
         public static readonly GET_COMPANY_SUBSCRIPTION_LIST = "customer-subscriptions/list";
+        public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_LIST = "customer-subscriptions/update";
+        public static readonly GET_COMPANY_CONFIG = "customer-subscriptions/configs";
     }
 
 

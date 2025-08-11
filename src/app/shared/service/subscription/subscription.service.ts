@@ -16,5 +16,14 @@ export class SubscriptionService {
     const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.GET_COMPANY_SUBSCRIPTION_LIST;
     return this.http.post<any>(endpoint, requestBody);
   }
+  updateCustomerSubscriptionList(requestBody: any) {
+    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.UPDATE_CUSTOMER_SUBSCRIPTION_LIST;
+    return this.http.put<any>(endpoint, requestBody);
+  }
+  getConfigMaster() {
+    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.GET_COMPANY_CONFIG;
+    return this.http.get<any>(endpoint);
+  }
+
 }
   

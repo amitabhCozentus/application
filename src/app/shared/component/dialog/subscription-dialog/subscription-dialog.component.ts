@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PrimengModule } from '../../../primeng/primeng.module';
 
@@ -12,6 +12,12 @@ interface Subscription {
   updatedBy?: string;
 }
 
+interface Feature {
+  id: number;
+  name: string;
+  keyCode: string;
+}
+
 @Component({
   selector: 'app-subscription-dialog',
   imports: [ReactiveFormsModule,PrimengModule],
@@ -19,14 +25,16 @@ interface Subscription {
   styleUrl: './subscription-dialog.component.scss'
 })
 export class SubscriptionDialogComponent implements OnInit {
+  changeDetector=inject(ChangeDetectorRef);
   @Input() visible: boolean = false;
+  @Input() features: Feature[] = [];
   @Input() set subscription(value: Subscription | null) {
     if (value) {
       this.subscriptionForm.patchValue({
         customerName: value.customerName,
         customerCode: value.customerCode,
         subscriptionType: value.subscriptionType,
-        featureToggle: ''  // Set this based on your requirements
+        featureToggle: ''  
       });
     }
   }
@@ -42,6 +50,12 @@ export class SubscriptionDialogComponent implements OnInit {
 
 
   ngOnInit() {
+    // this.features.forEach(feature => {
+    //   this.subscriptionForm.addControl(
+    //     `feature_${feature.id}`, 
+    //     new FormControl(false)
+    //   );
+    // });
     console.log(this.visible)
   }
 

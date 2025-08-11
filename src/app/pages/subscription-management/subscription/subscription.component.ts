@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Inject, Output, output } from '@angular/core';
 import { PrimengModule } from '../../../shared/primeng/primeng.module';
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
 import { SubscriptionDialogComponent } from '../../../shared/component/dialog/subscription-dialog/subscription-dialog.component';
@@ -19,6 +19,7 @@ interface Subscription {
   onBoardedSource: string;
   updatedOn?: string;
   updatedBy?: string;
+  featureIds?: number[]; 
 }
 interface PaginationState {
   first: number;
@@ -45,6 +46,7 @@ export class SubscriptionComponent {
   subscriptionTableHeader:Header[];
   subscriptionList:Subscription[] = [];
   selectedRows: Subscription[] = [];
+  features: [];
   
   onSelectionChange(event: any) {
     console.log('Selected Rows:', this.selectedRows);
@@ -58,7 +60,7 @@ export class SubscriptionComponent {
     pageCount: 0,
     totalRecords: 0
   };
-  constructor(private commonService:CommonService,private subscriptionService: SubscriptionService){
+  constructor(private commonService:CommonService,private subscriptionService: SubscriptionService,private readonly changeDetector: ChangeDetectorRef)  {
   this.subscriptionTableHeader =  [
         { field: 'customerName', header: 'Customer Name' },
         { field: 'customerCode', header: 'Customer Code' },
@@ -102,36 +104,49 @@ export class SubscriptionComponent {
       }
 
   ngOnInit() {
-    const requestBody = {
-      pagination: { page: 0, size: 10 }
-      // searchFilter: { searchText: '', columns: [] as String[] },
-      // columns: [] as any[],
-      // sortFieldValidator: { validSortFields: [] as String[] }
-    };
-    try {
-      this.subscriptionService.getCustomerSubscriptionList(requestBody).subscribe({
-        next: (response: { data: { content: Array<any>, totalElements: number } }) => {
-          const content = response?.data?.content || [];
-          this.totalRecords = response?.data?.totalElements || 0;
-          this.subscriptionList = [...content];
-          this.subscriptionList = content.map((item): Subscription => ({
-            customerName: item.customerName,
-            customerCode: item.customerCode,
-            subscriptionType: item.subscriptionTypeName,
-            onBoardedOn: item.onboardedOn,
-            onBoardedSource: item.onboardedSourceName,
-            updatedOn: item.updatedOn,
-            updatedBy: item.updatedBy
-          }));
-        },
-        error: (error) => {
-          console.error('Error fetching subscription list', error);
-        }
-      });
-    } catch (err) {
-      console.error('Unexpected error in subscription list fetch', err);
+  const requestBody = {
+    pagination: { page: 0, size: 10 }
+  };
+  
+  this.subscriptionService.getCustomerSubscriptionList(requestBody).subscribe({
+    next: (response: { data: { content: Array<any>, totalElements: number } }) => {
+      const content = response?.data?.content || [];
+      this.totalRecords = response?.data?.totalElements || 0;
+      this.subscriptionList = content.map((item): Subscription => ({
+        customerName: item.customerName,
+        customerCode: item.customerCode,
+        subscriptionType: item.subscriptionTypeName,
+        onBoardedOn: item.onboardedOn,
+        onBoardedSource: item.onboardedSourceName,
+        updatedOn: item.updatedOn,
+        updatedBy: item.updatedBy,
+        featureIds: item.featureIds || [] 
+      }));
+    },
+    error: (error) => {
+      console.error('Error fetching subscription list', error);
     }
-  }
+  });
+
+  // Fetch config master features
+  this.subscriptionService.getConfigMaster().subscribe({
+    next: (response) => {
+      this.features = response.data
+        .filter((item: any) => item.configType === 'FEATURE_TOGGLE' || item.configType === 'SUBSCRIPTION_TYPE')
+        .map((item: any) => ({
+          id: item.id,
+          name: item.name,
+          configType: item.configType
+        }));
+      console.log('Features loaded:', this.features);
+      this.changeDetector.detectChanges();
+    },
+    error: (error) => {
+      console.error('Error fetching config master features', error);
+    }
+  });
+}
+
 
    onCopyClick(){
       this.showAssignDialog=true;
@@ -144,8 +159,16 @@ export class SubscriptionComponent {
     }
 
     navigateToSubscription(subscription: Subscription) {
-      this.selectedSubscription = subscription;
-      this.isDialogOpen = true;
+        this.selectedSubscription = subscription;
+        console.log("selected Features", this.features);
+        this.isDialogOpen = true;
+      // this.subscriptionService.updateCustomerSubscriptionList(subscription).subscribe({
+      //   next: (response) => {
+      //     console.log('Subscription updated successfully:', response);
+      //     this.selectedSubscription = subscription;
+      //     this.isDialogOpen = true;
+      //   }
+      // });
     }
   onPageChange(event: any) {
     console.log('Page change event:', event);
