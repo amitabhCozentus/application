@@ -17,8 +17,8 @@
       <p-select class="mr-4" [options]="languageOptions" [(ngModel)]="selectedLanguage" (onChange)="onLanguageChange($event)"
         placeholder="Select Language" optionLabel="label" optionValue="value" style="width: 25%;">
       </p-select>
-      <p-select class="mr-4" [options]="primaryColors()" [(ngModel)]="selectedCompany" placeholder="Select Skin"
-        optionLabel="name" (onChange)="updateColors($event, 'primary')" style="width: 50%;">
+      <p-select class="mr-4" [options]="primaryColors()" [(ngModel)]="selectedSkin" placeholder="Select Skin"
+        optionLabel="name" (onChange)="updateColors($event, 'primary')" style="width: 35%;">
         <ng-template let-color pTemplate="item">
           <span class="color-swatch" [style.backgroundColor]="color.palette"></span>
           <span class="color-name">{{ color.name }}</span>
@@ -39,4 +39,20 @@
   </p-toolbar>
 
   <p-menubar [model]="navMenuItems" class="navigation-bar"></p-menubar>
+
+  <!-- <div class="navigation-container">
+    <p-menubar [model]="visibleNavMenuItems" class="navigation-bar" #navigationBar></p-menubar>
+
+    <div class="overflow-menu" *ngIf="showOverflowMenu">
+      <p-button
+        icon="pi pi-ellipsis-h"
+        [text]="true"
+        [rounded]="true"
+        (click)="overflowMenu.toggle($event)"
+        pTooltip="More options"
+        tooltipPosition="bottom">
+      </p-button>
+      <p-menu #overflowMenu [model]="overflowMenuItems" [popup]="true"></p-menu>
+    </div>
+  </div> -->
 </div>

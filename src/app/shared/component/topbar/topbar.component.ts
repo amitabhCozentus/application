@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -7,6 +7,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import { ButtonModule } from 'primeng/button';
 import { AvatarModule } from 'primeng/avatar';
 import { TieredMenuModule } from 'primeng/tieredmenu';
+import { MenuModule } from 'primeng/menu';
+import { TooltipModule } from 'primeng/tooltip';
 import { MenuItem, SelectItem } from 'primeng/api';
 import { PrimengModule } from '../../primeng/primeng.module';
 import Aura from '@primeng/themes/aura';
@@ -41,11 +43,11 @@ declare type SurfacesType = {
 @Component({
     standalone: true,
     selector: 'app-topbar',
-    imports: [CommonModule, FormsModule, ToolbarModule, MenubarModule, DropdownModule, ButtonModule, AvatarModule, TieredMenuModule, PrimengModule],
+    imports: [CommonModule, FormsModule, ToolbarModule, MenubarModule, DropdownModule, ButtonModule, AvatarModule, TieredMenuModule, MenuModule, TooltipModule, PrimengModule],
     templateUrl: './topbar.component.html',
     styleUrls: ['./topbar.component.scss']
 })
-export class TopbarComponent {
+export class TopbarComponent implements OnInit, AfterViewInit {
     applicationTitle = 'SMART + NAVIGATOR';
     currentSection = 'MARITIME + INSIGHTS';
     fenchLanguage: any = {};
@@ -83,6 +85,12 @@ export class TopbarComponent {
     ];
     navMenuItems: MenuItem[] = [];
     userMenuItems: MenuItem[] = [];
+    visibleNavMenuItems: MenuItem[] = [];
+    overflowMenuItems: MenuItem[] = [];
+    showOverflowMenu: boolean = false;
+    selectedSkin: string;
+
+    @ViewChild('navigationBar', { static: false }) navigationBar!: ElementRef;
 
     userName = 'Solution User';
     get userInitials(): string {
@@ -98,10 +106,17 @@ export class TopbarComponent {
                 ...state,
                 primary: event.value.name
             }));
+
+            // Save theme color preference to localStorage
+            this.saveThemeColorPreference(event.value.name);
         }
         this.applyTheme(type, event.value);
         this.layoutService.updateBodyBackground(event.value.name);
-        event.stopPropagation();
+
+        // Check if stopPropagation exists before calling it
+        if (event && typeof event.stopPropagation === 'function') {
+            event.stopPropagation();
+        }
     }
 
     applyTheme(type: string, color: any) {
@@ -126,8 +141,52 @@ export class TopbarComponent {
                 { label: t('LIT.LBL.MENU.USER_MANAGEMENT'), icon: 'pi pi-users',  command: () => {
                         this.router.navigate(['/user-control']);
                     }},
-            { label: t('LIT.LBL.MENU.MASTER_DATA'), icon: 'pi pi-cog', items: [], routerLink: '/user-control' }
+            { label: t('LIT.LBL.MENU.MASTER_DATA'), icon: 'pi pi-cog', items: [], routerLink: '/' }
         ];
+
+        // Calculate responsive menu after building nav items
+        this.calculateResponsiveMenu();
+    }
+
+    private calculateResponsiveMenu(): void {
+        // Enhanced responsive calculation based on screen size
+        const screenWidth = window.innerWidth;
+        let maxVisibleItems: number;
+
+        // Define responsive breakpoints and maximum visible items
+        if (screenWidth >= 1400) {
+            maxVisibleItems = 9; // Show all items on very wide screens
+        } else if (screenWidth >= 1200) {
+            maxVisibleItems = 7;
+        } else if (screenWidth >= 992) {
+            maxVisibleItems = 6;
+        } else if (screenWidth >= 768) {
+            maxVisibleItems = 5;
+        } else if (screenWidth >= 576) {
+            maxVisibleItems = 4;
+        } else {
+            maxVisibleItems = 3; // Minimum items on small screens
+        }
+
+        // Ensure we don't try to show more items than we have
+        maxVisibleItems = Math.min(maxVisibleItems, this.navMenuItems.length);
+
+        if (maxVisibleItems >= this.navMenuItems.length) {
+            // Show all menu items
+            this.visibleNavMenuItems = [...this.navMenuItems];
+            this.overflowMenuItems = [];
+            this.showOverflowMenu = false;
+        } else {
+            // Show limited items and put rest in overflow
+            this.visibleNavMenuItems = this.navMenuItems.slice(0, maxVisibleItems);
+            this.overflowMenuItems = this.navMenuItems.slice(maxVisibleItems);
+            this.showOverflowMenu = this.overflowMenuItems.length > 0;
+        }
+    }
+
+    @HostListener('window:resize', ['$event'])
+    onWindowResize(event: any): void {
+        this.calculateResponsiveMenu();
     }
 
 
@@ -279,16 +338,103 @@ export class TopbarComponent {
     toggleDarkMode() {
         this.executeDarkModeToggle();
     }
+
     executeDarkModeToggle() {
+        const newDarkTheme = !this.darkTheme();
         this.layoutService.layoutConfig.update((state) => ({
             ...state,
-            darkTheme: !state.darkTheme
+            darkTheme: newDarkTheme
         }));
+
+        // Save dark mode preference to localStorage
+        this.saveDarkModePreference(newDarkTheme);
+
         if (this.darkTheme()) {
             this.setMenuTheme('dark');
         }
         this.updateMenuThemeOptions();
         this.layoutService.updateBodyBackground(this.layoutService.layoutConfig().primary);
+    }
+
+    private saveDarkModePreference(isDarkMode: boolean): void {
+        try {
+            localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+        } catch (error) {
+            console.warn('Unable to save dark mode preference to localStorage:', error);
+        }
+    }
+
+    private loadDarkModePreference(): boolean | null {
+        try {
+            const savedPreference = localStorage.getItem('darkMode');
+            return savedPreference ? JSON.parse(savedPreference) : null;
+        } catch (error) {
+            console.warn('Unable to load dark mode preference from localStorage:', error);
+            return null;
+        }
+    }
+
+    private initializeDarkModePreference(): void {
+        const savedDarkMode = this.loadDarkModePreference();
+        if (savedDarkMode !== null) {
+            // Apply the saved preference
+            this.layoutService.layoutConfig.update((state) => ({
+                ...state,
+                darkTheme: savedDarkMode
+            }));
+
+            if (savedDarkMode) {
+                this.setMenuTheme('dark');
+            }
+            this.updateMenuThemeOptions();
+            this.layoutService.updateBodyBackground(this.layoutService.layoutConfig().primary);
+        }
+    }
+
+    private saveThemeColorPreference(colorName: string): void {
+        try {
+            localStorage.setItem('themeColorPreference', JSON.stringify(colorName));
+        } catch (error) {
+            console.warn('Unable to save theme color preference to localStorage:', error);
+        }
+    }
+
+    private loadThemeColorPreference(): string | null {
+        try {
+            const savedColor = localStorage.getItem('themeColorPreference');
+            return savedColor ? JSON.parse(savedColor) : null;
+        } catch (error) {
+            console.warn('Unable to load theme color preference from localStorage:', error);
+            return null;
+        }
+    }
+
+    private initializeThemeColorPreference(): void {
+        const savedColor = this.loadThemeColorPreference();
+        this.selectedSkin = savedColor;
+        if (savedColor !== null) {
+            // Apply the saved color preference
+            this.layoutService.layoutConfig.update((state) => ({
+                ...state,
+                primary: savedColor
+            }));
+
+            // Apply the theme with saved color
+            const colorPalette = this.primaryColors().find(c => c.name === savedColor);
+            if (colorPalette) {
+                this.applyTheme('primary', colorPalette);
+                this.layoutService.updateBodyBackground(savedColor);
+            }
+        }
+    }
+
+    private clearLocalStorage(): void {
+        try {
+            localStorage.removeItem('app-theme');
+            localStorage.removeItem('darkMode');
+        } catch (error) {
+            console.warn('Unable to clear theme preferences from localStorage:', error);
+        }
     }
 
     updateMenuThemeOptions() {
@@ -322,11 +468,24 @@ export class TopbarComponent {
         this.buildNavMenu();
     }
     public logoutRedirect() {
-         this.auth0Service.logout({ returnTo: window.location.origin }
-    );
-        }
+        // Optional: Clear theme preferences on logout
+        // Uncomment the next line if you want to reset themes on logout
+        // this.clearLocalStorage();
+
+        this.auth0Service.logout({ returnTo: window.location.origin });
+    }
+
+    ngAfterViewInit(): void {
+        // Calculate responsive menu after view is initialized
+        setTimeout(() => {
+            this.calculateResponsiveMenu();
+        }, 100);
+    }
 
     ngOnInit(): void {
+        this.initializeDarkModePreference();
+        this.initializeThemeColorPreference();
+
         this.navMenuItems = [
             { label: 'Home', icon: 'pi pi-home', routerLink: '/home' },
             { label: 'Tracking List', icon: 'pi pi-list', routerLink: '/tracking-list' },
@@ -345,6 +504,9 @@ export class TopbarComponent {
             }] }
         ];
 
+        // Initial calculation of responsive menu with static items
+        this.calculateResponsiveMenu();
+
         this.userMenuItems = [
             { label: 'Profile', icon: 'pi pi-user' },
             { label: 'Settings', icon: 'pi pi-cog' },
@@ -362,10 +524,8 @@ export class TopbarComponent {
 
 
         this.topbarService.getEnglishItemTranslation('topbar.company').subscribe((translation: any) => {
-            console.log('English translation response:', translation);
             if (translation && translation.success && translation.data) {
                 this.englishLanguage = translation.data[0];
-                console.log('English language data:', this.englishLanguage);
 
                 // Check if englishLanguage exists and has languageCode before accessing it
                 if (this.englishLanguage && this.englishLanguage.languageCode) {

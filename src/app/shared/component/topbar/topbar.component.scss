@@ -26,3 +26,50 @@ topbar-container {
 .p-avatar-lg {
     width:100px !important;
 }
+
+// Responsive Navigation Styles
+.navigation-container {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    position: relative;
+}
+
+.navigation-bar {
+    flex: 1;
+}
+
+.overflow-menu {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.overflow-menu .p-button {
+    color: var(--text-color);
+    border: 1px solid transparent;
+
+    &:hover {
+        background-color: var(--surface-hover);
+    }
+}
+
+// Responsive breakpoints
+@media (max-width: 1200px) {
+    .navigation-container {
+        flex-wrap: nowrap;
+    }
+}
+
+@media (max-width: 768px) {
+    .navigation-container {
+        .navigation-bar {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .overflow-menu {
+            margin-left: 8px;
+        }
+    }
+}

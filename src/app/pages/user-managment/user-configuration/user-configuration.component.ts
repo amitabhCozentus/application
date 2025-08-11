@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { PrimengModule } from '../../../../shared/primeng/primeng.module'
+import { PrimengModule } from '../../../shared/primeng/primeng.module'
 import { TreeNode } from 'primeng/api';
 
 interface Column {
@@ -14,7 +14,7 @@ interface Column {
 })
 export class UserConfigurationComponent implements OnInit{
   selectedUser:any={userId:"Abhishek.kumar@bdpint.com"};
-  selectedIndex: string = '419'; 
+  selectedIndex: string = '419';
   selectedCompanyIndex:String='419';
 
     files!: TreeNode[];
@@ -425,9 +425,9 @@ export class UserConfigurationComponent implements OnInit{
 
     }
 
-   
 
-    
+
+
 }
 
 

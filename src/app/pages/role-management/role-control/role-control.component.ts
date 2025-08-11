@@ -42,7 +42,7 @@ export class RoleControlComponent implements OnInit {
     canEdit: boolean = true; // set from auth context
     pageSize: number = 10;
     currentPage: number = 0;
-    private layoutService: LayoutService = inject(LayoutService);
+    public layoutService: LayoutService = inject(LayoutService);
     private roleService: RoleService = inject(RoleService);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuThemeOptions: { name: string; value: string }[] = [];
@@ -107,11 +107,9 @@ export class RoleControlComponent implements OnInit {
 
     /** Lazy loading callback for PrimeNG table */
     onLazyLoad(event: any) {
-        console.log("Lazy load event:", event);
         const page = event.first / event.rows;
         this.currentPage = page;
         this.pageSize = event.rows;
-        console.log(`Loading page ${page} with ${event.rows} rows per page`);
         this.loadRoles(page, event.rows, this.searchTerm);
     }
 

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { PrimengModule } from '../../../../shared/primeng/primeng.module'
+import { PrimengModule } from '../../../shared/primeng/primeng.module'
 import { UserControlService } from 'src/app/shared/service/user-control/user-control.service';
-import { AppRoutes } from '../../../../shared/lib/api-constant';
-import { CommonService } from '../../../../shared/service/common/common.service';
+import { AppRoutes } from '../../../shared/lib/api-constant';
+import { CommonService } from '../../../shared/service/common/common.service';
 import { CommonTableSearchComponent } from 'src/app/shared/component/table-search/common-table-search.component';
 
 
@@ -18,7 +18,7 @@ interface userInfo{
   styleUrl: './user-control.component.scss'
 })
 export class UserControlComponent {
-  
+
   hasExistingUsers:boolean=true;
   usersTableHeader:any=[];
   inActiveTableHeader:any=[];
@@ -29,7 +29,7 @@ export class UserControlComponent {
   showAssignDialog:boolean=false;
 constructor(private userControlService:UserControlService,private commonService:CommonService) {
     this.usersTableHeader =  [
-        { field: 'userName', header: 'Name' },  
+        { field: 'userName', header: 'Name' },
         { field: 'userType', header: 'User Type' },
         { field: 'userId', header: 'User Email Id' },
         { field: 'companies', header: 'Company Name' },
