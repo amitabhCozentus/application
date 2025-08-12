@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PrimengModule } from '../../../primeng/primeng.module';
+import { SubscriptionService } from '../../../service/subscription/subscription.service';
 
 interface Subscription {
   customerName: string;
@@ -10,6 +11,7 @@ interface Subscription {
   onBoardedSource: string;
   updatedOn?: string;
   updatedBy?: string;
+  featureIds?: number[];
 }
 
 interface Feature {
@@ -25,45 +27,85 @@ interface Feature {
   styleUrl: './subscription-dialog.component.scss'
 })
 export class SubscriptionDialogComponent implements OnInit {
+  private subscriptionService = inject(SubscriptionService);
   changeDetector=inject(ChangeDetectorRef);
   @Input() visible: boolean = false;
   @Input() features: Feature[] = [];
+  featureStates: { [key: number]: boolean } = {};
+
   @Input() set subscription(value: Subscription | null) {
     if (value) {
       this.subscriptionForm.patchValue({
         customerName: value.customerName,
         customerCode: value.customerCode,
-        subscriptionType: value.subscriptionType,
-        featureToggle: ''  
+        subscriptionType: value.subscriptionType
       });
+      
+      // Initialize feature states from featureIds
+      this.features.forEach(feature => {
+        this.featureStates[feature.id] = value.featureIds?.includes(feature.id) || false;
+      });
+      this.changeDetector.detectChanges();
     }
   }
 
   @Output() onClose = new EventEmitter<void>();
+  @Output() onUpdateSuccess = new EventEmitter<void>();
 
   subscriptionForm = new FormGroup({
     customerName: new FormControl('', Validators.required),
     customerCode: new FormControl('', Validators.required),
     subscriptionType: new FormControl('', Validators.required),
-    featureToggle: new FormControl('', Validators.required),
+    
   });
 
-
   ngOnInit() {
-    // this.features.forEach(feature => {
-    //   this.subscriptionForm.addControl(
-    //     `feature_${feature.id}`, 
-    //     new FormControl(false)
-    //   );
-    // });
-    console.log(this.visible)
+    // Initialize feature states if not already set
+    this.features.forEach(feature => {
+      if (!(feature.id in this.featureStates)) {
+        this.featureStates[feature.id] = false;
+      }
+    });
   }
 
+  isFeatureEnabled(featureId: number): boolean {
+    return this.featureStates[featureId] || false;
+  }
 
-  onSubmit() {
+  toggleFeature(featureId: number) {
+    this.featureStates[featureId] = !this.featureStates[featureId];
+  }
+
+  onUpdateSubmit() {
     if (this.subscriptionForm.valid) {
-      console.log('Form submitted:', this.subscriptionForm.value);
-      this.visible = false;
+      // Get selected feature IDs
+      const selectedFeatureIds = Object.entries(this.featureStates)
+        .filter(([_, isEnabled]) => isEnabled)
+        .map(([id]) => Number(id));
+
+      // Get form values
+      const customerCode = this.subscriptionForm.get('customerCode')?.value;
+      const subscriptionType = this.subscriptionForm.get('subscriptionType')?.value;
+      const subscriptionTierTypeNumber= subscriptionType === 'Standard' ? 48 : 49; // 48 for Standard and 49 for Premium
+      
+      const requestBody = {
+        companyCode: Number(customerCode), 
+        subscriptionTierType: subscriptionTierTypeNumber,
+        featureIds: selectedFeatureIds
+      };
+      
+      
+      this.subscriptionService.updateCustomerSubscriptionList(requestBody).subscribe({
+        next: (response) => {
+          this.visible = false;
+          this.onClose.emit();
+          this.onUpdateSuccess.emit();
+        },
+        error: (error) => {
+          console.error('Error updating subscription:', error);
+        }
+      });
+      
     }
   }
 

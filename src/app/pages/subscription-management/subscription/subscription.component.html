@@ -51,7 +51,7 @@
                                 <td>
                                     <button pButton pRipple icon="pi pi-pencil"
                                         class="p-button-rounded p-button-text mr-2"
-                                        (click)="navigateToSubscription(assignment)">
+                                        (click)="navigateToEditSubscription(assignment)">
                                     </button>
                                     <button pButton pRipple icon="pi pi-copy"
                                         class="p-button-rounded p-button-text mr-2" (click)="onCopyClick(assignment)">
@@ -73,7 +73,8 @@
                             [visible]="isDialogOpen"
                             [features]="features"
                             [subscription]="selectedSubscription"
-                            (onClose)="handleDialogClose()">
+                            (onClose)="handleDialogClose()"
+                            (onUpdateSuccess)="loadSubscriptionList()">
                         </app-subscription-dialog> 
                 </div>
             </div>

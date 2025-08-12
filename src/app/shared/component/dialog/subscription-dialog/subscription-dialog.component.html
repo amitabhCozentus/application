@@ -3,9 +3,9 @@
     <p-divider class="mt-0"></p-divider>
     <ng-template pTemplate="body">
         <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()">
-            <div style="display:flex" class="mb-2">
+            <div style="display:flex" class="mb-2 ">
                 <div>
-                    <label for="customerName" class="font-semibold w-24">Customer Name</label>
+                    <label for="customerName" class="font-semibold w-24">Customer Name<span class="required-star">*</span></label>
                     <input pInputText 
                            id="customerName" 
                            class="flex-auto p-disabled" 
@@ -14,7 +14,7 @@
                            [disabled]="true" />
                 </div>
                 <div>
-                    <label for="customerCode" class="font-semibold w-24">Customer Code</label>
+                    <label for="customerCode" class="font-semibold w-24">Customer Code<span class="required-star">*</span></label>
                     <input pInputText 
                            id="customerCode" 
                            class="flex-auto p-disabled" 
@@ -23,26 +23,31 @@
                            [disabled]="true" />
                 </div>
             </div>
-            <div class="mb-2">
-                <h4 class="font-semibold">Subscription Type</h4>
+            <div class="mb-4 mt-4">
+                <h4 class="font-semibold mb-2">Subscription Type<span class="required-star">*</span></h4>
                 <span>
-                    <p-radioButton name="subscriptionType" value="standard" label="Standard"
+                    <p-radioButton name="subscriptionType" [value]="'Standard'" label="Standard"
                         formControlName="subscriptionType"></p-radioButton>
                     <label class="ml-2">Standard</label>
                 </span>
                 <span>
-                    <p-radioButton name="subscriptionType" value="premium" label="Premium"
+                    <p-radioButton name="subscriptionType" [value]="'Premium'" label="Premium"
                         formControlName="subscriptionType" class="ml-2"></p-radioButton>
                     <label class="ml-2">Premium</label>
                 </span>
-                <div>
-                    <h6 style="font-weight: bold;">Feature Toggle</h6>
-                    <ul class="feature-grid">
+                <div class="mt-4 mb-4">
+                    <h6 style="font-weight: bold;" class="mb-4 mt-4">Feature Toggle</h6>
+                    <ul class="flex flex-wrap p-0 m-0  row">
                         @for(feature of features; track feature.id){   
-                        <p-toggleSwitch 
-                            formControlName="featureToggle">
-                        </p-toggleSwitch>
-                        <label for="toggle-{{feature.id}}" class="flex">{{ feature.name }}</label>
+                        <li class="flex align-items-center gap-3  col-3">
+                            <p-toggleSwitch 
+                                
+                                [inputId]="'toggle-' + feature.id"
+                                [(ngModel)]="featureStates[feature.id]"
+                                [ngModelOptions]="{standalone: true}">
+                            </p-toggleSwitch>
+                            <label [for]="'toggle-' + feature.id" class="flex cursor-pointer">{{ feature.name }}</label>
+                        </li>
                         }
                     </ul>
                 </div>
@@ -51,8 +56,8 @@
         </form>
     </ng-template>
     <ng-template pTemplate="footer">
-        <button pButton type="button" label="Cancel" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton type="button" label="Cancel" class="p-button-outlined" (click)="hideDialog()"></button>
         <button pButton type="submit" label="Update" class="p-button-primary" [disabled]="!subscriptionForm.valid"
-            (click)="onSubmit()"></button>
+            (click)="onUpdateSubmit()"></button>
     </ng-template>
 </p-dialog>

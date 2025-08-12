@@ -46,7 +46,7 @@ export class SubscriptionComponent {
   subscriptionTableHeader:Header[];
   subscriptionList:Subscription[] = [];
   selectedRows: Subscription[] = [];
-  features: [];
+  features: number[] = [];
   
   onSelectionChange(event: any) {
     console.log('Selected Rows:', this.selectedRows);
@@ -103,9 +103,9 @@ export class SubscriptionComponent {
 
       }
 
-  ngOnInit() {
+  loadSubscriptionList(page: number = 0, size: number = 10) {
   const requestBody = {
-    pagination: { page: 0, size: 10 }
+    pagination: { page, size }
   };
   
   this.subscriptionService.getCustomerSubscriptionList(requestBody).subscribe({
@@ -127,24 +127,28 @@ export class SubscriptionComponent {
       console.error('Error fetching subscription list', error);
     }
   });
+}
+
+  ngOnInit() {
+    this.loadSubscriptionList();
 
   // Fetch config master features
-  this.subscriptionService.getConfigMaster().subscribe({
-    next: (response) => {
-      this.features = response.data
-        .filter((item: any) => item.configType === 'FEATURE_TOGGLE' || item.configType === 'SUBSCRIPTION_TYPE')
-        .map((item: any) => ({
-          id: item.id,
-          name: item.name,
-          configType: item.configType
-        }));
-      console.log('Features loaded:', this.features);
-      this.changeDetector.detectChanges();
-    },
-    error: (error) => {
-      console.error('Error fetching config master features', error);
-    }
-  });
+    this.subscriptionService.getConfigMaster().subscribe({
+      next: (response) => {
+        this.features = response.data
+          .filter((item: any) => item.configType === 'FEATURE_TOGGLE')
+          .map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            configType: item.configType
+          }));
+        console.log('Features loaded:', this.features);
+        this.changeDetector.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error fetching config master features', error);
+      }
+    });
 }
 
 
@@ -158,17 +162,9 @@ export class SubscriptionComponent {
       this.selectedSubscription = null;
     }
 
-    navigateToSubscription(subscription: Subscription) {
+    navigateToEditSubscription(subscription: Subscription) {
         this.selectedSubscription = subscription;
-        console.log("selected Features", this.features);
         this.isDialogOpen = true;
-      // this.subscriptionService.updateCustomerSubscriptionList(subscription).subscribe({
-      //   next: (response) => {
-      //     console.log('Subscription updated successfully:', response);
-      //     this.selectedSubscription = subscription;
-      //     this.isDialogOpen = true;
-      //   }
-      // });
     }
   onPageChange(event: any) {
     console.log('Page change event:', event);
