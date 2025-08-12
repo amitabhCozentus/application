@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, EventEmitter, inject, Input, OnInit, Outp
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { PrimengModule } from '../../../primeng/primeng.module';
 import { SubscriptionService } from '../../../service/subscription/subscription.service';
+import { MessageService } from 'primeng/api';
 
 interface Subscription {
   customerName: string;
@@ -24,10 +25,12 @@ interface Feature {
   selector: 'app-subscription-dialog',
   imports: [ReactiveFormsModule,PrimengModule],
   templateUrl: './subscription-dialog.component.html',
-  styleUrl: './subscription-dialog.component.scss'
+  styleUrl: './subscription-dialog.component.scss',
+  providers: [MessageService]
 })
 export class SubscriptionDialogComponent implements OnInit {
   private subscriptionService = inject(SubscriptionService);
+  private messageService = inject(MessageService)
   changeDetector=inject(ChangeDetectorRef);
   @Input() visible: boolean = false;
   @Input() features: Feature[] = [];
@@ -86,7 +89,7 @@ export class SubscriptionDialogComponent implements OnInit {
       // Get form values
       const customerCode = this.subscriptionForm.get('customerCode')?.value;
       const subscriptionType = this.subscriptionForm.get('subscriptionType')?.value;
-      const subscriptionTierTypeNumber= subscriptionType === 'Standard' ? 48 : 49; // 48 for Standard and 49 for Premium
+      const subscriptionTierTypeNumber = subscriptionType === 'Standard' ? 48 : 49;
       
       const requestBody = {
         companyCode: Number(customerCode), 
@@ -94,18 +97,26 @@ export class SubscriptionDialogComponent implements OnInit {
         featureIds: selectedFeatureIds
       };
       
-      
       this.subscriptionService.updateCustomerSubscriptionList(requestBody).subscribe({
         next: (response) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success',
+            detail: 'Subscription updated successfully'
+          });
           this.visible = false;
           this.onClose.emit();
           this.onUpdateSuccess.emit();
         },
         error: (error) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to update subscription. Please try again.'
+          });
           console.error('Error updating subscription:', error);
         }
       });
-      
     }
   }
 
