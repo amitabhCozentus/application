@@ -90,6 +90,8 @@ export class SubscriptionDialogComponent implements OnInit {
       const customerCode = this.subscriptionForm.get('customerCode')?.value;
       const subscriptionType = this.subscriptionForm.get('subscriptionType')?.value;
       const subscriptionTierTypeNumber = subscriptionType === 'Standard' ? 48 : 49;
+
+      const customerName = this.subscriptionForm.get('customerName')?.value;
       
       const requestBody = {
         companyCode: Number(customerCode), 
@@ -102,7 +104,7 @@ export class SubscriptionDialogComponent implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Subscription updated successfully'
+            detail:  `Subscription for ${customerName} updated successfully`
           });
           this.visible = false;
           this.onClose.emit();
@@ -112,7 +114,7 @@ export class SubscriptionDialogComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Failed to update subscription. Please try again.'
+            detail: 'Unable to update subscription. Please try again.'
           });
           console.error('Error updating subscription:', error);
         }
