@@ -143,7 +143,7 @@ export class RoleService {
                     });
                     return {
                         data: roles,
-                        total: res.data.totalElements || 0
+                        total: res.data.pagination?.totalElements || 0
                     };
                 }),
                 catchError(this.handleError<PagedResult<RoleConfigData>>('getActiveRoles', { data: [], total: 0 }))
@@ -320,7 +320,7 @@ export class RoleService {
 
                     return {
                         data: roles,
-                        total: res.data.totalElements || 0
+                        total: res.data.pagination?.totalElements || 0
                     };
                 }),
                 catchError(this.handleError<PagedResult<RoleConfigData>>('searchRoles', { data: [], total: 0 }))

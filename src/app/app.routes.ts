@@ -6,6 +6,8 @@ import { SubscriptionComponent } from "./pages/subscription-management/subscript
 import { SubscriptionDialogComponent } from "./shared/component/dialog/subscription-dialog/subscription-dialog.component";
 import { AuthGuard } from "@auth0/auth0-angular";
 import { AuthGuard as Auth0Guard } from '@auth0/auth0-angular';
+import { ReleaseNotesComponent } from "./pages/release-management/release-notes/release-notes.component";
+import { UploadDownloadDialogComponent } from "./shared/component/dialog/upload-download-dialog/upload-download-dialog.component";
 export const routes: Routes = [
     {
         path: "",
@@ -18,7 +20,7 @@ export const routes: Routes = [
     },
     {
         path: "user-control",
-        component: UserControlComponent,
+        component: UserConfigurationComponent,
     },
     {
         path: "subscription",
@@ -31,5 +33,13 @@ export const routes: Routes = [
      {
         path: "role-management",
         component: RoleControlComponent,
+    },
+    {
+        path: "release-notes",
+        component: ReleaseNotesComponent,
+    },
+    {
+        path: "release-notes-new",
+        component: UploadDownloadDialogComponent,
     },
 ];

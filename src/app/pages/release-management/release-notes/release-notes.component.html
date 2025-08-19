@@ -1,0 +1,73 @@
+<div class="card">
+    <p-tabs value="0" (onChange)="onTabChange($event)">
+        <p-tablist>
+            <p-tab value="0">Release Notes</p-tab>
+            <p-tab value="1">User Manual</p-tab>
+        </p-tablist>
+        <p-tabpanels>
+            <p-tabpanel value="0">
+                <p-table [columns]="cols" [value]="releaseNotes" [tableStyle]="{ 'min-width': '50rem' }">
+                    <ng-template #caption>
+                        <div class="flex flex-1 justify-content-between align-items-center w-100">
+                            <div class="w-full md:w-30rem">
+                                <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
+                                    (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
+                            </div>
+                            <div>
+                                <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
+                                    (click)="refresh()"></button>
+                                <button pButton pRipple label="Upload Release Notes" class="p-button-primary ml-2"
+                                    (click)="openAddRoleDialog()"></button>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template #header let-columns>
+                        <tr>
+                            <th>
+                                Action
+                            </th>
+                            <th *ngFor="let col of columns">
+                                {{ col.header }}
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-rowData let-columns="columns">
+                        <tr>
+                            <td>
+                                <div class="flex">
+                                    <img src="../../../../assets/bdp/images/bdp_edit_icon.svg" alt="edit"
+                                        (click)="editReleaseNotes(rowData)" style="cursor: pointer;" class="mr-2">
+                                    <img src="../../../../assets/bdp/images/bdp_refresh_icon.svg" alt="delete"
+                                        (click)="deleteReleaseNotes(rowData)" style="cursor: pointer;">
+                                </div>
+                            </td>
+                            <td *ngFor="let col of columns">
+                                @if(col.field === 'releaseName'){}
+                                <span *ngIf="col.field === 'releaseName'; else normalField">
+                                    <a style="cursor: pointer">
+                                        {{ rowData[col.field] }}
+                                    </a>
+                                </span>
+                                <ng-template #normalField>
+                                    {{ rowData[col.field] }}
+                                </ng-template>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </p-tabpanel>
+            <p-tabpanel value="1">
+                <app-user-manual></app-user-manual>
+            </p-tabpanel>
+        </p-tabpanels>
+    </p-tabs>
+</div>
+@if(showEditDialog){
+<app-upload-download-dialog 
+    [uploadDialogVisible]="showEditDialog" 
+    [editMode]="true"
+    [selectedReleaseNote]="selectedReleaseNote"
+    (dialogClosed)="onDialogClosed()"
+    (releaseNoteUpdated)="onReleaseNoteUpdated($event)">
+</app-upload-download-dialog>
+}

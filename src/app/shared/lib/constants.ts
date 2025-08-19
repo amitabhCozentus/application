@@ -18,11 +18,25 @@ export const ROLE_TABLE_HEADERS: TableHeaders[] = [
     { field: 'rolePrivileges', header: 'Role Privileges', sortable: true, filter: true },
     { field: 'customLanding', header: 'Custom Landing', sortable: true, filter: true },
     { field: 'defaultLanding', header: 'Default Landing', sortable: true, filter: true },
-    { field: 'skin', header: 'Skins', sortable: true, filter: true },
+    { field: 'skin', header: 'Skin', sortable: true, filter: true },
     { field: 'createdBy', header: 'Created By', sortable: true, filter: true },
     { field: 'createdOn', header: 'Created On', sortable: true, filter: true },
     { field: 'updatedBy', header: 'Updated By', sortable: true, filter: true },
     { field: 'updatedOn', header: 'Updated On', sortable: true, filter: true }
+];
+
+export const RELEASE_NOTES_TABLE_HEADERS: TableHeaders[] = [
+    { field: 'releaseName', header: 'Release Name', sortable: true, filter: true },
+    { field: 'releaseDate', header: 'Date of Release Note', sortable: true, filter: true },
+    { field: 'uploadedBy', header: 'Uploaded By', sortable: true, filter: true },
+    { field: 'uploadedOn', header: 'Uploaded On', sortable: true, filter: true }
+];
+
+export const USER_MANUAL_TABLE_HEADERS: TableHeaders[] = [
+    { field: 'manualName', header: 'User Manual Name', sortable: true, filter: true },
+    { field: 'updatedOn', header: 'Last Update On', sortable: true, filter: true },
+    { field: 'uploadedBy', header: 'Uploaded By', sortable: true, filter: true },
+    { field: 'uploadedOn', header: 'Uploaded On', sortable: true, filter: true }
 ];
 
 export interface SelectOption {
@@ -92,13 +106,6 @@ export interface ApiRole {
 }
 export interface ApiResponse {
   success: boolean;
-  data: {
-    content: ApiRole[];
-    page: number;
-    size: number;
-    totalElements: number;
-    totalPages: number;
-    last: boolean;
-  };
+  data: { content: ApiRole[]; pagination: ApiPagination };
   timestamp: string;
 }

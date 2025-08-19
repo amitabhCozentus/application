@@ -1,0 +1,61 @@
+<div id="upload-download-dialog">
+    <p-dialog 
+        [header]="editMode ? 'Edit Release Notes' : 'Upload Release Notes'" 
+        [(visible)]="uploadDialogVisible" 
+        [modal]="true" 
+        [responsive]="true"
+        [style]="{ width: '50vw' }" 
+        [baseZIndex]="10000"
+        (onHide)="closeDialog()">
+        <ng-template pTemplate="header">
+            <h4>{{ editMode ? 'Edit Release Notes' : 'Upload Release Notes' }}</h4>
+        </ng-template>
+        <p-divider></p-divider>
+        <ng-template pTemplate="content">
+            <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
+                <div class="flex gap-8 mb-2">
+                <span class="p-field flex flex-column">
+                    <label for="releaseNotesDate" class="p-required">Release Note Date</label>
+                    <p-datepicker [iconDisplay]="'input'" [showIcon]="true" inputId="releaseNotesDate"
+                        formControlName="releaseNotesDate" />
+                    <p-message
+                        *ngIf="uploadForm.get('releaseNotesDate')?.invalid && uploadForm.get('releaseNotesDate')?.touched"
+                        severity="error" text="Please select a valid date."></p-message>
+                </span>
+                <span class="p-field flex flex-column">
+                    <label for="releaseName" class="p-required">Release Name</label>
+                    <input pInputText type="text" id="releaseName" placeholder="Release Name"
+                        formControlName="releaseName" />
+                    <p-message *ngIf="uploadForm.get('releaseName')?.invalid && uploadForm.get('releaseName')?.touched"
+                        severity="error" text="Please enter a valid release name."></p-message>
+                </span>
+                </div>
+                 <div class="">
+                            <h4 class="bdp-card-heading fw-bold">1.Maximum File Size:5 MB 2.File Type:PDF</h4>
+                        <div class="p-card card-height-1 p-4 border border-2 border-dashed" style="border-color: #6c757d !important;text-align: center;">
+                            <ngx-dropzone class="bdp-drop-zone" (change)="onChoosingFile($event)" [multiple]="false"
+                                [disabled]="files.length > 0" accept=".pdf" >
+                                <ngx-dropzone-label>
+                                    <i class="fad fa-cloud-upload" style="font-size: 2rem; margin-bottom: 8px; color: #007bff;"></i><br />
+                                    <div style="color: #495057;">
+                                        Drag & Drop your File or
+                                        <span class="bdp-link bdp-underline" style="color: #007bff;">Upload</span>
+                                    </div>
+                                </ngx-dropzone-label>
+                                <ngx-dropzone-preview class="bdp-drop-zone-preview" *ngFor="let f of files" [removable]="true"
+                                    (removed)="onRemove(f)">
+                                    <ngx-dropzone-label style="overflow-wrap: anywhere;">
+                                        {{ f.name }}
+                                    </ngx-dropzone-label>
+                                </ngx-dropzone-preview>
+                            </ngx-dropzone>
+                        </div>
+                    </div>
+            </form>
+        </ng-template>
+        <ng-template pTemplate="footer">
+            <button pButton label="Cancel" icon="pi pi-times" (click)="closeDialog()"></button>
+            <button pButton [label]="editMode ? 'Update' : 'Upload'" icon="pi pi-check" (click)="uploadFile()"></button>
+        </ng-template>
+    </p-dialog>
+</div>
