@@ -24,6 +24,19 @@ export class SubscriptionService {
     const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.GET_COMPANY_CONFIG;
     return this.http.get<any>(endpoint);
   }
+  getCustomerSubscriptionCompanies(requestBody: any) {
+    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.GET_COMPANY_SUBSCRIPTION_COMPANIES;
+    return this.http.post<any>(endpoint, requestBody);
+  }
+  updateCopySubscription(requestBody: any) {
+    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.UPDATE_CUSTOMER_SUBSCRIPTION_THROUGH_COPY;
+    return this.http.post<any>(endpoint, requestBody);
+  }
+
+  bulkUpdateSubscriptionTier(requestBody: any) {
+    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.BULK_UPDATE_CUSTOMER_SUBSCRIPTION_TIER;
+    return this.http.put<any>(endpoint, requestBody);
+  }
 
 }
   

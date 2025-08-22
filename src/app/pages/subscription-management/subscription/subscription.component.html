@@ -5,7 +5,7 @@
                 <div class="card">
                     <p-table #existingUserTable [value]="subscriptionList" [(selection)]="selectedUsers"
                         styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" [rows]="10"
-                        [showCurrentPageReport]="true" [scrollable]="true" scrollHeight="600px" (onPage)="onPageChange($event)"
+                        [showCurrentPageReport]="true" [scrollable]="true"  (onPage)="onPageChange($event)"
                         (selectionChange)="onSelectionChange($event)"
                         [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" dataKey="customerCode"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -22,8 +22,11 @@
                                     <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
                                         (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
                                 </div>
-                                <button pButton  label="subscription Tier" 
-                                    (click)="refresh()"></button>
+                                <button pButton
+                                    label="Subscription Tier"
+                                    (click)="openSubscriptionTierDialog()"
+                                    [disabled]="!isSubscriptionTierButtonActive">
+                                </button>
                             </div>
                         </ng-template>
 
@@ -54,7 +57,9 @@
                                         (click)="navigateToEditSubscription(assignment)">
                                     </button>
                                     <button pButton pRipple icon="pi pi-copy"
-                                        class="p-button-rounded p-button-text mr-2" (click)="onCopyClick(assignment)">
+                                        class="p-button-rounded p-button-text mr-2"
+                                        (click)="onCopyClick(assignment)"
+                                        [disabled]="assignment.subscriptionType === 'Standard'">
                                     </button>
                                 </td>
                                 <td *ngFor="let col of subscriptionTableHeader">
@@ -76,6 +81,21 @@
                             (onClose)="handleDialogClose()"
                             (onUpdateSuccess)="loadSubscriptionList()">
                         </app-subscription-dialog> 
+
+                        <app-subscription-copy-dialog
+                            [visible]="showAssignDialog"
+                            [features]="features"
+                            [subscription]="selectedCopySubscription"
+                            (onClose)="handleCopyDialogClose()"
+                            (onUpdateSuccess)="handleCopyUpdateSuccess()">
+                        </app-subscription-copy-dialog>
+
+                        <app-subscription-tier-dialog
+                            [visible]="showSubscriptionTierDialog"
+                            [selectedRows]="selectedUsers"
+                            (onClose)="closeSubscriptionTierDialog()"
+                            (onSave)="handleSubscriptionTierSave()">
+                        </app-subscription-tier-dialog>
                 </div>
             </div>
         </div>

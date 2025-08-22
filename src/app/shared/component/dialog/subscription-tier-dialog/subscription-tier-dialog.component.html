@@ -1,0 +1,37 @@
+<p-dialog header="Subscription Tier"
+          [(visible)]="visible"
+          [modal]="true"
+          [style]="{ width: '40rem' }"
+          [draggable]="false"
+          (onHide)="onCloseDialog()">
+  <p-divider class="mt-0"></p-divider>
+  <ng-template pTemplate="body">
+    <div class="mb-3">
+      <span>
+        You are changing the subscription tier for the
+        "<b>{{ selectedRows?.length || 0 }}</b>" companies:
+      </span>
+    </div>
+    <div class="mb-3">
+      <label class="font-semibold mb-2 d-block">Subscription Tier<span class="required-star">*</span></label>
+      <div class="flex align-items-center gap-4">
+        <p-radioButton name="subscriptionTier"
+                       [value]="'Standard'"
+                       [(ngModel)]="selectedTier"
+                       inputId="tier-standard"></p-radioButton>
+        <label for="tier-standard" class="mr-4">Standard</label>
+        <p-radioButton name="subscriptionTier"
+                       [value]="'Premium'"
+                       [(ngModel)]="selectedTier"
+                       inputId="tier-premium"></p-radioButton>
+        <label for="tier-premium">Premium</label>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="footer">
+    <button pButton type="button" label="Cancel" class="p-button-outlined" (click)="onCloseDialog()"></button>
+    <button pButton type="button" label="Save" class="p-button-primary"
+            [disabled]="!selectedTier"
+            (click)="onSaveDialog()"></button>
+  </ng-template>
+</p-dialog>

@@ -1,8 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { RoleConfigurationComponent } from './role-configuration.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ToastComponent } from 'src/app/shared/component/toast-component/toast.component';
+import { MessageService } from 'primeng/api';
 
 describe('RoleConfigurationComponent', () => {
   let component: RoleConfigurationComponent;
@@ -10,7 +12,15 @@ describe('RoleConfigurationComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RoleConfigurationComponent, HttpClientTestingModule],
+      imports: [
+        HttpClientTestingModule,
+        RoleConfigurationComponent,
+        ToastComponent,
+      
+      ],
+      providers: [
+  MessageService 
+],
       schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();

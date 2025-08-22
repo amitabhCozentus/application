@@ -3,6 +3,7 @@ import { CommonTableSearchComponent } from './common-table-search.component';
 import { By } from '@angular/platform-browser';
 import { PrimengModule } from '../../primeng/primeng.module';
 import { DebugElement } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('CommonTableSearchComponent', () => {
   let component: CommonTableSearchComponent;
@@ -11,7 +12,7 @@ describe('CommonTableSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PrimengModule, CommonTableSearchComponent],
+      imports: [PrimengModule, CommonTableSearchComponent,TranslateModule.forRoot()],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CommonTableSearchComponent);

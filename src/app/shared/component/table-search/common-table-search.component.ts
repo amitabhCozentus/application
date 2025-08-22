@@ -1,15 +1,16 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { PrimengModule } from "../../primeng/primeng.module";
+import { TranslateModule } from "@ngx-translate/core";
 
 @Component({
     selector: "app-common-table-search",
     standalone: true,
-    imports: [PrimengModule],
+    imports: [PrimengModule,TranslateModule],
     templateUrl: "./common-table-search.component.html",
     styleUrls: ["./common-table-search.component.scss"],
 })
 export class CommonTableSearchComponent {
-    @Input() placeholder: string = "Type min 3 characters and press enter to Search";
+    //@Input() placeholder: string = "Type min 3 characters and press enter to Search";
     @Input() value: string = "";
     @Output() valueChange = new EventEmitter<string>();
     @Output() search = new EventEmitter<void>();

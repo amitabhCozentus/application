@@ -1,7 +1,14 @@
 <p-iconfield class="relative w-full">
   <p-inputicon styleClass="pi pi-search" />
-  <input type="text" pInputText [placeholder]="placeholder" [ngModel]="value" (ngModelChange)="valueChange.emit($event)"
-    (keyup.enter)="onEnter()" class="pr-10 w-full" />
+  <input 
+  type="text" 
+  pInputText 
+  [placeholder]="'table.searchInput' | translate" 
+  [ngModel]="value" 
+  (ngModelChange)="valueChange.emit($event)"
+  (keyup.enter)="onEnter()" 
+  class="pr-10 w-full" />
+
     @if (value && value.length >= 3) {
       <button pButton icon="pi pi-times" [text]="true" (click)="onClear()"
       class="absolute right-0 h-full"></button>

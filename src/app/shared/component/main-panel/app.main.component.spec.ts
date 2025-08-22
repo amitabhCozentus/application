@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AppMainComponent } from './app.main.component';
+import { TranslateModule } from '@ngx-translate/core';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ActivatedRoute } from '@angular/router';
 
 describe('MainComponentComponent', () => {
   let component: AppMainComponent;
@@ -8,7 +11,10 @@ describe('MainComponentComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppMainComponent]
+      imports: [AppMainComponent,TranslateModule.forRoot(),HttpClientTestingModule],
+       providers: [
+    { provide: ActivatedRoute, useValue: { snapshot: { params: {} } } }
+  ]
     })
     .compileComponents();
 

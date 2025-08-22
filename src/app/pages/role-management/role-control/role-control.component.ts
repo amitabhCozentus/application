@@ -8,6 +8,8 @@ import { Table } from 'primeng/table';
 import Aura from '@primeng/themes/aura';
 import { updatePreset, updateSurfacePalette } from '@primeng/themes';
 import { LayoutService } from '../../../shared/service/layout/layout.service';
+import { TranslateModule } from '@ngx-translate/core';
+import { MessageService } from 'primeng/api';
 
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
@@ -34,12 +36,15 @@ declare type SurfacesType = {
 @Component({
     selector: "app-role-control",
     standalone: true,
-    imports: [PrimengModule, CommonTableSearchComponent, RoleConfigurationComponent],
+    imports: [PrimengModule, CommonTableSearchComponent, RoleConfigurationComponent,TranslateModule],
+        providers: [MessageService], 
+
     templateUrl: "./role-control.component.html",
     styleUrls: ["./role-control.component.scss"],
 })
 export class RoleControlComponent implements OnInit {
-    canEdit: boolean = true; // set from auth context
+
+    canEdit: boolean = true; 
     pageSize: number = 10;
     currentPage: number = 0;
     public layoutService: LayoutService = inject(LayoutService);
@@ -304,10 +309,10 @@ export class RoleControlComponent implements OnInit {
 
     /** Open configuration dialog prefilled for editing */
     editRole(role: RoleConfigData): void {
-        this.roleConfig.open(role);
+        this.roleConfig.openDialog(role);
     }
 
     openAddRoleDialog() {
-        this.roleConfig.open();
+        this.roleConfig.openDialog();
     }
 }

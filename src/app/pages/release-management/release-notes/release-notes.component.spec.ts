@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ReleaseNotesComponent } from './release-notes.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 describe('ReleaseNotesComponent', () => {
   let component: ReleaseNotesComponent;
@@ -8,7 +9,10 @@ describe('ReleaseNotesComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ReleaseNotesComponent]
+      imports: [
+        ReleaseNotesComponent,
+        TranslateModule.forRoot()
+      ]
     })
     .compileComponents();
 

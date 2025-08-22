@@ -5,6 +5,8 @@ import { SubscriptionDialogComponent } from '../../../shared/component/dialog/su
 import { CommonService } from '../../../shared/service/common/common.service';
 import { AppRoutes } from '../../../shared/lib/api-constant';
 import { SubscriptionService } from '../../../shared/service/subscription/subscription.service';
+import { SubscriptionCopyDialogComponent } from '../../../shared/component/dialog/subscription-copy-dialog/subscription-copy-dialog.component';
+import { SubscriptionTierDialogComponent } from '../../../shared/component/dialog/subscription-tier-dialog/subscription-tier-dialog.component';
 // import { SubscriptionDialogComponent } from 'src/app/shared/component/dialog/subscription-dialog/subscription-dialog.component';
 interface Header{
 field:string,
@@ -31,7 +33,7 @@ interface PaginationState {
 
 @Component({
   selector: 'app-subscription',
-  imports: [PrimengModule, CommonTableSearchComponent, SubscriptionDialogComponent],
+  imports: [PrimengModule, CommonTableSearchComponent, SubscriptionDialogComponent,SubscriptionCopyDialogComponent, SubscriptionTierDialogComponent],
   templateUrl: './subscription.component.html',
   styleUrl: './subscription.component.scss'
 })
@@ -42,15 +44,29 @@ export class SubscriptionComponent {
   showAssignDialog:boolean = false;
   isDialogOpen: boolean = false;
   selectedSubscription: Subscription | null = null;
+  selectedCopySubscription: Subscription | null = null;
   subscription:any[];
   subscriptionTableHeader:Header[];
   subscriptionList:Subscription[] = [];
-  selectedRows: Subscription[] = [];
+  selectedUsers: Subscription[] = [];
   features: number[] = [];
+  isSubscriptionTierButtonActive: boolean = false;
+  showSubscriptionTierDialog: boolean = false;
   
   onSelectionChange(event: any) {
-    console.log('Selected Rows:', this.selectedRows);
+    // event is the array of selected assignments
+    this.selectedUsers = event || [];
+    this.isSubscriptionTierButtonActive = this.selectedUsers.length > 0;
   }
+
+  openSubscriptionTierDialog() {
+    this.showSubscriptionTierDialog = true;
+  }
+
+  closeSubscriptionTierDialog() {
+    this.showSubscriptionTierDialog = false;
+  }
+
   totalRecords: number ;
   
    paginationState: PaginationState = {
@@ -142,7 +158,7 @@ export class SubscriptionComponent {
             name: item.name,
             configType: item.configType
           }));
-        console.log('Features loaded:', this.features);
+        // console.log('Features loaded:', this.features);
         this.changeDetector.detectChanges();
       },
       error: (error) => {
@@ -152,19 +168,28 @@ export class SubscriptionComponent {
 }
 
 
-   onCopyClick(){
-      this.showAssignDialog=true;
-       this.enableSubscriptionDialog.next(this.showAssignDialog);
-    }
+   onCopyClick(subscription: Subscription) {
+    this.selectedCopySubscription = subscription;
+    this.showAssignDialog = true;
+  }
 
-    handleDialogClose() {
-      this.isDialogOpen = false;
-      this.selectedSubscription = null;
-    }
+  handleCopyDialogClose() {
+    this.showAssignDialog = false;
+    this.selectedCopySubscription = null;
+  }
+
+  handleCopyUpdateSuccess() {
+    this.loadSubscriptionList();
+    this.handleCopyDialogClose();
+  }
 
     navigateToEditSubscription(subscription: Subscription) {
-        this.selectedSubscription = subscription;
-        this.isDialogOpen = true;
+        // Always assign a new object reference to trigger change detection
+        this.selectedSubscription = { ...subscription };
+        this.isDialogOpen = false;
+        setTimeout(() => {
+          this.isDialogOpen = true;
+        }, 0);
     }
   onPageChange(event: any) {
     console.log('Page change event:', event);
@@ -202,5 +227,16 @@ export class SubscriptionComponent {
     });
   }
 
+  // Add this method to handle the save event from the dialog
+  handleSubscriptionTierSave() {
+    this.loadSubscriptionList();
+    this.selectedUsers = [];
+    this.isSubscriptionTierButtonActive = false;
+  }
+
+  handleDialogClose() {
+    this.isDialogOpen = false;
+    this.selectedSubscription = null;
+  }
 
 }

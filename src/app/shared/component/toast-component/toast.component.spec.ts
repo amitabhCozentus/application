@@ -1,6 +1,7 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MessageService } from 'primeng/api';
+import { TestBed, ComponentFixture } from '@angular/core/testing';
 import { ToastComponent } from './toast.component';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
 
 describe('ToastComponent', () => {
   let component: ToastComponent;
@@ -9,10 +10,9 @@ describe('ToastComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ToastComponent],
-      providers: [MessageService]
-    })
-    .compileComponents();
+      imports: [ToastComponent, ToastModule],
+      providers: [MessageService] 
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ToastComponent);
     component = fixture.componentInstance;
@@ -31,7 +31,8 @@ describe('ToastComponent', () => {
     expect(messageService.add).toHaveBeenCalledWith({
       severity: 'success',
       summary: '',
-      detail: 'Test success message'
+      detail: 'Test success message',
+      life: 300000
     });
   });
 
@@ -82,7 +83,8 @@ describe('ToastComponent', () => {
     expect(messageService.add).toHaveBeenCalledWith({
       severity: 'success',
       summary: 'Custom Summary',
-      detail: 'Test success message'
+      detail: 'Test success message',
+      life: 300000
     });
   });
 });

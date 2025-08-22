@@ -6,7 +6,7 @@
                     [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
                     [columns]="roleTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                    [currentPageReportTemplate]="'table.pageReport' | translate"
                     styleClass="p-datatable-customers p-datatable-striped"
                     [globalFilterFields]="['roleName', 'roleDescription']" [lazy]="true"
                     (onLazyLoad)="onLazyLoad($event)" [loading]="loading">
@@ -23,8 +23,9 @@
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                     (click)="refresh()"></button>
                                 @if (canEdit) {
-                                <button pButton pRipple label="Add Role" class="p-button-primary" style="width:120px;"
-                                    (click)="openAddRoleDialog()"></button>
+                                <button pButton pRipple [label]="'AddRole' | translate" class="p-button-primary"
+                                    style="min-width: 120px; white-space: nowrap;" (click)="openAddRoleDialog()">
+                                </button>
                                 }
                             </div>
                         </div>
@@ -34,11 +35,11 @@
                     <ng-template pTemplate="header" let-columns>
                         <tr>
                             @if (canEdit) {
-                            <th>Action</th>
+                            <th>{{ 'Action' | translate }}</th>
                             }
                             @for (col of columns; track col) {
                             <th pSortableColumn="{{col.field}}">
-                                {{ col.header }} <p-sortIcon field="{{col.field}}" />
+                                {{ col.header | translate }} <p-sortIcon field="{{col.field}}" />
                                 <p-columnFilter type="text" field="{{col.field}}" display="menu" />
                             </th>
                             }
@@ -50,7 +51,8 @@
                         <tr>
                             @if (canEdit) {
                             <td class="actions">
-                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text mr-2 shadow-none"
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-text mr-2 shadow-none"
                                     (click)="editRole(assignment)"></button>
                             </td>
                             }
@@ -61,7 +63,8 @@
                                 <div>
                                     <button pButton pRipple class="p-button-primary"
                                         [ngClass]="assignment.status === 'Active' ? 'status-active' : 'status-inactive'"
-                                        class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none">
+                                        class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none"
+                                        style="width: 6rem; text-align: center;">
                                         {{ assignment.status }}
                                     </button>
                                 </div>
@@ -138,7 +141,8 @@
                                 @if (col.filter) {
                                 <input pInputText type="text"
                                     (input)="roleTable.filter($event.target.value, col.field, 'contains')"
-                                    placeholder="Filter {{col.header}}" class="p-column-filter" />
+                                    [placeholder]="'table.searchPlaceholder' | translate" class="p-column-filter" />
+
                                 }
                             </th>
                             }

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { UploadDownloadDialogComponent } from './upload-download-dialog.component';
 
@@ -8,7 +9,10 @@ describe('UploadDownloadDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UploadDownloadDialogComponent]
+      imports: [
+        UploadDownloadDialogComponent,
+        NoopAnimationsModule
+      ]
     })
     .compileComponents();
 
@@ -21,3 +25,4 @@ describe('UploadDownloadDialogComponent', () => {
     expect(component).toBeTruthy();
   });
 });
+

@@ -2,12 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { PrimengModule } from '../../primeng/primeng.module';
 import { CommonModule } from '@angular/common';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+import { SubscriptionDialogComponent } from '../dialog/subscription-dialog/subscription-dialog.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-toast-component',
   standalone: true,
   imports: [PrimengModule, CommonModule],
-  providers: [MessageService],
+  providers: [],
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.scss'
 })

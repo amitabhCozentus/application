@@ -2,9 +2,40 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { map, catchError } from 'rxjs/operators';
-import { RoleConfigData, ApiResponse } from '../../lib/constants';
+import { RoleConfigData, ApiResponse, ApiSkinConfig } from '../../lib/constants';
 import { environment } from '../../../../environments/environment';
 import { AdminEndPoint } from '../../lib/api-constant';
+
+// Payload interfaces for role operations
+export interface RoleCreatePayload {
+    name: string;
+    description: string;
+    isActive: boolean;
+    customLanding: boolean;
+    landingPageConfigId?: number;
+    roleTypeConfigId: number;
+    skinConfigIds: number[];
+    privilegeIds: number[];
+    createdById: number;
+    updatedById: number;
+  }
+  
+  export interface RoleUpdatePayload extends RoleCreatePayload {
+    id: number;
+  }
+  
+  export interface RoleTypeData {
+    id: number;
+    key: string;
+    name: string;
+  }
+  
+  export interface SkinData {
+    roleType: RoleTypeData;
+    skins: ApiSkinConfig[];
+  }
+  
+  // Note: LandingPageData and PrivilegeData interfaces are now defined in role.service.ts
 
 
 export interface Role {
@@ -325,6 +356,48 @@ export class RoleService {
                 }),
                 catchError(this.handleError<PagedResult<RoleConfigData>>('searchRoles', { data: [], total: 0 }))
             );
+    }
+
+    /**
+     * Create a new role
+     * @param roleData - The role data to create matching API schema
+     * @returns Observable<ApiResponse>
+     */
+    createRole(roleData: any): Observable<ApiResponse> {
+        const url = `${environment.baseurl}${AdminEndPoint.RoleManagement.SAVE_ROLE_MANAGEMENT}`;
+        return this.http.post<ApiResponse>(url, roleData).pipe(
+            map(response => {
+                return response;
+            }),
+            catchError(error => {
+                return this.handleError<ApiResponse>('createRole', {
+                    success: false,
+                    data: { content: [], pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0, last: true } },
+                    timestamp: new Date().toISOString()
+                })(error);
+            })
+        );
+    }
+
+    /**
+     * Update an existing role
+     * @param roleData - The updated role data matching API schema (must include id)
+     * @returns Observable<ApiResponse>
+     */
+    updateRole(roleData: any): Observable<ApiResponse> {
+        const url = `${environment.baseurl}${AdminEndPoint.RoleManagement.UPDATE_ROLE_MANAGEMENT}/${roleData.id}`;
+        return this.http.put<ApiResponse>(url, roleData).pipe(
+            map(response => {
+                return response;
+            }),
+            catchError(error => {
+                return this.handleError<ApiResponse>('updateRole', {
+                    success: false,
+                    data: { content: [], pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0, last: true } },
+                    timestamp: new Date().toISOString()
+                })(error);
+            })
+        );
     }
 
     private handleError<T>(operation = 'operation', result?: T) {

@@ -9,6 +9,9 @@ export namespace UserEndPoint {
         public static readonly GET_COMPANY_SUBSCRIPTION_LIST = "customer-subscriptions/list";
         public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_LIST = "customer-subscriptions/update";
         public static readonly GET_COMPANY_CONFIG = "customer-subscriptions/configs";
+        public static readonly GET_COMPANY_SUBSCRIPTION_COMPANIES = "customer-subscriptions/companies";
+        public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_THROUGH_COPY = "customer-subscriptions/copy";
+        public static readonly BULK_UPDATE_CUSTOMER_SUBSCRIPTION_TIER = "customer-subscriptions/bulk-update-tier";
     }
 
 
@@ -43,12 +46,13 @@ export namespace AdminEndPoint {
         public static readonly GET_ROLE = "roles";
         public static readonly ROLE_LIST = RoleManagement.GET_ROLE + "/" + "all-details";
         public static readonly ROLE_LIST_DROPDOWN = RoleManagement.GET_ROLE + "/" + "get-roleDetails";
-        public static readonly SAVE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE + "/" + "role/save-role-management";
-        public static readonly UPDATE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE + "/" + "role/update-role-management";
+        public static readonly SAVE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE;
+        public static readonly UPDATE_ROLE_MANAGEMENT = RoleManagement.GET_ROLE;
         public static readonly ROLE_FEATURE_PRIVILAGE = RoleManagement.GET_ROLE + "/" + "get-featureDropdown";
         public static readonly SKINS = RoleManagement.GET_ROLE + "/" + "skins";
         public static readonly PRIVILEGE_HIERARCHY = RoleManagement.GET_ROLE + "/" + "privilege-hierarchy";
         public static readonly LANDING_PAGES = RoleManagement.GET_ROLE + "/" + "landing-pages";
+        
     }
 
 

@@ -15,10 +15,11 @@ import Aura from '@primeng/themes/aura';
 import { $t, updatePreset, updateSurfacePalette } from '@primeng/themes';
 import { LayoutService } from '../../service/layout/layout.service';
 import { TopbarsService } from '../../service/topbars/topbars.service';
-import { TranslationService } from '../../service/translationService/translation.service';
 import { CommonService } from '../../service/common/common.service';
-import { AuthService as Auth0Service } from '@auth0/auth0-angular';
+// import { AuthService as Auth0Service } from '@auth0/auth0-angular';
 import { Router } from '@angular/router';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';   // ngx-translate
+import { TranslationService } from '../../service/translationService/translation.service';
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
     Aura
@@ -43,7 +44,7 @@ declare type SurfacesType = {
 @Component({
     standalone: true,
     selector: 'app-topbar',
-    imports: [CommonModule, FormsModule, ToolbarModule, MenubarModule, DropdownModule, ButtonModule, AvatarModule, TieredMenuModule, MenuModule, TooltipModule, PrimengModule],
+    imports: [CommonModule, FormsModule, ToolbarModule, MenubarModule, DropdownModule, ButtonModule, AvatarModule, TieredMenuModule, MenuModule, TooltipModule, PrimengModule,TranslateModule],
     templateUrl: './topbar.component.html',
     styleUrls: ['./topbar.component.scss']
 })
@@ -58,7 +59,7 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     router = inject(Router);
     topbarService: TopbarsService = inject(TopbarsService);
     translationService: TranslationService = inject(TranslationService);
-    auth0Service: Auth0Service = inject(Auth0Service);
+    // auth0Service: Auth0Service = inject(Auth0Service);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuThemeOptions: { name: string; value: string }[] = [];
     primaryColors = computed<SurfacesType[]>(() => {
@@ -91,6 +92,9 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     selectedSkin: string;
 
     @ViewChild('navigationBar', { static: false }) navigationBar!: ElementRef;
+
+    constructor(private translateService: TranslateService) {}
+
 
     userName = 'Solution User';
     get userInitials(): string {
@@ -462,17 +466,25 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     selectedPrimaryColor = computed(() => {
         return this.layoutService.layoutConfig().primary;
     });
-    onLanguageChange(event: any) {
-        const selectedLanguage = event.value;
-        selectedLanguage === 'en' ? this.translationService.setLanguage(selectedLanguage, this.englishLanguage) : this.translationService.setLanguage(selectedLanguage, this.fenchLanguage);
-        this.buildNavMenu();
-    }
+   onLanguageChange(event: any) {
+  const lang = event.value;
+  this.translateService.use(lang);
+  const selectedLanguage = event.value;
+  
+  selectedLanguage === 'en'
+    ? this.translationService.setLanguage(selectedLanguage, this.englishLanguage)
+    : this.translationService.setLanguage(selectedLanguage, this.fenchLanguage);
+
+  this.buildNavMenu();
+}
+
     public logoutRedirect() {
         // Optional: Clear theme preferences on logout
         // Uncomment the next line if you want to reset themes on logout
         // this.clearLocalStorage();
 
-        this.auth0Service.logout({ returnTo: window.location.origin });
+        // this.auth0Service.logout({ returnTo: window.location.origin });
+        // this.auth0Service.logout();
     }
 
     ngAfterViewInit(): void {

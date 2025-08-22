@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient } from '@angular/common/http';
+import { HttpBackend, HttpClient, provideHttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
@@ -11,6 +11,9 @@ import {providePrimeNG} from 'primeng/config';
 import {definePreset} from '@primeng/themes';
 import { routes } from '../app/app.routes'
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import {provideTranslateService} from "@ngx-translate/core";
+
+import {provideTranslateHttpLoader} from "@ngx-translate/http-loader";
 
 export interface AppConfig {
     profiles: { [key: string]: { [key: string]: unknown } };
@@ -121,20 +124,36 @@ const MyPreset = definePreset(Aura, {
         }
     }
 });
-
-
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: LocationStrategy, useClass: HashLocationStrategy }
-      , ErrorHandler, {
+    // 🔹 Existing providers
+    { provide: LocationStrategy, useClass: HashLocationStrategy },
+    ErrorHandler,
+    {
       provide: provideAppInitializer,
-     useFactory: initializeAppFactory,
+      useFactory: initializeAppFactory,
       deps: [HttpBackend],
       multi: true,
-     } ,
+    },
+
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideAnimationsAsync(),
-    providePrimeNG({theme: {preset: MyPreset, options: {darkModeSelector: '.app-dark'}}})
-  ]
+    providePrimeNG({
+      theme: { preset: MyPreset, options: { darkModeSelector: '.app-dark' } },
+    }),
+
+    // 🔹 Required for Translate Http Loader
+    provideHttpClient(),
+
+    // 🔹 New style translate service with loader
+    provideTranslateService({
+      loader: provideTranslateHttpLoader({
+        prefix: '/assets/i18n/',
+        suffix: '.json',
+      }),
+      fallbackLang: 'en', //default
+      lang: 'en',
+    }),
+  ],
 };
