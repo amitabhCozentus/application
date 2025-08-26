@@ -79,7 +79,7 @@ export class RoleControlComponent implements OnInit {
     }
 
     /** Load one page from server */
-    loadRoles(pageIndex: number, pageSize: number, searchTerm: string = "") {
+     loadRoles(pageIndex: number, pageSize: number, searchTerm: string = "") {
         this.loading = true;
         const trimmedSearchTerm = searchTerm;
         this.roleService
@@ -104,7 +104,7 @@ export class RoleControlComponent implements OnInit {
     }
 
     /** Pagination callback */
-    onPage(event: { page: number; rows: number; first: number }) {
+   onPage(event: { page: number; rows: number; first: number }) {
         this.currentPage = event.page;
         this.pageSize = event.rows;
         this.loadRoles(event.page, event.rows, this.searchTerm);
@@ -116,7 +116,7 @@ export class RoleControlComponent implements OnInit {
         this.currentPage = page;
         this.pageSize = event.rows;
         this.loadRoles(page, event.rows, this.searchTerm);
-    }
+      }
 
     updateColors(event: any, type: string, color: any) {
         if (type === 'primary') {
@@ -285,13 +285,15 @@ export class RoleControlComponent implements OnInit {
     }
 
     /** Search on Enter (min 3 chars) */
-    onSearch() {
-        const trimmedTerm = this.searchTerm.trim();
-        if (trimmedTerm.length >= 3) {
-            this.currentPage = 0;
-            this.loadRoles(0, this.pageSize, trimmedTerm);
-        }
-    }
+onSearch() {
+  const trimmedTerm = this.searchTerm.trim();
+  if (trimmedTerm.length >= 3) {
+    this.currentPage = 0;
+    this.loadRoles(0, this.pageSize, trimmedTerm); 
+  }
+}
+
+
 
     resetSearch() {
         this.searchTerm = "";

@@ -5,6 +5,7 @@ import { RELEASE_NOTES_TABLE_HEADERS, TableHeaders } from '../../../shared/lib/c
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
 import { UploadDownloadDialogComponent } from '../../../shared/component/dialog/upload-download-dialog/upload-download-dialog.component';
 import { UserManualComponent } from '../user-manual/user-manual.component';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -64,6 +65,17 @@ releaseNotes: any[] = [
 ];
 searchTerm: string = '';
 
+constructor(private translate: TranslateService) {}
+
+
+ngOnInit() {
+  this.cols = [
+    { field: 'releaseName', header: this.translate.instant('LBL.RELEASE_NAME'), sortable: true, filter: true },
+    { field: 'releaseDate', header: this.translate.instant('LBL.RELEASE_DATE'), sortable: true, filter: true },
+    { field: 'uploadedBy', header: this.translate.instant('LBL.UPLOADED_BY'), sortable: true, filter: true },
+    { field: 'uploadedOn', header: this.translate.instant('LBL.UPLOADED_ON'), sortable: true, filter: true }
+  ];
+}
 onSearch() {
   // Implement search functionality
   console.log('Searching for:', this.searchTerm);

@@ -1,4 +1,4 @@
-import { Component, computed, inject, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, computed, inject, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -20,7 +20,6 @@ import { CommonService } from '../../service/common/common.service';
 // import { AuthService as Auth0Service } from '@auth0/auth0-angular';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';   // ngx-translate
-import { TranslationService } from '../../service/translation-service/translation.service';
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
     Aura
@@ -49,7 +48,7 @@ declare type SurfacesType = {
     templateUrl: './topbar.component.html',
     styleUrls: ['./topbar.component.scss']
 })
-export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TopbarComponent implements OnInit, AfterViewInit {
     applicationTitle = 'SMART + NAVIGATOR';
     currentSection = 'MARITIME + INSIGHTS';
     fenchLanguage: any = {};
@@ -59,7 +58,6 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     layoutService: LayoutService = inject(LayoutService);
     router = inject(Router);
     topbarService: TopbarsService = inject(TopbarsService);
-    translationService: TranslationService = inject(TranslationService);
     // auth0Service: Auth0Service = inject(Auth0Service);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuThemeOptions: { name: string; value: string }[] = [];
@@ -83,23 +81,21 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedCompany: any;
     languageOptions: SelectItem[] = [
         { label: 'English', value: 'en' },
-        { label: 'French', value: 'fr' }
+        { label: 'French', value: 'fr' },
+        { label: 'Hindi', value: 'hi' },
+        
     ];
-    // Full menu set after permission filtering
-    navMenuItems: AppMenuItem[] = [];
+    navMenuItems: MenuItem[] = [];
     userMenuItems: MenuItem[] = [];
-    // Items rendered in the main ribbon
-    visibleNavMenuItems: AppMenuItem[] = [];
-    // Items moved into the overflow popup
-    overflowMenuItems: AppMenuItem[] = [];
+    visibleNavMenuItems: MenuItem[] = [];
+    overflowMenuItems: MenuItem[] = [];
     showOverflowMenu: boolean = false;
-    selectedSkin: string | null = '';
+    selectedSkin: string;
 
     @ViewChild('navigationBar', { static: false }) navigationBar!: ElementRef;
-    @ViewChild('navContainer', { static: false }) navContainer!: ElementRef<HTMLElement>;
-    private resizeObserver?: ResizeObserver;
 
-    constructor(private translateService: TranslateService) {}
+    constructor(private translateService: TranslateService,private translate: TranslateService,private ngZone: NgZone
+) {}
 
 
     userName = 'Solution User';
@@ -137,69 +133,72 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    /**
-     * Build the navigation menu from centralized constants, applying
-     * permission-based filtering so items like Home can be hidden
-     * for users without access.
-     */
-    buildNavMenu() {
-        // In a real app, wire this to your auth/roles service.
-        const hasHomeAccess = this.userHasPermission('HOME_VISIBLE');
+  buildNavMenu() {
+  this.translate.stream([
+    'LBL.MENU.HOME',
+    'LBL.MENU.TRACKING_LIST',
+    'LBL.MENU.FAVORITES',
+    'LBL.MENU.ALERTS',
+    'LBL.MENU.REPORTING',
+    'LBL.MENU.3PL',
+    'LBL.MENU.DATA_MANAGEMENT',
+    'LBL.MENU.USER_MANAGEMENT',
+    'LBL.MENU.MASTER_DATA'
+  ]).subscribe(translations => {
+    this.navMenuItems = [
+      { label: translations['LBL.MENU.HOME'], icon: 'pi pi-home', routerLink: '/home' },
+      { label: translations['LBL.MENU.TRACKING_LIST'], icon: 'pi pi-list', routerLink: '/tracking-list' },
+      { label: translations['LBL.MENU.FAVORITES'], icon: 'pi pi-star', routerLink: '/favorites' },
+      { label: translations['LBL.MENU.ALERTS'], icon: 'pi pi-bell', routerLink: '/alerts' },
+      { label: translations['LBL.MENU.REPORTING'], icon: 'pi pi-chart-line', routerLink: '/reporting' },
+      { label: translations['LBL.MENU.3PL'], icon: 'pi pi-refresh', items: [] },
+      { label: translations['LBL.MENU.DATA_MANAGEMENT'], icon: 'pi pi-database', items: [] },
+      { label: translations['LBL.MENU.USER_MANAGEMENT'], icon: 'pi pi-users', command: () => this.router.navigate(['/user-control']) },
+      { label: translations['LBL.MENU.MASTER_DATA'], icon: 'pi pi-cog', items: [] }
+    ];
 
-        // Filter by permission rules
-        const filterByPermission = (items: AppMenuItem[] = []): AppMenuItem[] =>
-            items
-                .filter(i => !i.permission || (i.permission === 'HOME_VISIBLE' ? hasHomeAccess : this.userHasPermission(i.permission)))
-                .map(i => ({
-                    ...i,
-                    items: i.items ? filterByPermission(i.items) : undefined
-                }));
+    this.calculateResponsiveMenu();
+  });
+}
 
-        this.navMenuItems = filterByPermission(MENU_ITEMS);
-        this.calculateResponsiveMenu();
-    }
-
-    /**
-     * Dummy permission check stub. Replace with your actual auth/role check.
-     */
-    private userHasPermission(_permission: string): boolean {
-        // TODO: integrate with real permission checks (e.g., from JWT/roles)
-        // Special case: return false here to test hiding Home.
-        return true;
-    }
-
-    /**
-     * Compute which items can fit on the first line and which should be moved
-     * into the overflow menu. Uses container width and an average item width
-     * heuristic for robust behavior across zoom/resolutions.
-     */
     private calculateResponsiveMenu(): void {
-        const container = this.navContainer?.nativeElement;
-        const containerWidth = container?.offsetWidth || window.innerWidth;
+        // Enhanced responsive calculation based on screen size
+        const screenWidth = window.innerWidth;
+        let maxVisibleItems: number;
 
-        // Heuristic: average width per top-level item (icon + label + padding)
-        const avgItemWidth = 150; // px
-        const overflowButtonWidth = 48; // px for the ellipsis button
+        // Define responsive breakpoints and maximum visible items
+        if (screenWidth >= 1400) {
+            maxVisibleItems = 9; // Show all items on very wide screens
+        } else if (screenWidth >= 1200) {
+            maxVisibleItems = 7;
+        } else if (screenWidth >= 992) {
+            maxVisibleItems = 6;
+        } else if (screenWidth >= 768) {
+            maxVisibleItems = 5;
+        } else if (screenWidth >= 576) {
+            maxVisibleItems = 4;
+        } else {
+            maxVisibleItems = 3; // Minimum items on small screens
+        }
 
-        // How many items can we show with room for the overflow button
-        let maxVisibleItems = Math.floor((containerWidth - overflowButtonWidth) / avgItemWidth);
-        if (maxVisibleItems < 1) maxVisibleItems = 1;
-
+        // Ensure we don't try to show more items than we have
         maxVisibleItems = Math.min(maxVisibleItems, this.navMenuItems.length);
 
         if (maxVisibleItems >= this.navMenuItems.length) {
+            // Show all menu items
             this.visibleNavMenuItems = [...this.navMenuItems];
             this.overflowMenuItems = [];
             this.showOverflowMenu = false;
         } else {
+            // Show limited items and put rest in overflow
             this.visibleNavMenuItems = this.navMenuItems.slice(0, maxVisibleItems);
             this.overflowMenuItems = this.navMenuItems.slice(maxVisibleItems);
             this.showOverflowMenu = this.overflowMenuItems.length > 0;
         }
     }
 
-    @HostListener('window:resize')
-    onWindowResize(): void {
+    @HostListener('window:resize', ['$event'])
+    onWindowResize(event: any): void {
         this.calculateResponsiveMenu();
     }
 
@@ -476,17 +475,14 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedPrimaryColor = computed(() => {
         return this.layoutService.layoutConfig().primary;
     });
-   onLanguageChange(event: any) {
+  onLanguageChange(event: any) {
   const lang = event.value;
-  this.translateService.use(lang);
-  const selectedLanguage = event.value;
+  this.translate.use(lang);
 
-  selectedLanguage === 'en'
-    ? this.translationService.setLanguage(selectedLanguage, this.englishLanguage)
-    : this.translationService.setLanguage(selectedLanguage, this.fenchLanguage);
-
+  // Nav menu ko dubara rebuild karna hoga 
   this.buildNavMenu();
 }
+
 
     public logoutRedirect() {
         // Optional: Clear theme preferences on logout
@@ -499,75 +495,33 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit(): void {
         // Calculate responsive menu after view is initialized
-        setTimeout(() => this.calculateResponsiveMenu(), 100);
-        // Observe container size changes to avoid global resize costs
-        if (typeof ResizeObserver !== 'undefined' && this.navContainer?.nativeElement) {
-            let rafId: number | null = null;
-            this.resizeObserver = new ResizeObserver(() => {
-                if (rafId) cancelAnimationFrame(rafId);
-                rafId = requestAnimationFrame(() => this.calculateResponsiveMenu());
-            });
-            this.resizeObserver.observe(this.navContainer.nativeElement);
-        }
+        setTimeout(() => {
+            this.calculateResponsiveMenu();
+        }, 100);
     }
 
-    ngOnDestroy(): void {
-        this.resizeObserver?.disconnect();
-    }
+  ngOnInit(): void {
+  // Initialize dark mode and theme color preferences
+  this.initializeDarkModePreference();
+  this.initializeThemeColorPreference();
 
-    // Ensure only one popup menu is open at a time to avoid overlay overlap
-    onOverflowButtonClick(event: Event, overflowMenu: any, userMenu: any) {
-        try { userMenu?.hide?.(); } catch (err) { console.error('Error hiding user menu:', err); }
-        overflowMenu?.toggle?.(event);
-    }
+  // Menu items ko translation ke sath set karo
+  this.buildNavMenu();
 
-    onUserAvatarClick(event: Event, userMenu: any, overflowMenu: any) {
-        try { overflowMenu?.hide?.(); } catch {}
-        userMenu?.toggle?.(event);
-    }
-
-    ngOnInit(): void {
-        this.initializeDarkModePreference();
-        this.initializeThemeColorPreference();
-
-    // Build from centralized menu constants
-    this.buildNavMenu();
-
-        this.userMenuItems = [
-            { label: 'Profile', icon: 'pi pi-user' },
-            { label: 'Settings', icon: 'pi pi-cog' },
-            { separator: true },
-            { label: 'Logout', icon: 'pi pi-sign-out', command: (event) => this.logoutRedirect() }
-        ];
-
-        this.topbarService.getFrenchItemTranslation('topbar.company').subscribe((translation: any) => {
-            if (translation && translation.success && translation.data) {
-                this.fenchLanguage = translation.data[0];
-            }
-        });
-
-
-
-
-        this.topbarService.getEnglishItemTranslation('topbar.company').subscribe((translation: any) => {
-            if (translation && translation.success && translation.data) {
-                this.englishLanguage = translation.data[0];
-
-                // Check if englishLanguage exists and has languageCode before accessing it
-                if (this.englishLanguage && this.englishLanguage.languageCode) {
-                    this.translationService.setLanguage(this.englishLanguage.languageCode, this.englishLanguage);
-                    this.buildNavMenu();
-                } else {
-                    console.warn('English language data missing languageCode, using fallback');
-                    // Fallback: use default English language code
-                    this.translationService.setLanguage('en', this.englishLanguage);
-                    this.buildNavMenu();
-                }
-            } else {
-                console.error('Invalid English translation response structure');
-            }
-        });
-
-
-    }
+  // User menu items translation ke sath
+  this.translate.stream([
+  'LBL.PROFILE',
+  'LBL.SETTINGS',
+  'LBL.LOGOUT'
+]).subscribe(translations => {
+  this.ngZone.run(() => {
+    this.userMenuItems = [
+      { label: translations['LBL.PROFILE'], icon: 'pi pi-user' },
+      { label: translations['LBL.SETTINGS'], icon: 'pi pi-cog' },
+      { separator: true },
+      { label: translations['LBL.LOGOUT'], icon: 'pi pi-sign-out', command: () => this.logoutRedirect() }
+    ];
+  });
+});
+  }
 }

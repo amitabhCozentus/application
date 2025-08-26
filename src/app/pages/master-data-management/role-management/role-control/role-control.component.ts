@@ -339,6 +339,12 @@ export class RoleControlComponent implements OnInit {
         }
     }
 
+       resetSearch() {
+        this.searchTerm = "";
+        this.currentPage = 0;
+        this.loadRoles(0, this.pageSize, "");
+    }
+
     refresh() {
         this.searchTerm = "";
         this.currentPage = 0;

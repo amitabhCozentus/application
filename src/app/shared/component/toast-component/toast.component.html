@@ -2,14 +2,14 @@
     <ng-template let-message pTemplate="message">
         <div class="flex flex-row align-items-center justify-content-between h-3rem">
             <div class="flex align-items-center gap-2">
-                @switch (message.severity) {
-                    @case ('success') { <i class="fal fa-check-circle bpd-success mr-2" style="font-size: 1.5rem; color: #04D2A1;"></i> }
-                    @case ('error') { <i class="fal fa-times-circle bdp-error mr-2" style="font-size: 1.25rem; color: #ED1A24;"></i> }
-                    @case ('warn') { <i class="fal fa-info-circle bdp-info mr-2" style="font-size: 1.25rem"></i> }
-                    @case ('info') { <i class="fal fa-info-circle bdp-info mr-2" style="font-size: 1.25rem"></i> }
-                }
+                <i *ngIf="message.severity == 'success'" class="fal fa-check-circle bpd-success mr-2"
+                    style="font-size: 1.5rem; color: #04D2A1;"></i>
+                <i *ngIf="message.severity == 'error'" class="fal fa-times-circle bdp-error mr-2"
+                    style="font-size: 1.25rem; color: #ED1A24;"></i>
+                <i *ngIf="message.severity == 'warn'" class="fal fa-info-circle bdp-info mr-2" style="font-size: 1.25rem"></i>
+                <i *ngIf="message.severity == 'info'" class="fal fa-info-circle bdp-info mr-2" style="font-size: 1.25rem"></i>
                 <div class="flex align-items-center">
-                    @if (message.summary) { <p class="bdp-message-title" style="font-weight: bold; margin: 0; margin-right: 0.5rem;">{{ message.summary }}</p> }
+                    <p class="bdp-message-title" style="font-weight: bold; margin: 0; margin-right: 0.5rem;" *ngIf="message.summary">{{ message.summary }}</p>
                     <p style="margin: 0;">{{ message.detail }}</p>
                 </div>
             </div>

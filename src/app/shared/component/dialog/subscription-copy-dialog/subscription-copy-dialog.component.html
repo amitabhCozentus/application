@@ -7,20 +7,20 @@
             <div style="display:flex" class="mb-2 ">
                 <div>
                     <label for="customerName" class="font-semibold w-24">Customer Name<span class="required-star">*</span></label>
-                    <input pInputText
-                           id="customerName"
-                           class="flex-auto p-disabled"
-                           autocomplete="off"
-                           formControlName="customerName"
+                    <input pInputText 
+                           id="customerName" 
+                           class="flex-auto p-disabled" 
+                           autocomplete="off" 
+                           formControlName="customerName" 
                            [disabled]="true" />
                 </div>
                 <div>
                     <label for="customerCode" class="font-semibold w-24">Customer Code<span class="required-star">*</span></label>
-                    <input pInputText
-                           id="customerCode"
-                           class="flex-auto p-disabled"
-                           autocomplete="off"
-                           formControlName="customerCode"
+                    <input pInputText 
+                           id="customerCode" 
+                           class="flex-auto p-disabled" 
+                           autocomplete="off" 
+                           formControlName="customerCode" 
                            [disabled]="true" />
                 </div>
             </div>
@@ -28,10 +28,10 @@
                 <div class="mt-4 mb-4">
                     <h6 style="font-weight: bold;" class="mb-4 mt-4">Feature Toggle</h6>
                     <ul class="flex flex-wrap p-0 m-0  row">
-                        @for(feature of features; track feature.id){
+                        @for(feature of features; track feature.id){   
                         <li class="flex align-items-center gap-3  col-3">
-                            <p-toggleSwitch
-
+                            <p-toggleSwitch 
+                                
                                 [inputId]="'toggle-' + feature.id"
                                 [(ngModel)]="featureStates[feature.id]"
                                 [ngModelOptions]="{standalone: true}">
@@ -47,11 +47,11 @@
                 </div>
                 <div class="mt-4" style="width: min-content;" >
                     <label for="customerName" class="font-semibold w-24 mb-4">Customer Name<span class="required-star">*</span></label>
-                    <p-select
-                        [options]="customerNameList"
+                    <p-select 
+                        [options]="customerNameList" 
                         formControlName="selectedCustomer"
-                        optionLabel="companyName"
-                        [showClear]="true"
+                        optionLabel="companyName" 
+                        [showClear]="true" 
                         placeholder="Select Customer Name"
                         appendTo="body"
                         [filter]="true"
@@ -61,9 +61,9 @@
                         <ng-template pTemplate="footer">
                             @if (hasMoreCompanies) {
                                 <a (click)="onCompanyLoadMore()"
-                                   style="display: block; text-align: left; margin: 8px 0 8px 12px; cursor: pointer; color: #007ad9; text-decoration: underline;">
-                                    Load More
-                                </a>
+                               style="display: block; text-align: left; margin: 8px 0 8px 12px; cursor: pointer; color: #007ad9; text-decoration: underline;">
+                                Load More
+                            </a>
                             }
                         </ng-template>
                     </p-select>

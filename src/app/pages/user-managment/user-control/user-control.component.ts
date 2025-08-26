@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { PrimengModule } from '../../../shared/primeng/primeng.module'
-import { UserControlService } from '../../../shared/service/user-control/user-control.service';
+import { UserControlService } from 'src/app/shared/service/user-control/user-control.service';
 import { AppRoutes } from '../../../shared/lib/api-constant';
 import { CommonService } from '../../../shared/service/common/common.service';
-import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
+import { CommonTableSearchComponent } from 'src/app/shared/component/table-search/common-table-search.component';
+import { TranslateModule } from '@ngx-translate/core';
 
 
 interface userInfo{
@@ -29,14 +30,14 @@ export class UserControlComponent {
   showAssignDialog:boolean=false;
 constructor(private userControlService:UserControlService,private commonService:CommonService) {
     this.usersTableHeader =  [
-        { field: 'userName', header: 'Name' },
-        { field: 'userType', header: 'User Type' },
-        { field: 'userId', header: 'User Email Id' },
-        { field: 'companies', header: 'Company Name' },
-        { field: 'roleGranted', header: 'Role Granted' },
-        { field: 'updatedBy', header: 'Updated By' },
-        { field: 'updatedOn', header: 'Updated On' }
-      ];
+  { field: 'userName', header: 'LBL.USER_NAME' },
+  { field: 'userType', header: 'LBL.USER_TYPE' },
+  { field: 'userId', header: 'LBL.USER_EMAIL_ID' },
+  { field: 'companies', header: 'LBL.COMPANY_NAME' },
+  { field: 'roleGranted', header: 'LBL.ROLE_GRANTED' },
+  { field: 'updatedBy', header: 'LBL.UPDATED_BY' },
+  { field: 'updatedOn', header: 'LBL.UPDATED_ON' }
+];
     //this.inActiveTableHeader = this.userControlService.getTableHeaders(1);
     this.usersList=[ {
         "userId": "madhusudhan.murmu@bdpint.com",

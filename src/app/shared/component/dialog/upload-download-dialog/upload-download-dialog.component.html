@@ -1,10 +1,10 @@
 <div id="upload-download-dialog">
-    <p-dialog
-        [header]="editMode ? 'Edit Release Notes' : 'Upload Release Notes'"
-        [(visible)]="uploadDialogVisible"
-        [modal]="true"
+    <p-dialog 
+        [header]="editMode ? 'Edit Release Notes' : 'Upload Release Notes'" 
+        [(visible)]="uploadDialogVisible" 
+        [modal]="true" 
         [responsive]="true"
-        [style]="{ width: '50vw' }"
+        [style]="{ width: '50vw' }" 
         [baseZIndex]="10000"
         (onHide)="closeDialog()">
         <ng-template pTemplate="header">
@@ -45,9 +45,9 @@
                                 </ngx-dropzone-label>
                                 @for (f of files; track f.name) {
                                     <ngx-dropzone-preview class="bdp-drop-zone-preview" [removable]="true"
-                                        (removed)="onRemove(f)">
+                                    (removed)="onRemove(f)">
                                         <ngx-dropzone-label style="overflow-wrap: anywhere;">{{ f.name }}</ngx-dropzone-label>
-                                    </ngx-dropzone-preview>
+                                </ngx-dropzone-preview>
                                 }
                             </ngx-dropzone>
                         </div>

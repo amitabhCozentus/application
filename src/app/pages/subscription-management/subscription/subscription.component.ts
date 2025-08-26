@@ -78,14 +78,15 @@ export class SubscriptionComponent {
   };
   constructor(private commonService:CommonService,private subscriptionService: SubscriptionService,private readonly changeDetector: ChangeDetectorRef)  {
   this.subscriptionTableHeader =  [
-        { field: 'customerName', header: 'Customer Name' },
-        { field: 'customerCode', header: 'Customer Code' },
-        { field: 'subscriptionType', header: 'subscriptionType' },
-        { field: 'onBoardedOn', header: 'Onboarded On' },
-        { field: 'onBoardedSource', header: 'Onboarded Source' },
-        { field: 'updatedOn', header: 'Updated On' },
-        { field: 'updatedBy', header: 'Updated By' },
-      ];
+  { field: 'customerName', header: 'LBL.CUSTOMER_NAME' },
+  { field: 'customerCode', header: 'LBL.CUSTOMER_CODE' },
+  { field: 'subscriptionType', header: 'LBL.SUBSCRIPTION_TYPE' },
+  { field: 'onBoardedOn', header: 'LBL.ONBOARDED_ON' },
+  { field: 'onBoardedSource', header: 'LBL.ONBOARDED_SOURCE' },
+  { field: 'updatedOn', header: 'LBL.UPDATED_ON' },
+  { field: 'updatedBy', header: 'LBL.UPDATED_BY' },
+];
+
       // this.subscriptionList = [
       //   {
       //     "customerName": 'John Doe',

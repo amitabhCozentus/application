@@ -43,14 +43,14 @@
 
     @if (showOverflowMenu) {
       <div class="overflow-menu">
-        <p-button
+      <p-button
           icon="pi pi-angle-double-right"
-          [text]="true"
-          [rounded]="true"
+        [text]="true"
+        [rounded]="true"
           (click)="onOverflowButtonClick($event, overflowMenu, userMenu)">
-        </p-button>
+      </p-button>
         <p-tieredmenu #overflowMenu [model]="overflowMenuItems" [popup]="true" [appendTo]="'body'" [autoZIndex]="true" [baseZIndex]="1000" styleClass="topbar-menu"></p-tieredmenu>
-      </div>
+    </div>
     }
   </div>
 </div>

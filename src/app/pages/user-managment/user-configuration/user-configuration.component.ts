@@ -428,6 +428,6 @@ export class UserConfigurationComponent implements OnInit{
 
 
 
-}
+    }
 
 

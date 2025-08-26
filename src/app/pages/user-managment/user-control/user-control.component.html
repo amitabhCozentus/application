@@ -4,10 +4,12 @@
             <div class="col-12">
                 <p-tabs value="0">
                     <p-tablist>
-                        <p-tab value="0">Users
+                        <p-tab value="0">  {{ 'LBL.USERS' | translate }}
+
                             <p-badge value="2" class="ml-2" />
                         </p-tab>
-                        <p-tab value="1">Users With Inactive Role
+                        <p-tab value="1">{{ 'LBL.USERS_WITH_INACTIVE_ROLE' | translate }}
+
                             <p-badge value="6" class="ml-2" />
                         </p-tab>
                     </p-tablist>
@@ -17,7 +19,8 @@
                             [(selection)]="selectedUsers" styleClass="p-datatable-customers p-datatable-striped"
                             [rowHover]="true" [rows]="10" [showCurrentPageReport]="true" [scrollable]="true"
                             scrollHeight="400px" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row"
-                            dataKey="id" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                            dataKey="id"[currentPageReportTemplate]="'LBL.TABLE.PAGE_REPORT' | translate"
+
                             [filterDelay]="0" [resizableColumns]="true" [columns]="usersTableHeader"
                             [reorderableColumns]="true" [(totalRecords)]="usersList.length" [globalFilterFields]="[
                                 'userId',
@@ -45,7 +48,7 @@
 
                                     @for (col of usersTableHeader; track col.field) {
                                         <th [pSortableColumn]="col.field">
-                                            {{ col.header }}
+                                            {{ col.header|translate }}
                                             <p-sortIcon [field]="col.field" />
                                             <p-columnFilter type="text" [field]="col.field" display="menu" />
                                         </th>

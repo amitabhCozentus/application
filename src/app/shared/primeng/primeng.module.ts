@@ -73,6 +73,7 @@ import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { TranslateModule } from '@ngx-translate/core';
 
 const primengModules = [
+  
     CommonModule,
     IconFieldModule,
     FormsModule,
@@ -145,7 +146,8 @@ const primengModules = [
     ProgressSpinnerModule,
     DividerModule,
     OverlayBadgeModule,
-    TranslateModule
+    TranslateModule,
+    DialogModule
 ]
 @NgModule({
   declarations: [],

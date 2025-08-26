@@ -92,7 +92,7 @@ describe('RoleControlComponent', () => {
             expect(component.pageSize).toBe(10);
             expect(component.currentPage).toBe(0);
             expect(component.searchTerm).toBe('');
-            // loading might be true initially if detectChanges triggered loadRoles
+            expect(component.loading).toBe(false);
             expect(component.roles).toEqual([]);
             expect(component.totalRecords).toBe(0);
         });
@@ -925,14 +925,14 @@ describe('RoleControlComponent', () => {
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
         });
  
-                it('should handle multiple consecutive loadRoles calls', () => {
+        it('should handle multiple consecutive loadRoles calls', () => {
             // Reset spy call count to start fresh
             mockRoleService.getActiveRoles.calls.reset();
             
             component.loadRoles(0, 10);
             component.loadRoles(1, 20);
             component.loadRoles(2, 30);
-
+ 
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledTimes(3);
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 20, '');
@@ -985,14 +985,14 @@ describe('RoleControlComponent', () => {
     });
  
     describe('Component Lifecycle and Memory Management', () => {
-                it('should handle component reinitialization', () => {
+        it('should handle component reinitialization', () => {
             // Reset spy call count to start fresh
             mockRoleService.getActiveRoles.calls.reset();
             
             // Simulate component reinitialization
             component.ngOnInit();
             component.ngOnInit(); // Called twice
-
+ 
             // ngOnInit doesn't call loadRoles, so service should not be called
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledTimes(0);
         });

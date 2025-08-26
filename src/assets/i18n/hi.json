@@ -1,0 +1,75 @@
+{
+  "LBL.STATUS": "भूमिका की स्थिति",
+  "LBL.NAME": "भूमिका का नाम",
+  "LBL.DESCRIPTION": "भूमिका का विवरण",
+  "LBL.PRIVILEGES": "भूमिका विशेषाधिकार",
+  "LBL.CUSTOM_LANDING": "कस्टम लैंडिंग",
+  "LBL.DEFAULT_LANDING": "डिफ़ॉल्ट लैंडिंग",
+  "LBL.SKIN": "स्किन",
+  "LBL.CREATED_BY": "द्वारा बनाया गया",
+  "LBL.CREATED_ON": "बनाने की तारीख",
+  "LBL.UPDATED_BY": "द्वारा अपडेट किया गया",
+  "LBL.UPDATED_ON": "अपडेट की तारीख",
+  "LBL.ADD_ROLE": "भूमिका जोड़ें",
+  "LBL.ACTION": "क्रिया",
+
+  "LBL.TABLE.SEARCH_INPUT": "खोजने के लिए न्यूनतम 3 अक्षर टाइप करें और एंटर दबाएँ",
+  "LBL.TABLE.PAGE_REPORT": "{first} से {last} तक कुल {totalRecords} प्रविष्टियाँ दिखा रहा है",
+  "LBL.TABLE.EMPTY_MESSAGE": "कोई भूमिकाएँ नहीं मिलीं।",
+  "LBL.TABLE.SEARCH_PLACEHOLDER": "खोजें",
+
+  "LBL.MENU.HOME": "मुख्य पृष्ठ",
+  "LBL.MENU.TRACKING_LIST": "ट्रैकिंग सूची",
+  "LBL.MENU.FAVORITES": "पसंदीदा",
+  "LBL.MENU.ALERTS": "अलर्ट",
+  "LBL.MENU.REPORTING": "रिपोर्टिंग",
+  "LBL.MENU.3PL": "3पीएल",
+  "LBL.MENU.DATA_MANAGEMENT": "डेटा प्रबंधन",
+  "LBL.MENU.USER_MANAGEMENT": "उपयोगकर्ता प्रबंधन",
+  "LBL.MENU.MASTER_DATA": "मास्टर डेटा",
+  "LBL.MENU.SUBSCRIPTION": "सदस्यता",
+  "LBL.MENU.ROLE_MANAGEMENT": "भूमिका प्रबंधन",
+
+  "LBL.BUTTON.REFRESH": "रिफ्रेश",
+  "LBL.BUTTON.EDIT": "संपादित करें",
+  "LBL.BUTTON.SAVE": "सहेजें",
+  "LBL.BUTTON.CANCEL": "रद्द करें",
+  "LBL.BUTTON.DELETE": "हटाएँ",
+
+  "LBL.PROFILE": "प्रोफ़ाइल",
+  "LBL.SETTINGS": "सेटिंग्स",
+  "LBL.LOGOUT": "लॉग आउट",
+
+  "LBL.RELEASE_NAME": "रिलीज़ नाम",
+  "LBL.RELEASE_DATE": "रिलीज़ नोट की तारीख",
+  "LBL.UPLOADED_BY": "द्वारा अपलोड किया गया",
+  "LBL.UPLOADED_ON": "अपलोड की तारीख",
+
+  "LBL.MANUAL_NAME": "मैनुअल नाम",
+  "LBL.BUTTON.UPLOAD_USER_MANUAL": "यूज़र मैनुअल अपलोड करें",
+
+  "LBL.CUSTOMER_NAME": "ग्राहक का नाम",
+  "LBL.CUSTOMER_CODE": "ग्राहक कोड",
+  "LBL.SUBSCRIPTION_TYPE": "सदस्यता प्रकार",
+  "LBL.ONBOARDED_ON": "ऑनबोर्ड की तारीख",
+  "LBL.ONBOARDED_SOURCE": "ऑनबोर्ड स्रोत",
+
+  "LBL.BUTTON.ADD_SUBSCRIPTION": "सदस्यता जोड़ें",
+
+  "LBL.USER_NAME": "नाम",
+  "LBL.USER_TYPE": "उपयोगकर्ता प्रकार",
+  "LBL.USER_EMAIL_ID": "उपयोगकर्ता ईमेल आईडी",
+  "LBL.COMPANY_NAME": "कंपनी का नाम",
+  "LBL.ROLE_GRANTED": "प्रदान की गई भूमिका",
+
+  "LBL.USERS": "उपयोगकर्ता",
+  "LBL.USERS_WITH_INACTIVE_ROLE": "निष्क्रिय भूमिका वाले उपयोगकर्ता",
+  "LBL.SUBSCRIPTION_TIER": "सदस्यता स्तर",
+  
+"LBL.COMPANY_CODE": "कंपनी कोड",
+"LBL.PETA_CALLING": "पीईटीए कॉलिंग",
+"LBL.OCEAN_FREQUENCY": "समुद्री आवृत्ति",
+"LBL.AIR_FREQUENCY": "हवाई आवृत्ति",
+"LBL.RAIL_ROAD_FREQUENCY": "रेल/सड़क आवृत्ति"
+
+}
