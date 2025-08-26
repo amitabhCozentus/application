@@ -33,6 +33,7 @@ topbar-container {
     align-items: center;
     width: 100%;
     position: relative;
+    background-color: #2c3a52;
 }
 
 .navigation-bar {
@@ -52,6 +53,23 @@ topbar-container {
     &:hover {
         background-color: var(--surface-hover);
     }
+}
+
+// Ensure 2nd-level submenu panels open to the side and do not cover the 1st level
+:host ::ng-deep .p-menu-overlay .p-submenu-list,
+:host ::ng-deep .p-menu .p-submenu-list,
+:host ::ng-deep .p-tieredmenu .p-submenu-list {
+    position: absolute !important;
+    top: 0 !important;
+    left: 100% !important;
+    margin-left: 4px;
+    z-index: 1;
+}
+
+// Prevent label wrapping that can distort width and submenu positioning
+:host ::ng-deep .p-menu .p-menuitem-content,
+:host ::ng-deep .p-tieredmenu .p-menuitem-content {
+    white-space: nowrap;
 }
 
 // Responsive breakpoints

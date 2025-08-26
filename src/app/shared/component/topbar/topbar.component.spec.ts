@@ -24,7 +24,7 @@ describe('TopbarComponent', () => {
         TopbarComponent,
         TranslateModule.forRoot({
           loader: { provide: TranslateLoader, useClass: FakeLoader }
-        }),HttpClientTestingModule,RouterTestingModule
+        }), HttpClientTestingModule, RouterTestingModule
       ],
       providers: [
         TopbarsService,

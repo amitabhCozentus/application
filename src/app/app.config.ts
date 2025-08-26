@@ -3,17 +3,16 @@ import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
 import { ApiRouteDefinition, AuthClientConfig } from '@auth0/auth0-angular';
-import {  ApplicationConfig, ErrorHandler, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
+import { ApplicationConfig, ErrorHandler, provideAppInitializer, provideZoneChangeDetection } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import Aura from '@primeng/themes/aura';
-import {providePrimeNG} from 'primeng/config';
-import {definePreset} from '@primeng/themes';
+import { providePrimeNG } from 'primeng/config';
+import { definePreset } from '@primeng/themes';
 import { routes } from '../app/app.routes'
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
-import {provideTranslateService} from "@ngx-translate/core";
-
-import {provideTranslateHttpLoader} from "@ngx-translate/http-loader";
+import { provideTranslateService } from "@ngx-translate/core";
+import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
 
 export interface AppConfig {
     profiles: { [key: string]: { [key: string]: unknown } };
@@ -55,7 +54,7 @@ export function initializeAppFactory(
                 Object.assign(environment, {
                     ...configObj,
                     baseurl: apiBasePath,
-                    ump_endpoint_url:configObj['ump_endpoint_url'],
+                    ump_endpoint_url: configObj['ump_endpoint_url'],
                     mapbox: {
                         accessToken: configObj['mapBoxAccessToken']
                     }
@@ -124,36 +123,33 @@ const MyPreset = definePreset(Aura, {
         }
     }
 });
+
+
 export const appConfig: ApplicationConfig = {
-  providers: [
-    // 🔹 Existing providers
-    { provide: LocationStrategy, useClass: HashLocationStrategy },
-    ErrorHandler,
-    {
-      provide: provideAppInitializer,
-      useFactory: initializeAppFactory,
-      deps: [HttpBackend],
-      multi: true,
-    },
+    providers: [
+        { provide: LocationStrategy, useClass: HashLocationStrategy },
+        ErrorHandler,
+        {
+            provide: provideAppInitializer,
+            useFactory: initializeAppFactory,
+            deps: [HttpBackend],
+            multi: true,
+        },
 
-    provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes),
-    provideAnimationsAsync(),
-    providePrimeNG({
-      theme: { preset: MyPreset, options: { darkModeSelector: '.app-dark' } },
-    }),
-
-    // 🔹 Required for Translate Http Loader
-    provideHttpClient(),
-
-    // 🔹 New style translate service with loader
-    provideTranslateService({
-      loader: provideTranslateHttpLoader({
-        prefix: '/assets/i18n/',
-        suffix: '.json',
-      }),
-      fallbackLang: 'en', //default
-      lang: 'en',
-    }),
-  ],
+        provideZoneChangeDetection({ eventCoalescing: true }),
+        provideRouter(routes),
+        provideAnimationsAsync(),
+        providePrimeNG({
+            theme: { preset: MyPreset, options: { darkModeSelector: '.app-dark' } },
+        }),
+        provideHttpClient(),
+        provideTranslateService({
+            loader: provideTranslateHttpLoader({
+                prefix: '/assets/i18n/',
+                suffix: '.json',
+            }),
+            fallbackLang: 'en', //default
+            lang: 'en',
+        }),
+    ],
 };

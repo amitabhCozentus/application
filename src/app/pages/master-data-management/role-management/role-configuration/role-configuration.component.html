@@ -1,0 +1,172 @@
+<p-dialog [(visible)]="display" [header]="dialogHeader" [modal]="true" [closable]="true" (onHide)="close()"
+    [style]="{ width: '40rem' }" [resizable]="false" [draggable]="false" [dismissableMask]="true" [focusOnShow]="false">
+    <ng-template pTemplate="closeicon">
+        <button type="button" class="p-dialog-header-icon p-dialog-header-close p-link shadow-none" (click)="close()">
+            <span class="pi pi-times"></span>
+        </button>
+    </ng-template>
+    <form [formGroup]="form" class="formgrid grid">
+        <div class="col-12 pb-3">
+            <label class="p-required">Status<span class="required-star">*</span></label>
+            <div class="flex flex-wrap gap-4 pt-1">
+                <div class="flex align-items-center">
+                    <p-radiobutton formControlName="status" value="Active" inputId="status-active"></p-radiobutton>
+                    <label for="status-active" class="ml-2 cursor-pointer">Active</label>
+                </div>
+                <div class="flex align-items-center">
+                    <p-radiobutton formControlName="status" value="Inactive" inputId="status-inactive"></p-radiobutton>
+                    <label for="status-inactive" class="ml-2 cursor-pointer">Inactive</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 pb-3">
+            <label class="p-required">Role Name<span class="required-star">*</span></label>
+            <div class="flex pt-1">
+                <input type="text" pInputText formControlName="name" placeholder="Enter Role Name" />
+            </div>
+        </div>
+        <!-- Role Privileges -->
+        <div class="col-12 md:col-6 pb-3">
+            <label class="p-required">Role Privileges<span class="required-star">*</span></label>
+
+            <!-- Trigger input -->
+            <div class="flex pt-1 relative role-privilege-dropdown">
+                <input type="text" pInputText [readOnly]="true" class="w-full cursor-pointer"
+                    placeholder="Select Role Privilege" [value]="displayText || ''" (click)="toggleOpen()" />
+
+                <!-- Popover -->
+                @if (dropdownOpen) {
+                <div
+                    class="absolute z-5 w-full surface-overlay border-1 border-200 shadow-2 mt-2 border-round max-h-20rem overflow-auto left-0 top-100">
+
+                    <!-- Search -->
+                    <div class="p-2 border-bottom-1 border-200">
+                        <div class="flex align-items-center gap-2">
+                            <input type="text" pInputText #searchBox class="flex-auto" placeholder="Search"
+                                [(ngModel)]="query" [ngModelOptions]="{standalone: true}" (input)="onSearch()" />
+
+                        </div>
+                    </div>
+
+                    <!-- Tree -->
+                    <div role="tree">
+                        <ul class="list-none p-0 m-0">
+                            @for (category of filteredCategories; track category.label; let categoryIndex = $index) {
+                            <li class="p-1">
+                                <!-- Category row (collapsible with arrow) -->
+                                <button type="button"
+                                    class="w-full flex align-items-center gap-2 p-2 p-button-text p-button-plain"
+                                    (click)="toggleCategory(categoryIndex)">
+                                    <span
+                                        [ngClass]="categoryExpanded[categoryIndex] ? 'pi pi-chevron-circle-down' : 'pi pi-chevron-circle-right'"></span>
+                                    <span class="font-medium text-sm">{{ category.label }}</span>
+                                </button>
+
+                                <!-- Feature block (shown when category expanded) -->
+                                @if (categoryExpanded[categoryIndex]) {
+                                <ul class="list-none p-0 m-0 pl-0">
+                                    @for (feature of category.children; track feature.label) {
+                                    <li class="py-1">
+                                        <div class="p-2 text-600 text-sm">{{ feature.label }}</div>
+
+                                        <!-- Privilege items -->
+                                        <div class="pl-0">
+                                            @for (privilege of feature.children; track privilege.nodeId) {
+                                            <label class="flex align-items-center gap-2 p-2 border-round"
+                                                [class.hover:surface-hover]="!isPrivilegeDisabled(privilege.nodeId)"
+                                                [class.cursor-pointer]="!isPrivilegeDisabled(privilege.nodeId)"
+                                                [class.cursor-not-allowed]="isPrivilegeDisabled(privilege.nodeId)"
+                                                [class.opacity-60]="isPrivilegeDisabled(privilege.nodeId)"
+                                                [attr.aria-checked]="isNodeSelected(privilege.nodeId)" role="checkbox"
+                                                tabindex="0">
+
+                                                <p-radiobutton class="mr-2" [inputId]="'privilege-' + privilege.nodeId"
+                                                    [value]="true" [ngModel]="isNodeSelected(privilege.nodeId)"
+                                                    [ngModelOptions]="{standalone: true}"
+                                                    [disabled]="isPrivilegeDisabled(privilege.nodeId)"
+                                                    (click)="!isPrivilegeDisabled(privilege.nodeId) && toggleNode(privilege.nodeId)">
+                                                </p-radiobutton>
+
+                                                <label class="ml-2"
+                                                    [class.cursor-pointer]="!isPrivilegeDisabled(privilege.nodeId)"
+                                                    [class.cursor-not-allowed]="isPrivilegeDisabled(privilege.nodeId)"
+                                                    [class.text-400]="isPrivilegeDisabled(privilege.nodeId)"
+                                                    [for]="'privilege-' + privilege.nodeId">
+                                                    {{ privilege.label }}
+                                                </label>
+                                            </label>
+
+                                            }
+                                        </div>
+                                    </li>
+                                    }
+                                </ul>
+                                }
+                            </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                }
+            </div>
+        </div>
+
+        <div class="col-12 pb-3">
+            <label class="p-required">Custom landing<span class="required-star">*</span></label>
+            <div class="flex flex-wrap gap-4 pt-1">
+                <div class="flex align-items-center">
+                    <p-radiobutton formControlName="customLanding" value="Yes" inputId="custom-yes"></p-radiobutton>
+                    <label for="custom-yes" class="ml-2 cursor-pointer">Yes</label>
+                </div>
+                <div class="flex align-items-center">
+                    <p-radiobutton formControlName="customLanding" value="No" inputId="custom-no"></p-radiobutton>
+                    <label for="custom-no" class="ml-2 cursor-pointer">No</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 pb-3">
+            <label class="p-required">Default Landing Page<span class="required-star">*</span></label>
+            <div class="flex pt-1">
+                <p-select [options]="landingPages" formControlName="defaultLanding" optionLabel="label"
+                    optionValue="value" placeholder="Select Default Landing Page" class="w-full"></p-select>
+            </div>
+        </div>
+        <div class="col-12 pb-3">
+            <label class="p-required">Role Type<span class="required-star">*</span></label>
+            <div class="flex flex-wrap gap-4 pt-1">
+                <div class="flex align-items-center">
+                    <p-radiobutton formControlName="roleType" value="PSA BDP" inputId="role-psa"></p-radiobutton>
+                    <label for="role-psa" class="ml-2 cursor-pointer">PSA BDP</label>
+                </div>
+                <div class="flex align-items-center">
+                    <p-radiobutton formControlName="roleType" value="BNS" inputId="role-bns"></p-radiobutton>
+                    <label for="role-bns" class="ml-2 cursor-pointer">BNS</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 md:col-6 pb-3">
+            <label class="p-required">Skin<span class="required-star">*</span></label>
+            <div class="flex pt-1">
+                <p-multiSelect class="w-full" [options]="skinOptions" formControlName="skin" optionLabel="label"
+                    optionValue="value" placeholder="Select Skin(s)" [appendTo]="'body'" [filter]="false"
+                    [showToggleAll]="false" [disabled]="form.get('skin')?.disabled" [maxSelectedLabels]="4"
+                    [panelStyle]="{ 'max-height': '13rem', 'width': '18rem', 'overflow': 'auto' }">
+                </p-multiSelect>
+            </div>
+        </div>
+        <div class="col-12 pb-3">
+            <label>Role Description</label>
+            <div class="flex pt-1">
+                <textarea pInputTextarea rows="4" formControlName="description" maxlength="200"
+                    placeholder="Enter Description" class="w-full h-5rem"></textarea>
+            </div>
+            <div class="text-right">{{ form.get('description')?.value?.length || 0 }}/200</div>
+        </div>
+    </form>
+    <div class="flex justify-content-end gap-2">
+        <button pButton label="Cancel" class="p-button-outlined text-gray-900" (click)="close()"></button>
+        <button pButton [label]="isEdit ? 'Update' : 'Add'" class="p-button-primary"
+            [disabled]="!isFormValid() || saving" (click)="save()"></button>
+    </div>
+</p-dialog>
+<app-toast-component></app-toast-component>

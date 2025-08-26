@@ -6,37 +6,6 @@ import { RoleConfigData, ApiResponse, ApiSkinConfig } from '../../lib/constants'
 import { environment } from '../../../../environments/environment';
 import { AdminEndPoint } from '../../lib/api-constant';
 
-// Payload interfaces for role operations
-export interface RoleCreatePayload {
-    name: string;
-    description: string;
-    isActive: boolean;
-    customLanding: boolean;
-    landingPageConfigId?: number;
-    roleTypeConfigId: number;
-    skinConfigIds: number[];
-    privilegeIds: number[];
-    createdById: number;
-    updatedById: number;
-  }
-  
-  export interface RoleUpdatePayload extends RoleCreatePayload {
-    id: number;
-  }
-  
-  export interface RoleTypeData {
-    id: number;
-    key: string;
-    name: string;
-  }
-  
-  export interface SkinData {
-    roleType: RoleTypeData;
-    skins: ApiSkinConfig[];
-  }
-  
-  // Note: LandingPageData and PrivilegeData interfaces are now defined in role.service.ts
-
 
 export interface Role {
     id: number;
@@ -104,10 +73,10 @@ interface ApiRequestPayload {
     };
     searchFilter: {
         searchText?: string;
-        columns?: string[];
+        columns?: string[]; // optional: which columns global search applies to
     };
     columns: Array<{
-        columnName: string;
+        columnName?: string;
         filter?: string;
         sort?: string;
     }>;
@@ -116,25 +85,86 @@ interface ApiRequestPayload {
     };
 }
 
+// Column filter/sort descriptor to be sent in payload
+export interface ColumnFilterDescriptor {
+    columnName?: string;
+    /**
+     * Filter operations supported by API.
+     * Examples:
+     *  - Text:    cnt:foo | ncnt:bar | sw:pre | ew:suf | eq:val | ne:val
+     *  - Number:  gt:5 | gte:5 | lt:10 | lte:10 | eq:3 | ne:7 | in:1,2,3
+     *  - Date:    dgt:2024-01-01 | dgte:2024-01-01 | dlt:2024-12-31 | dlte:2024-12-31 | deq:2024-05-10 | dne:2024-05-10 | dbetween:2024-01-01,2024-12-31
+     */
+    filter?: string;
+    /** asc | desc */
+    sort?: 'asc' | 'desc';
+}
+
+export interface RoleCreatePayload {
+    name: string;
+    description: string;
+    isActive: boolean;
+    customLanding: boolean;
+    landingPageConfigId?: number;
+    roleTypeConfigId: number;
+    skinConfigIds: number[];
+    privilegeIds: number[];
+    createdById: number;
+    updatedById: number;
+  }
+
+  export interface RoleUpdatePayload extends RoleCreatePayload {
+    id: number;
+  }
+
+  export interface RoleTypeData {
+    id: number;
+    key: string;
+    name: string;
+  }
+
+  export interface SkinData {
+    roleType: RoleTypeData;
+    skins: ApiSkinConfig[];
+  }
+
 @Injectable({ providedIn: 'root' })
 export class RoleService {
     private http = inject(HttpClient);
-    private apiUrl = environment.baseurl + AdminEndPoint.RoleManagement.ROLE_LIST;
+    private roleListApiUrl = environment.baseurl + AdminEndPoint.RoleManagement.ROLE_LIST;
+    private saveUpdateRoleApiUrl = environment.baseurl + AdminEndPoint.RoleManagement.SAVE_UPDATE_ROLE_MANAGEMENT;
 
-    /** Fetch paged + filtered roles from API */
-    getActiveRoles(page: number, size: number, search: string): Observable<PagedResult<RoleConfigData>> {
+    /**
+     * Fetch paged + filtered roles from API using flexible operator-based filters.
+     * - searchTerm applies a global search (API decides target columns when searchFilter.columns omitted).
+     * - columnFilters lets callers pass per-column filter/sort using operator strings (cnt, sw, eq, gt, dgte, dbetween, in, etc.).
+     */
+    getActiveRoles(
+        page: number,
+        size: number,
+        searchTerm: string,
+        columnFilters: ColumnFilterDescriptor[] = []
+    ): Observable<PagedResult<RoleConfigData>> {
         // Build standardized request payload according to API spec
         const requestPayload: ApiRequestPayload = {
-            pagination: {
-                page: page,
-                size: size
+            pagination: { page, size },
+            searchFilter: {
+                searchText: searchTerm?.trim() || '',
+                columns: ["name", "description"]
             },
-            searchFilter: {},
-            columns: []
+            columns: columnFilters.map(cf => ({
+                columnName: cf.columnName,
+                filter: cf.filter,
+                sort: cf.sort
+            })),
+            // Optional sort field validation can be retained or tuned as needed
+            // sortFieldValidator: {
+            //     validSortFields: ['name', 'description', 'status', 'isActive', 'roleType', 'createdOn', 'updatedOn']
+            // }
         };
 
         return this.http
-            .post<ApiResponse>(this.apiUrl, requestPayload)
+            .post<ApiResponse>(this.roleListApiUrl, requestPayload)
             .pipe(
                 map(res => {
                     if (!res?.success || !res?.data) {
@@ -174,7 +204,7 @@ export class RoleService {
                     });
                     return {
                         data: roles,
-                        total: res.data.pagination?.totalElements || 0
+                        total: res.data?.totalElements || 0
                     };
                 }),
                 catchError(this.handleError<PagedResult<RoleConfigData>>('getActiveRoles', { data: [], total: 0 }))
@@ -310,7 +340,7 @@ export class RoleService {
             }
         };
 
-        return this.http.post<ApiResponse>(this.apiUrl, payload)
+        return this.http.post<ApiResponse>(this.roleListApiUrl, payload)
             .pipe(
                 map(res => {
                     if (!res?.success || !res?.data) {
@@ -351,53 +381,43 @@ export class RoleService {
 
                     return {
                         data: roles,
-                        total: res.data.pagination?.totalElements || 0
+                        total: res.data?.totalElements || 0
                     };
                 }),
                 catchError(this.handleError<PagedResult<RoleConfigData>>('searchRoles', { data: [], total: 0 }))
             );
     }
 
-    /**
-     * Create a new role
-     * @param roleData - The role data to create matching API schema
-     * @returns Observable<ApiResponse>
-     */
-    createRole(roleData: any): Observable<ApiResponse> {
-        const url = `${environment.baseurl}${AdminEndPoint.RoleManagement.SAVE_ROLE_MANAGEMENT}`;
-        return this.http.post<ApiResponse>(url, roleData).pipe(
+    /** Create a new role using dedicated API */
+    createRole(roleData: RoleCreatePayload): Observable<ApiResponse> {
+        return this.http.post<ApiResponse>(this.saveUpdateRoleApiUrl, roleData).pipe(
             map(response => {
                 return response;
             }),
             catchError(error => {
-                return this.handleError<ApiResponse>('createRole', {
-                    success: false,
-                    data: { content: [], pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0, last: true } },
-                    timestamp: new Date().toISOString()
-                })(error);
+                return this.handleError<ApiResponse>('createRole', this.getDefaultErrorResponse())(error);
             })
         );
     }
 
-    /**
-     * Update an existing role
-     * @param roleData - The updated role data matching API schema (must include id)
-     * @returns Observable<ApiResponse>
-     */
-    updateRole(roleData: any): Observable<ApiResponse> {
-        const url = `${environment.baseurl}${AdminEndPoint.RoleManagement.UPDATE_ROLE_MANAGEMENT}/${roleData.id}`;
+    /** Update an existing role using dedicated API */
+    updateRole(roleData: RoleUpdatePayload): Observable<ApiResponse> {
+        const url = `${this.saveUpdateRoleApiUrl}/${roleData.id}`;
+
         return this.http.put<ApiResponse>(url, roleData).pipe(
             map(response => {
                 return response;
             }),
-            catchError(error => {
-                return this.handleError<ApiResponse>('updateRole', {
-                    success: false,
-                    data: { content: [], pagination: { page: 0, size: 0, totalElements: 0, totalPages: 0, last: true } },
-                    timestamp: new Date().toISOString()
-                })(error);
-            })
+            catchError(error => this.handleError<ApiResponse>('updateRole', this.getDefaultErrorResponse())(error))
         );
+    }
+
+    private getDefaultErrorResponse(): ApiResponse {
+        return {
+            success: false,
+            data: { content: [], page: 0, size: 0, totalElements: 0, totalPages: 0, last: true },
+            timestamp: new Date().toISOString()
+        } as any;
     }
 
     private handleError<T>(operation = 'operation', result?: T) {

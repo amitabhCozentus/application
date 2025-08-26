@@ -1,0 +1,156 @@
+<div class="grid mt-2 m-2" id="bdpUserControl">
+    <div class="col-12">
+        <div class="grid">
+            <div class="col-12">
+                <p-table #roleTable [value]="roles" [paginator]="true" [rows]="pageSize"
+                    [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
+                    [columns]="roleTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
+                    [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
+                    [currentPageReportTemplate]="'table.pageReport' | translate"
+                    styleClass="p-datatable-customers p-datatable-striped"
+                    [globalFilterFields]="['roleName', 'roleDescription']" [lazy]="true"
+                    (onLazyLoad)="onLazyLoad($event)">
+
+                    <!-- Caption -->
+                    <ng-template pTemplate="caption">
+                        <div class="flex flex-1 justify-content-between align-items-center w-100">
+                            <div class="w-full md:w-30rem">
+                                <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
+                                    (search)="onSearch()" (clear)="refresh()"></app-common-table-search>
+                            </div>
+                            <div class="action-buttons p-d-flex p-ai-center p-jc-end"
+                                style="display: flex; gap: 1.5rem;">
+                                <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
+                                    (click)="refresh()"></button>
+                                @if (canEdit) {
+                                <button pButton pRipple [label]="'AddRole' | translate" class="p-button-primary"
+                                    style="min-width: 120px; white-space: nowrap;" (click)="openAddRoleDialog()">
+                                </button>
+                                }
+                            </div>
+                        </div>
+                    </ng-template>
+
+                    <!-- Header -->
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            @if (canEdit) {
+                            <th>{{ 'Action' | translate }}</th>
+                            }
+                            @for (col of columns; track col.field) {
+                            <th [pSortableColumn]="col.field">
+                                {{ col.header | translate }} <p-sortIcon [field]="col.field" />
+                                @if (col.field === 'status') {
+                                <p-columnFilter field="status" matchMode="equals" display="menu">
+                                    <ng-template #filter let-value let-filter="filterCallback">
+                                        <p-select [(ngModel)]="value" [options]="statuses" optionLabel="label" optionValue="value" (onChange)="filter($event.value)" placeholder="Select One" class="w-full"></p-select>
+                                    </ng-template>
+                                </p-columnFilter>
+                                } @else if (col.type === 'date') {
+                                <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true" />
+                                } @else {
+                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu" />
+                                }
+                            </th>
+                            }
+                        </tr>
+                    </ng-template>
+
+                    <!-- Body -->
+                    <ng-template pTemplate="body" let-assignment let-columns="columns">
+                        <tr>
+                            @if (canEdit) {
+                            <td class="actions">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-text mr-2 shadow-none"
+                                    (click)="editRole(assignment)"></button>
+                            </td>
+                            }
+                            @for (col of columns; track col.field) {
+                            <td>
+                                @switch (col.field) {
+                                @case ('status') {
+                                <div>
+                                    <button pButton pRipple class="p-button-primary"
+                                        [ngClass]="assignment.status === 'Active' ? 'status-active' : 'status-inactive'"
+                                        class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none">
+                                        {{ assignment.status }}
+                                    </button>
+                                </div>
+                                }
+                                @case ('rolePrivileges') {
+                                <div>
+                                    @if (assignment['rolePrivileges'] && assignment['rolePrivileges'].length > 0) {
+                                    <span>
+                                        @if (assignment['rolePrivileges'].length === allPrivileges.length) {
+                                        Full access ({{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
+                                        @if (assignment['rolePrivileges'].length > 2) {
+                                        ,<a class="text-blue-500 cursor-pointer ml-1"
+                                            (click)="moreTpl.toggle($event)">+{{assignment['rolePrivileges'].length
+                                            - 2}} more
+                                        </a>
+                                        })
+                                        <p-popover #moreTpl appendTo="body">
+                                            @for (privilege of assignment['rolePrivileges'].slice(4); track privilege) {
+                                            <div>
+                                                {{privilege}}
+                                            </div>
+                                            }
+                                        </p-popover>
+                                        } @else {
+                                        {{ assignment['rolePrivileges'].slice(0,2).join(', ') }}
+                                        @if (assignment['rolePrivileges'].length > 2) {
+                                        , <a class="text-blue-500 cursor-pointer ml-1" (click)="moreTpl.toggle($event)">
+                                            +{{assignment['rolePrivileges'].length - 2}} More
+                                        </a>
+                                        <p-popover #moreTpl appendTo="body">
+                                            @for (privilege of assignment['rolePrivileges'].slice(2); track privilege) {
+                                            <div>
+                                                {{privilege}}
+                                            </div>
+                                            }
+                                        </p-popover>
+                                        }
+                                        }
+                                    </span>
+                                    }
+                                </div>
+                                }
+                                @case ('defaultLanding') {
+                                <div>
+                                    {{ assignment['defaultLanding'] ? assignment['defaultLanding'] : '-' }}
+                                </div>
+                                }
+                                @case ('createdOn') {
+                                <div>{{ assignment['createdOn'] | date: dateTimeFormat }}</div>
+                                }
+                                @case ('updatedOn') {
+                                <div>{{ assignment['updatedOn'] | date: dateTimeFormat }}</div>
+                                }
+                                @default {
+                                <div>
+                                    {{ assignment[col.field] }}
+                                </div>
+                                }
+                                }
+                            </td>
+                            }
+                        </tr>
+                    </ng-template>
+
+                    <!-- Empty -->
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td [attr.colspan]="(canEdit ? roleTableHeaders.length + 1 : roleTableHeaders.length)"
+                                class="text-center">
+                                No Roles found.
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+
+                <app-role-configuration #roleConfig (saved)="refresh()"></app-role-configuration>
+            </div>
+        </div>
+    </div>
+</div>

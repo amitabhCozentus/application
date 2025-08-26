@@ -1,0 +1,132 @@
+<div class="grid m-2" id="petaManager">
+    <div class="col-12">
+        <div class="grid">
+            <div class="col-12">
+                <p-table #dt [value]="companies || []" [paginator]="true" [rows]="pageSize"
+                    [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
+                    [columns]="petaTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
+                    [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
+                    [currentPageReportTemplate]="'table.pageReport' | translate" [lazy]="true" selectionMode="multiple"
+                    styleClass="p-datatable-customers p-datatable-striped"
+                    [globalFilterFields]="['companyName','companyCode','updatedBy']" (onLazyLoad)="onLazyLoad($event)">
+
+                    <!-- Caption -->
+                    <ng-template pTemplate="caption">
+                        <div class="flex justify-content-between align-items-center mb-3">
+                            <div class="w-full md:w-30rem">
+                                <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
+                                    (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
+                            </div>
+                            <div class="flex align-items-center gap-3">
+                                <span class="font-semibold">PETA Calling</span>
+                                <div class="flex align-items-center gap-2">
+                                    <p-radiobutton name="petaGlobal" inputId="petaYes" value="Yes"
+                                        [(ngModel)]="petaGlobal"></p-radiobutton>
+                                    <label for="petaYes">Yes</label>
+                                    <p-radiobutton name="petaGlobal" inputId="petaNo" value="No"
+                                        [(ngModel)]="petaGlobal"></p-radiobutton>
+                                    <label for="petaNo">No</label>
+                                </div>
+                                <button pButton label="Save" class="p-button-primary" (click)="saveGlobal()"></button>
+                            </div>
+                        </div>
+                    </ng-template>
+
+                    <!-- Header -->
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            @if (canEdit) {
+                            <th> <p-tableHeaderCheckbox /> </th>
+                            <th>Action</th>
+                            }
+                            @for (col of columns; track col.field) {
+                            <th [pSortableColumn]="col.sortable ? col.field : null">
+                                {{ col.header | translate }}
+                                @if (col.sortable) {
+                                <p-sortIcon [field]="col.field" />
+                                }
+                                @if (col.type === 'date') {
+                                <p-columnFilter type="date" [field]="col.field" display="menu"></p-columnFilter>
+                                } @else if (col.filter) {
+                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu"></p-columnFilter>
+                                }
+                            </th>
+                            }
+
+                        </tr>
+                    </ng-template>
+
+                    <!-- Body -->
+                    <ng-template pTemplate="body" let-row let-ri="rowIndex" let-columns="columns">
+                        <tr>
+                            @if (canEdit) {
+                            <td>
+                                <p-tableCheckbox [value]="row"></p-tableCheckbox>
+                            </td>
+                            <td class="white-space-nowrap">
+                                @if (!row?.isEditing) {
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text"
+                                    (click)="row.isEditing = true"></button>
+                                } @else {
+                                <button pButton pRipple icon="pi pi-check" class="p-button-rounded p-button-text mr-2"
+                                    (click)="row.isEditing = false"></button>
+                                <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-text"
+                                    (click)="row.isEditing = false"></button>
+                                }
+                            </td>
+                            }
+
+                            <!-- Reusable frequency selector template -->
+                            <ng-template #freqSelect let-model="model" let-options="options" let-row="row"
+                                let-disabled="disabled">
+                                <p-select [options]="options" [ngModel]="row[model]"
+                                    (ngModelChange)="row[model] = $event" optionLabel="label" optionValue="value"
+                                    appendTo="body" style="width:13.75rem" [panelStyle]="{ width: '13.75rem' }"
+                                    [disabled]="disabled" [showClear]="false">
+                                </p-select>
+                            </ng-template>
+
+                            @for (col of columns; track col.field) {
+                            <td>
+                                @switch (col.field) {
+                                @case ('companyName') { {{ row?.companyName }} }
+                                @case ('companyCode') { {{ row?.companyCode }} }
+                                @case ('petaEnabled') {
+                                <p-toggleswitch [(ngModel)]="row.petaEnabled"
+                                    [disabled]="!row?.isEditing"></p-toggleswitch>
+                                }
+                                @case ('oceanFrequency') {
+                                <ng-container [ngTemplateOutlet]="freqSelect"
+                                    [ngTemplateOutletContext]="{ model: 'oceanFrequency', options: oceanFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
+                                </ng-container>
+                                }
+                                @case ('airFrequency') {
+                                <ng-container [ngTemplateOutlet]="freqSelect"
+                                    [ngTemplateOutletContext]="{ model: 'airFrequency', options: airFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
+                                </ng-container>
+                                }
+                                @case ('railRoadFrequency') {
+                                <ng-container [ngTemplateOutlet]="freqSelect"
+                                    [ngTemplateOutletContext]="{ model: 'railRoadFrequency', options: railRoadFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
+                                </ng-container>
+                                }
+                                @case ('updatedBy') { {{ row?.updatedBy || 'System' }} }
+                                @case ('updatedOn') { {{ row?.updatedOn | date: dateTimeFormat }} }
+                                }
+                            </td>
+                            }
+                        </tr>
+                    </ng-template>
+
+                    <!-- Empty -->
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td [attr.colspan]="(petaTableHeaders?.length || 0) + (canEdit ? 2 : 0)"
+                                class="text-center">No premium companies found.</td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+</div>

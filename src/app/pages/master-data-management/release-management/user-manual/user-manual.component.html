@@ -1,0 +1,44 @@
+<div id="user-manual">
+     <p-table [columns]="cols" [value]="UserManual" [tableStyle]="{ 'min-width': '50rem' }">
+                    <ng-template #caption>
+                        <div class="flex flex-1 justify-content-between align-items-center w-100">
+                            <div class="w-full md:w-30rem">
+                                <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
+                                    (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
+                            </div>
+                            <div>
+                                <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
+                                    (click)="refresh()"></button>
+                                <button pButton pRipple label="Upload User Manual" class="p-button-primary ml-2"
+                                    (click)="openAddRoleDialog()"></button>
+                            </div>
+                        </div>
+                    </ng-template>
+                    <ng-template #header let-columns>
+                        <tr>
+                            <th>
+                                Action
+                            </th>
+                            @for (col of columns; track col.field) { <th>{{ col.header }}</th> }
+                        </tr>
+                    </ng-template>
+                    <ng-template #body let-rowData let-columns="columns">
+                        <tr>
+                            <td>
+                                <div class="flex">
+                                    <img src="../../../../assets/bdp/images/bdp_delete_icon.svg" alt="edit"
+                                        (click)="deleteManual(rowData)" style="cursor: pointer;" class="mr-2">
+                                </div>
+                            </td>
+                            @for (col of columns; track col.field) {
+                                <td>
+                                    @if (col.field === 'manualName') {
+                                        <a style="cursor: pointer">{{ rowData[col.field] }}</a>
+                                    }
+                                    @else { {{ rowData[col.field] }} }
+                                </td>
+                            }
+                        </tr>
+                    </ng-template>
+                </p-table>
+</div>

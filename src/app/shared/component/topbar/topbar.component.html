@@ -4,9 +4,9 @@
     <ng-template pTemplate="start">
       <img class="bdp-logo" src="./../../../../assets/bdp/images/Smart Navigator_White.svg" alt="Smart Navigator" />
     </ng-template>
-    <ng-template pTemplate="center">
+    <!-- <ng-template pTemplate="center">
       <span class="current-section">{{ currentSection }}</span>
-    </ng-template>
+    </ng-template> -->
     <ng-template pTemplate="end" class="tools">
           <p-toggleswitch [ngModel]="darkTheme()" (ngModelChange)="toggleDarkMode()">
           </p-toggleswitch>
@@ -33,26 +33,24 @@
       <img src="../../../../assets/bdp/images/announcements.svg"
                   pTooltip='announcements' tooltipPosition="top" alt
                   class="mmt-icon" />
-     <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/xuxuefeng.png" size="large" shape="circle" (click)="userMenu.toggle($event)"/>
-      <p-tieredMenu #userMenu [model]="userMenuItems" popup="true"></p-tieredMenu>
+  <p-avatar image="https://primefaces.org/cdn/primeng/images/demo/avatar/xuxuefeng.png" size="large" shape="circle" (click)="onUserAvatarClick($event, userMenu, overflowMenu)"/>
+   <p-tieredMenu #userMenu [model]="userMenuItems" [popup]="true" [appendTo]="'body'" [autoZIndex]="true" [baseZIndex]="1100" styleClass="topbar-menu"></p-tieredMenu>
     </ng-template>
   </p-toolbar>
 
-  <p-menubar [model]="navMenuItems" class="navigation-bar"></p-menubar>
-
-  <!-- <div class="navigation-container">
+  <div class="navigation-container" #navContainer>
     <p-menubar [model]="visibleNavMenuItems" class="navigation-bar" #navigationBar></p-menubar>
 
-    <div class="overflow-menu" *ngIf="showOverflowMenu">
-      <p-button
-        icon="pi pi-ellipsis-h"
-        [text]="true"
-        [rounded]="true"
-        (click)="overflowMenu.toggle($event)"
-        pTooltip="More options"
-        tooltipPosition="bottom">
-      </p-button>
-      <p-menu #overflowMenu [model]="overflowMenuItems" [popup]="true"></p-menu>
-    </div>
-  </div> -->
+    @if (showOverflowMenu) {
+      <div class="overflow-menu">
+        <p-button
+          icon="pi pi-angle-double-right"
+          [text]="true"
+          [rounded]="true"
+          (click)="onOverflowButtonClick($event, overflowMenu, userMenu)">
+        </p-button>
+        <p-tieredmenu #overflowMenu [model]="overflowMenuItems" [popup]="true" [appendTo]="'body'" [autoZIndex]="true" [baseZIndex]="1000" styleClass="topbar-menu"></p-tieredmenu>
+      </div>
+    }
+  </div>
 </div>

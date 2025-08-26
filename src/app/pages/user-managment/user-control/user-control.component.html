@@ -12,7 +12,8 @@
                         </p-tab>
                     </p-tablist>
                     <p-tabpanel value="0">
-                        <p-table *ngIf="hasExistingUsers" #existingUserTable [value]="usersList"
+                        @if (hasExistingUsers) {
+                        <p-table #existingUserTable [value]="usersList"
                             [(selection)]="selectedUsers" styleClass="p-datatable-customers p-datatable-striped"
                             [rowHover]="true" [rows]="10" [showCurrentPageReport]="true" [scrollable]="true"
                             scrollHeight="400px" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row"
@@ -42,11 +43,13 @@
                                         Actions
                                     </th>
 
-                                    <th *ngFor="let col of usersTableHeader" pSortableColumn="{{col.field}}">
-                                        {{ col.header }}
-                                        <p-sortIcon field="{{col.field}}" />
-                                        <p-columnFilter type="text" field="{{col.field}}" display="menu" />
-                                    </th>
+                                    @for (col of usersTableHeader; track col.field) {
+                                        <th [pSortableColumn]="col.field">
+                                            {{ col.header }}
+                                            <p-sortIcon [field]="col.field" />
+                                            <p-columnFilter type="text" [field]="col.field" display="menu" />
+                                        </th>
+                                    }
                                 </tr>
                             </ng-template>
 
@@ -66,23 +69,25 @@
                                             (click)="onCopyClick(assignment)">
                                         </button>
                                     </td>
-                                    <td *ngFor="let col of usersTableHeader" [ngSwitch]="col.field">
-                                        <div *ngSwitchCase="'actions'">
+                                    @for (col of usersTableHeader; track col.field) {
+                                    <td>
+                                        @switch (col.field) {
+                                        @case ('actions') {
                                             <button (click)="
                                                     updateUsersCompany(
                                                         assignment,
                                                         'existing'
                                                     )
                                                 " pButton type="button" label="Assign"></button>
-                                        </div>
-                                        <div *ngSwitchCase="'userType'">
+                                        }
+                                        @case ('userType') {
                                             <button pButton pRipple
                                                 [ngClass]="assignment.userType === 'Existing' ? 'status-active' : 'status-new'"
                                                 class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none w-7">
                                                 {{ assignment.userType }}
                                             </button>
-                                        </div>
-                                        <div *ngSwitchCase="'companies'">
+                                        }
+                                        @case ('companies') {
                                             <ul>
                                                 <li>
                                                     {{
@@ -91,21 +96,18 @@
                                                     ][0]
                                                     }}
                                                 </li>
-                                                <li *ngIf="
-                                                        assignment['companies']
-                                                            .length >= 2
-                                                    ">
+                                                @if (assignment['companies'].length >= 2) {
+                                                <li>
                                                     {{
                                                     assignment[
                                                     "companies"
                                                     ][1]
                                                     }}
                                                 </li>
+                                                }
                                             </ul>
-                                            <div *ngIf="
-                                                    assignment['companies']
-                                                        .length > 2
-                                                ">
+                                            @if (assignment['companies'].length > 2) {
+                                            <div>
                                                 <div class="bdp-link" (click)="
                                                         extraCompanies.toggle(
                                                             $event
@@ -119,24 +121,20 @@
                                                         more.</a>
                                                 </div>
                                             </div>
+                                            }
                                             <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
                                                 appendTo="body">
-                                                <div *ngFor="
-                                                            let companyName of assignment[
-                                                                'companies'
-                                                            ];
-                                                            let index = index
-                                                        ">
-                                                    <span *ngIf="index > 1">{{
-                                                        companyName
-                                                        }}</span>
-                                                </div>
+                                                @for (companyName of assignment['companies']; track companyName; let index = $index) {
+                                                    @if (index > 1) { <div><span>{{ companyName }}</span></div> }
+                                                }
                                             </p-popover>
-                                        </div>
-                                        <div *ngSwitchDefault>
+                                        }
+                                        @default {
                                             {{ assignment[col.field] }}
-                                        </div>
+                                        }
+                                        }
                                     </td>
+                                    }
                                 </tr>
                             </ng-template>
 
@@ -146,14 +144,18 @@
                                 </tr>
                             </ng-template>
                         </p-table>
+                        }
 
-                        <div *ngIf="!hasExistingUsers" class="text-center mt-5 mb-4">
+                        @if (!hasExistingUsers) {
+                        <div class="text-center mt-5 mb-4">
                             <img src="./../../../../../../assets/layout/images/noPendingAssignment.svg" alt />
                             <h5>There are no new existing users</h5>
                         </div>
+                        }
                     </p-tabpanel>
                     <p-tabpanel value="1">
-                        <p-table *ngIf="!hasExistingUsers" #existingUserTable [value]="usersList"
+                        @if (!hasExistingUsers) {
+                        <p-table #existingUserTable [value]="usersList"
                             [(selection)]="selectedUsers" styleClass="p-datatable-customers p-datatable-striped"
                             [rowHover]="true" [rows]="10" [showCurrentPageReport]="true"
                             [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row" dataKey="id"
@@ -202,13 +204,13 @@
                                     <th>
                                         Actions
                                     </th>
-
-                                    <th *ngFor="let col of columns" pSortableColumn="{{col.field}}">
-                                        <div
-                                            class="flex justify-content-between align-items-center bdp-header-container">
-                                            {{ col.header }}
-                                        </div>
-                                    </th>
+                                    @for (col of columns; track col.field) {
+                                        <th [pSortableColumn]="col.field">
+                                            <div class="flex justify-content-between align-items-center bdp-header-container">
+                                                {{ col.header }}
+                                            </div>
+                                        </th>
+                                    }
                                 </tr>
                             </ng-template>
 
@@ -226,46 +228,47 @@
                                         <i (click)="copyToClipboard(port.portUnloc)" class="pi pi-copy"
                                             style="cursor: pointer; font-size: 1.5rem; color: #007bff;"></i>
                                     </td>
-                                    <td *ngFor="let col of columns" [ngSwitch]="col.field">
-                                        <div *ngSwitchCase="'actions'">
+                                    @for (col of columns; track col.field) {
+                                    <td>
+                                        @switch (col.field) {
+                                        @case ('actions') {
                                             <button (click)="updateUsersCompany(assignment,'existing')" pButton
                                                 type="button" label="Assign">
                                             </button>
-                                        </div>
-                                        <div *ngSwitchCase="'companies'">
+                                        }
+                                        @case ('companies') {
                                             <ul>
                                                 <li>
                                                     {{assignment["companies"][0]}}
                                                 </li>
-                                                <li *ngIf="assignment['companies'].length >= 2">
+                                                @if (assignment['companies'].length >= 2) {
+                                                <li>
                                                     {{assignment["companies"][1]}}
                                                 </li>
+                                                }
                                             </ul>
-                                            <div *ngIf="assignment['companies'].length > 2">
+                                            @if (assignment['companies'].length > 2) {
+                                            <div>
                                                 <div class="bdp-link" (click)="extraCompanies.toggle($event)">
                                                     <a class="ml-5">
                                                         ...+{{assignment["companies"].length - 2}}more.
                                                     </a>
                                                 </div>
                                             </div>
+                                            }
                                             <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
                                                 appendTo="body">
-                                                <div *ngFor="
-                                                            let companyName of assignment[
-                                                                'companies'
-                                                            ];
-                                                            let index = index
-                                                        ">
-                                                    <span *ngIf="index > 1">{{
-                                                        companyName
-                                                        }}</span>
-                                                </div>
+                                                @for (companyName of assignment['companies']; track companyName; let index = $index) {
+                                                    @if (index > 1) { <div><span>{{ companyName }}</span></div> }
+                                                }
                                             </p-popover>
-                                        </div>
-                                        <div *ngSwitchDefault>
+                                        }
+                                        @default {
                                             {{ assignment[col.field] }}
-                                        </div>
+                                        }
+                                    }
                                     </td>
+                                    }
                                 </tr>
                             </ng-template>
 
@@ -275,11 +278,14 @@
                                 </tr>
                             </ng-template>
                         </p-table>
+                        }
 
-                        <div *ngIf="!hasExistingUsers" class="text-center mt-5 mb-4">
+                        @if (!hasExistingUsers) {
+                        <div class="text-center mt-5 mb-4">
                             <img src="./../../../../../../assets/layout/images/noPendingAssignment.svg" alt />
                             <h5>There are no new existing users</h5>
                         </div>
+                        }
                     </p-tabpanel>
                 </p-tabs>
             </div>
@@ -306,18 +312,15 @@
                     </span>
                 </div>
                 <p-popover #extraCompanies styleClass="bdp-extracompanies-panel" class="z-0">
-                    <div *ngFor="let companyName of selectedUser[0]?.companyAssign
-                    let index = index">
-                        <span *ngIf="index > 1">{{
-                            companyName
-                            }}</span>
-                    </div>
+                    @for (companyName of selectedUser[0]?.companyAssign; track companyName; let index = $index) {
+                        @if (index > 1) { <div><span>{{ companyName }}</span></div> }
+                    }
                 </p-popover>
                 }
         </div>
         <div class="col-12 md:col-4 pl-0">
             <label for="traget_user" class="required-label">Target User <span class="required-star">*</span></label>
-            <p-select [options]="Users" [(ngModel)]="selectedCity" optionLabel="name" placeholder="Select a User"
+            <p-select [options]="Users" [(ngModel)]="selectedUser" optionLabel="name" placeholder="Select a User"
                 class="w-full md:w-56" />
         </div>
         <div class="card bg-[#FDEB8F]">
