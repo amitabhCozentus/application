@@ -43,7 +43,7 @@
                                 @if (col.field === 'status') {
                                 <p-columnFilter field="status" matchMode="equals" display="menu">
                                 <ng-template #filtericon>
-                                        <app-filter-icon [field]="'status'" [table]="roleTable"></app-filter-icon>
+                                        <app-common-table-filter [field]="'status'" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
                                         <p-select [(ngModel)]="value"
@@ -62,7 +62,7 @@
                                 @else if (col.type === 'date') {
                                 <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true">
                                     <ng-template #filtericon>
-                                        <app-filter-icon [field]="col.field" [table]="roleTable"></app-filter-icon>
+                                        <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                 </p-columnFilter>
                                 }
@@ -71,7 +71,7 @@
                                 @else if (col.type === 'boolean') {
                                 <p-columnFilter type="boolean" [field]="col.field" display="menu">
                                     <ng-template #filtericon>
-                                        <app-filter-icon [field]="col.field" [table]="roleTable"></app-filter-icon>
+                                        <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                 </p-columnFilter>
                                 }
@@ -80,7 +80,7 @@
                                 @else {
                                 <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
                                     <ng-template #filtericon>
-                                        <app-filter-icon [field]="col.field" [table]="roleTable"></app-filter-icon>
+                                        <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                 </p-columnFilter>
                                 }

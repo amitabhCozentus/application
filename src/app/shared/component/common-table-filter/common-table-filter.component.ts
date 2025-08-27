@@ -4,7 +4,7 @@ import { PrimengModule } from '../../primeng/primeng.module';
 import { Table } from 'primeng/table';
 
 @Component({
-  selector: 'app-filter-icon',
+  selector: 'app-common-table-filter',
   imports: [CommonModule,PrimengModule],
   templateUrl: './common-table-filter.component.html',
   styleUrl: './common-table-filter.component.scss'
