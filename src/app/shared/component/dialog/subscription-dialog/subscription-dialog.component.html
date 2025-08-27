@@ -7,42 +7,41 @@
             <div style="display:flex" class="mb-2 ">
                 <div>
                     <label for="customerName" class="font-semibold w-24">Customer Name<span class="required-star">*</span></label>
-                    <input pInputText 
-                           id="customerName" 
-                           class="flex-auto p-disabled" 
-                           autocomplete="off" 
-                           formControlName="customerName" 
+                    <input pInputText
+                           id="customerName"
+                           class="flex-auto p-disabled"
+                           autocomplete="off"
+                           formControlName="customerName"
                            [disabled]="true" />
                 </div>
                 <div>
                     <label for="customerCode" class="font-semibold w-24">Customer Code<span class="required-star">*</span></label>
-                    <input pInputText 
-                           id="customerCode" 
-                           class="flex-auto p-disabled" 
-                           autocomplete="off" 
-                           formControlName="customerCode" 
+                    <input pInputText
+                           id="customerCode"
+                           class="flex-auto p-disabled"
+                           autocomplete="off"
+                           formControlName="customerCode"
                            [disabled]="true" />
                 </div>
             </div>
             <div class="mb-4 mt-4">
                 <h4 class="font-semibold mb-2">Subscription Type<span class="required-star">*</span></h4>
                 <span>
-                    <p-radioButton name="subscriptionType" [value]="'Standard'" label="Standard"
-                        formControlName="subscriptionType"></p-radioButton>
+                    <p-radioButton name="subscriptionTypeName" [value]="'Standard'" label="Standard"
+                        formControlName="subscriptionTypeName"></p-radioButton>
                     <label class="ml-2">Standard</label>
                 </span>
                 <span>
-                    <p-radioButton name="subscriptionType" [value]="'Premium'" label="Premium"
-                        formControlName="subscriptionType" class="ml-2"></p-radioButton>
+                    <p-radioButton name="subscriptionTypeName" [value]="'Premium'" label="Premium"
+                        formControlName="subscriptionTypeName" class="ml-2"></p-radioButton>
                     <label class="ml-2">Premium</label>
                 </span>
                 <div class="mt-4 mb-4">
                     <h6 style="font-weight: bold;" class="mb-4 mt-4">Feature Toggle</h6>
                     <ul class="flex flex-wrap p-0 m-0  row">
-                        @for(feature of features; track feature.id){   
-                        <li class="flex align-items-center gap-3  col-3">
-                            <p-toggleSwitch 
-                                
+                        @for(feature of features; track feature.id) {
+                        <li class="flex align-items-center gap-3 col-3">
+                            <p-toggleSwitch
                                 [inputId]="'toggle-' + feature.id"
                                 [(ngModel)]="featureStates[feature.id]"
                                 [ngModelOptions]="{standalone: true}">

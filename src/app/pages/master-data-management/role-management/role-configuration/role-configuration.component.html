@@ -7,7 +7,7 @@
     </ng-template>
     <form [formGroup]="form" class="formgrid grid">
         <div class="col-12 pb-3">
-            <label class="p-required">Status<span class="required-star">*</span></label>
+            <label class="p-required">{{ 'LBL.STATUS' | translate }}<span class="required-star">*</span></label>
             <div class="flex flex-wrap gap-4 pt-1">
                 <div class="flex align-items-center">
                     <p-radiobutton formControlName="status" value="Active" inputId="status-active"></p-radiobutton>
@@ -20,14 +20,14 @@
             </div>
         </div>
         <div class="col-12 md:col-6 pb-3">
-            <label class="p-required">Role Name<span class="required-star">*</span></label>
+            <label class="p-required">{{ 'LBL.ROLE_NAME' | translate }}<span class="required-star">*</span></label>
             <div class="flex pt-1">
                 <input type="text" pInputText formControlName="name" placeholder="Enter Role Name" />
             </div>
         </div>
         <!-- Role Privileges -->
         <div class="col-12 md:col-6 pb-3">
-            <label class="p-required">Role Privileges<span class="required-star">*</span></label>
+            <label class="p-required">{{ 'LBL.ROLE_PRIVILEGES' | translate }}<span class="required-star">*</span></label>
 
             <!-- Trigger input -->
             <div class="flex pt-1 relative role-privilege-dropdown">
@@ -112,7 +112,7 @@
         </div>
 
         <div class="col-12 pb-3">
-            <label class="p-required">Custom landing<span class="required-star">*</span></label>
+            <label class="p-required">{{ 'LBL.CUSTOM_LANDING' | translate }}<span class="required-star">*</span></label>
             <div class="flex flex-wrap gap-4 pt-1">
                 <div class="flex align-items-center">
                     <p-radiobutton formControlName="customLanding" value="Yes" inputId="custom-yes"></p-radiobutton>
@@ -125,14 +125,14 @@
             </div>
         </div>
         <div class="col-12 md:col-6 pb-3">
-            <label class="p-required">Default Landing Page<span class="required-star">*</span></label>
+            <label class="p-required">{{ 'LBL.DEFAULT_LANDING' | translate }}<span class="required-star">*</span></label>
             <div class="flex pt-1">
                 <p-select [options]="landingPages" formControlName="defaultLanding" optionLabel="label"
                     optionValue="value" placeholder="Select Default Landing Page" class="w-full"></p-select>
             </div>
         </div>
         <div class="col-12 pb-3">
-            <label class="p-required">Role Type<span class="required-star">*</span></label>
+            <label class="p-required">{{ 'LBL.ROLE_TYPE' | translate }}<span class="required-star">*</span></label>
             <div class="flex flex-wrap gap-4 pt-1">
                 <div class="flex align-items-center">
                     <p-radiobutton formControlName="roleType" value="PSA BDP" inputId="role-psa"></p-radiobutton>
@@ -145,7 +145,7 @@
             </div>
         </div>
         <div class="col-12 md:col-6 pb-3">
-            <label class="p-required">Skin<span class="required-star">*</span></label>
+            <label class="p-required">{{ 'LBL.SKIN' | translate }}<span class="required-star">*</span></label>
             <div class="flex pt-1">
                 <p-multiSelect class="w-full" [options]="skinOptions" formControlName="skin" optionLabel="label"
                     optionValue="value" placeholder="Select Skin(s)" [appendTo]="'body'" [filter]="false"
@@ -155,7 +155,7 @@
             </div>
         </div>
         <div class="col-12 pb-3">
-            <label>Role Description</label>
+            <label>{{ 'LBL.ROLE_DESCRIPTION' | translate }}</label>
             <div class="flex pt-1">
                 <textarea pInputTextarea rows="4" formControlName="description" maxlength="200"
                     placeholder="Enter Description" class="w-full h-5rem"></textarea>

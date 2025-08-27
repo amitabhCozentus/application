@@ -6,7 +6,7 @@
                     [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
                     [columns]="petaTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
-                    [currentPageReportTemplate]="'LBL.TABLE.PAGE_REPORT' | translate" [lazy]="true" selectionMode="multiple"
+                    [currentPageReportTemplate]="'table.pageReport' | translate" [lazy]="true" selectionMode="multiple"
                     styleClass="p-datatable-customers p-datatable-striped"
                     [globalFilterFields]="['companyName','companyCode','updatedBy']" (onLazyLoad)="onLazyLoad($event)">
 
@@ -18,7 +18,7 @@
                                     (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
                             </div>
                             <div class="flex align-items-center gap-3">
-<span class="font-semibold">{{ 'LBL.PETA_CALLING' | translate }}</span>
+                                <span class="font-semibold">PETA Calling</span>
                                 <div class="flex align-items-center gap-2">
                                     <p-radiobutton name="petaGlobal" inputId="petaYes" value="Yes"
                                         [(ngModel)]="petaGlobal"></p-radiobutton>

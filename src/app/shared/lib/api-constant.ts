@@ -4,7 +4,6 @@
  */
 
 export namespace UserEndPoint {
-
     export abstract class CustomerSubscription {
         public static readonly GET_COMPANY_SUBSCRIPTION_LIST = "customer-subscriptions/list";
         public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_LIST = "customer-subscriptions/update";
@@ -13,8 +12,6 @@ export namespace UserEndPoint {
         public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_THROUGH_COPY = "customer-subscriptions/copy";
         public static readonly BULK_UPDATE_CUSTOMER_SUBSCRIPTION_TIER = "customer-subscriptions/bulk-update-tier";
     }
-
-
     export abstract class AuthPoints {
         public static readonly ADD_USER = "user/addUser";
         public static readonly FORGOT_PASSWORD = "user/forgot-password";
@@ -25,23 +22,9 @@ export namespace UserEndPoint {
         public static readonly UPDATE_USER = "user/updateUser";
     }
 
-
-
-
-
-
-
-
-
-
-
 }
 
 export namespace AdminEndPoint {
-
-
-
-
     export abstract class RoleManagement {
         public static readonly GET_ROLE = "roles";
         public static readonly ROLE_LIST = RoleManagement.GET_ROLE + "/" + "all-details";
@@ -53,12 +36,9 @@ export namespace AdminEndPoint {
         public static readonly LANDING_PAGES = RoleManagement.GET_ROLE + "/" + "landing-pages";
     }
 
-
-
 }
 
 export namespace AppRoutes {
-
     export abstract class Auth {
         public static readonly LOGIN = "login";
         public static readonly LOGOUT = "logout";
@@ -73,9 +53,7 @@ export namespace AppRoutes {
         public static readonly PASSWORD_CONFIRM = "password-confirm";
         public static readonly RESET_PASSWORD_AUTH = "reset-password-auth";
         public static readonly NOT_ASSOCIATED = "not-association";
-
     }
-
     export abstract class User {
         public static readonly ROOT = "app";
         public static readonly HOME = "home";
@@ -97,12 +75,7 @@ export namespace AppRoutes {
         public static readonly CONTRACT_CSV_HISTORY = User.CONTRACT_AGREEMENT + '/' + "contract-csv-history";
         public static readonly RELEASE_NOTES = User.PROFILE + '/' + "data-upload-download";
         public static readonly FILTER_PAGE = User.PROFILE + '/' + "filterpanel";
-
     }
-
-
-
-
     export abstract class AuthAbstract {
         public static readonly DOMAIN = '/';
         public static readonly ROOT = "auth";
@@ -123,15 +96,9 @@ export namespace AppRoutes {
         public static readonly REACTIVATE_ACCOUNT = "reactivate-account";
     }
 
-
-
     export abstract class Manager {
         public static readonly ROOT = "app";
         public static readonly HOME = "home";
 
     }
-
-
-
-
 }

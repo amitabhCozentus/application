@@ -29,13 +29,13 @@ interface Feature {
   providers: [MessageService]
 })
 export class SubscriptionCopyDialogComponent implements OnInit{
-
   private subscriptionService = inject(SubscriptionService);
   private messageService = inject(MessageService)
   changeDetector=inject(ChangeDetectorRef);
   @Input() visible: boolean = false;
   @Input() features: Feature[] = [];
   featureStates: { [key: number]: boolean } = {};
+  assignedFeatureIds: number[];
 
   @Input() set subscription(value: Subscription | null) {
     if (value) {
@@ -43,10 +43,11 @@ export class SubscriptionCopyDialogComponent implements OnInit{
         customerName: value.customerName,
         customerCode: value.customerCode,
       });
-      
-      // Initialize feature states from featureIds
+
+      // Set feature states and collect all assigned feature ids
+      this.assignedFeatureIds = value.featureIds ? [...value.featureIds] : [];
       this.features.forEach(feature => {
-        this.featureStates[feature.id] = value.featureIds?.includes(feature.id) || false;
+        this.featureStates[feature.id] = this.assignedFeatureIds.includes(feature.id);
       });
       this.changeDetector.detectChanges();
     }

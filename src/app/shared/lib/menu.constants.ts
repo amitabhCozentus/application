@@ -22,106 +22,106 @@ export interface AppMenuItem extends MenuItem {
  */
 export const MENU_ITEMS: AppMenuItem[] = [
     {
-        label: 'Home',
+        label: 'LBL.MENU.HOME',
         icon: 'pi pi-home',
         routerLink: '/home',
         permission: 'HOME_VISIBLE' // Custom permission key
     },
     {
-        label: 'Tracking List',
+        label: 'LBL.MENU.TRACKING_LIST',
         icon: 'pi pi-list',
         routerLink: '/tracking-list'
     },
     {
-        label: 'Favorites',
+        label: 'LBL.MENU.FAVORITES',
         icon: 'pi pi-star',
         routerLink: '/favorites'
     },
     {
-        label: 'Alerts',
+        label: 'LBL.MENU.ALERTS',
         icon: 'pi pi-bell',
         routerLink: '/alerts'
     },
     {
-        label: 'Reporting',
+        label: 'LBL.MENU.REPORTING',
         icon: 'pi pi-chart-bar',
         items: [
-            { label: 'Report Builder', routerLink: '/reporting/builder' },
-            { label: 'Analytics', routerLink: '/reporting/analytics' }
+            { label: 'LBL.MENU.REPORT_BUILDER', routerLink: '/reporting/builder' },
+            { label: 'LBL.MENU.ANALYTICS', routerLink: '/reporting/analytics' }
         ]
     },
     {
-        label: '3PL',
+        label: 'LBL.MENU.3PL',
         icon: 'pi pi-box',
         items: [
-            { label: 'Upload', routerLink: '/3pl/upload' },
-            { label: 'Exception Manager', routerLink: '/3pl/exception-manager' },
-            { label: 'Exception Configurator', routerLink: '/3pl/exception-configurator' },
-            { label: 'Event Manager', routerLink: '/3pl/event-manager' },
-            { label: 'Shipment Reprocessing', routerLink: '/3pl/shipment-reprocessing' }
+            { label: 'LBL.MENU.UPLOAD', routerLink: '/3pl/upload' },
+            { label: 'LBL.MENU.EXCEPTION_MANAGER', routerLink: '/3pl/exception-manager' },
+            { label: 'LBL.MENU.EXCEPTION_CONFIGURATOR', routerLink: '/3pl/exception-configurator' },
+            { label: 'LBL.MENU.EVENT_MANAGEMENT', routerLink: '/3pl/event-manager' },
+            { label: 'LBL.MENU.SHIPMENT_REPROCESSING', routerLink: '/3pl/shipment-reprocessing' }
         ]
     },
     {
-        label: 'Data Management',
+        label: 'LBL.MENU.DATA_MANAGEMENT',
         icon: 'pi pi-database',
         items: [
-            { label: 'Exception Manager', routerLink: '/data-management/exception-manager' },
-            { label: 'Exception Configurator', routerLink: '/data-management/exception-configurator' },
-            { label: 'Event Manager', routerLink: '/data-management/event-manager' },
-            { label: 'Geofence Manager', routerLink: '/data-management/geofence-manager' },
-            { label: 'Shipment Reprocessing', routerLink: '/data-management/shipment-reprocessing' },
-            { label: 'BDP Rep Email Manager', routerLink: '/data-management/bdp-rep-email-manager' }
+            { label: 'LBL.MENU.EXCEPTION_MANAGER', routerLink: '/data-management/exception-manager' },
+            { label: 'LBL.MENU.EXCEPTION_CONFIGURATOR', routerLink: '/data-management/exception-configurator' },
+            { label: 'LBL.MENU.EVENT_MANAGER', routerLink: '/data-management/event-manager' },
+            { label: 'LBL.MENU.GEOFENCE_MANAGER', routerLink: '/data-management/geofence-manager' },
+            { label: 'LBL.MENU.SHIPMENT_REPROCESSING', routerLink: '/data-management/shipment-reprocessing' },
+            { label: 'LBL.MENU.BDP_REP_EMAIL_MANAGER', routerLink: '/data-management/bdp-rep-email-manager' }
         ]
     },
     {
-        label: 'User Management',
+        label: 'LBL.MENU.USER_MANAGEMENT',
         icon: 'pi pi-users',
         routerLink: '/user-control'
     },
     {
-        label: 'Master Data',
+        label: 'LBL.MENU.MASTER_DATA',
         icon: 'pi pi-server',
         items: [
-            { label: 'Source System Identifier Manager', icon: 'pi pi-id-card', routerLink: '/master-data/source-system-identifier' },
-            { label: 'PETA/PETD Management', icon: 'pi pi-id-card', routerLink: '/master-data/peta-petd' },
-            { label: 'Customer Subscription Management', icon: 'pi pi-id-card', routerLink: '/master-data/subscription-management' },
-            { label: 'Role Management', icon: 'pi pi-user', routerLink: '/master-data/role-management' },
-            { label: 'Customer Carrier Management', icon: 'pi pi-briefcase', routerLink: '/master-data/customer-carrier' },
-            { label: 'Customer Onboarding', icon: 'pi pi-user-plus', routerLink: '/master-data/customer-onboarding' },
-            { label: 'Hierarchy Management', icon: 'pi pi-sitemap', routerLink: '/master-data/hierarchy' },
+            { label: 'LBL.MENU.SOURCE_SYSTEM_IDENTIFIER_MANAGER', icon: 'pi pi-id-card', routerLink: '/master-data/source-system-identifier' },
+            { label: 'LBL.MENU.PETA_PETD_MANAGEMENT', icon: 'pi pi-id-card', routerLink: '/master-data/peta-petd' },
+            { label: 'LBL.MENU.CUSTOMER_SUBSCRIPTION_MANAGEMENT', icon: 'pi pi-id-card', routerLink: '/master-data/subscription-management' },
+            { label: 'LBL.MENU.ROLE_MANAGEMENT', icon: 'pi pi-user', routerLink: '/master-data/role-management' },
+            { label: 'LBL.MENU.CUSTOMER_CARRIER_MANAGEMENT', icon: 'pi pi-briefcase', routerLink: '/master-data/customer-carrier' },
+            { label: 'LBL.MENU.CUSTOMER_ONBOARDING', icon: 'pi pi-user-plus', routerLink: '/master-data/customer-onboarding' },
+            { label: 'LBL.MENU.HIERARCHY_MANAGEMENT', icon: 'pi pi-sitemap', routerLink: '/master-data/hierarchy' },
             {
-                label: 'Location Master',
+                label: 'LBL.MENU.LOCATION_MASTER',
                 icon: 'pi pi-map',
                 items: [
-                    { label: 'Ocean Port Master', icon: 'pi pi-map', routerLink: '/master-data/location/ocean-port' },
-                    { label: 'Airport Master', icon: 'pi pi-map', routerLink: '/master-data/location/airport' }
+                    { label: 'LBL.MENU.OCEAN_PORT_MASTER', icon: 'pi pi-map', routerLink: '/master-data/location/ocean-port' },
+                    { label: 'LBL.MENU.AIRPORT_MASTER', icon: 'pi pi-map', routerLink: '/master-data/location/airport' }
                 ]
             },
             {
-                label: 'Carrier Master',
+                label: 'LBL.MENU.CARRIER_MASTER',
                 icon: 'pi pi-briefcase',
                 items: [
-                    { label: 'Ocean Carrier Master', icon: 'pi pi-briefcase', routerLink: '/master-data/carrier/ocean' },
-                    { label: 'Air Carrier Master', icon: 'pi pi-briefcase', routerLink: '/master-data/carrier/air' }
+                    { label: 'LBL.MENU.OCEAN_CARRIER_MASTER', icon: 'pi pi-briefcase', routerLink: '/master-data/carrier/ocean' },
+                    { label: 'LBL.MENU.AIR_CARRIER_MASTER', icon: 'pi pi-briefcase', routerLink: '/master-data/carrier/air' }
                 ]
             },
             {
-                label: 'Equivalency Management',
+                label: 'LBL.MENU.EQUIVALENCY_MANAGEMENT',
                 icon: 'pi pi-exchange',
                 items: [
-                    { label: 'Ocean Port Equivalency', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/ocean-port' },
-                    { label: 'Flight Equivalency', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/flight' },
-                    { label: 'Air Carrier Equivalency', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/air-carrier' },
-                    { label: 'Ocean Carrier Equivalency', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/ocean-carrier' }
+                    { label: 'LBL.MENU.OCEAN_PORT_EQUIVALENCY', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/ocean-port' },
+                    { label: 'LBL.MENU.FLIGHT_EQUIVALENCY', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/flight' },
+                    { label: 'LBL.MENU.AIR_CARRIER_EQUIVALENCY', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/air-carrier' },
+                    { label: 'LBL.MENU.OCEAN_CARRIER_EQUIVALENCY', icon: 'pi pi-exchange', routerLink: '/master-data/equivalency/ocean-carrier' }
                 ]
             },
-            { label: 'Country & Region Master', icon: 'pi pi-globe', routerLink: '/master-data/country-region' },
-            { label: 'Vessel Management', icon: 'pi pi-ship', routerLink: '/master-data/vessel' },
-            { label: 'Schedule Manager', icon: 'pi pi-calendar', routerLink: '/master-data/schedule' },
-            { label: 'Email Template Manager', icon: 'pi pi-envelope', routerLink: '/master-data/email-template' },
-            { label: 'Release Manager', icon: 'pi pi-paperclip', routerLink: '/master-data/release' },
-            { label: 'EULA Manager', icon: 'pi pi-file', routerLink: '/master-data/eula' },
-            { label: 'Audit Logs', icon: 'pi pi-clock', routerLink: '/master-data/audit-logs' }
+            { label: 'LBL.MENU.COUNTRY_REGION_MASTER', icon: 'pi pi-globe', routerLink: '/master-data/country-region' },
+            { label: 'LBL.MENU.VESSEL_MANAGEMENT', icon: 'pi pi-ship', routerLink: '/master-data/vessel' },
+            { label: 'LBL.MENU.SCHEDULE_MANAGER', icon: 'pi pi-calendar', routerLink: '/master-data/schedule' },
+            { label: 'LBL.MENU.EMAIL_TEMPLATE_MANAGER', icon: 'pi pi-envelope', routerLink: '/master-data/email-template' },
+            { label: 'LBL.MENU.RELEASE_MANAGER', icon: 'pi pi-paperclip', routerLink: '/master-data/release' },
+            { label: 'LBL.MENU.EULA_MANAGER', icon: 'pi pi-file', routerLink: '/master-data/eula' },
+            { label: 'LBL.MENU.AUDIT_LOGS', icon: 'pi pi-clock', routerLink: '/master-data/audit-logs' }
         ]
     }
 ];

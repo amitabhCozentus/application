@@ -1,40 +1,32 @@
 <p-toast position="top-right"></p-toast>
-<p-dialog header="Copy Subscription" [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }"
+<p-dialog header="Copy Subscription" value="features" [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }"
     [draggable]="false" (onHide)="hideDialog()">
     <p-divider class="mt-0"></p-divider>
     <ng-template pTemplate="body">
         <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()">
             <div style="display:flex" class="mb-2 ">
                 <div>
-                    <label for="customerName" class="font-semibold w-24">Customer Name<span class="required-star">*</span></label>
-                    <input pInputText 
-                           id="customerName" 
-                           class="flex-auto p-disabled" 
-                           autocomplete="off" 
-                           formControlName="customerName" 
-                           [disabled]="true" />
+                    <label for="customerName" class="font-semibold w-24">{{ 'LBL.CUSTOMER_NAME' | translate }}<span
+                            class="required-star">*</span></label>
+                    <input pInputText id="customerName" class="flex-auto p-disabled" autocomplete="off"
+                        formControlName="customerName" [disabled]="true" />
                 </div>
                 <div>
-                    <label for="customerCode" class="font-semibold w-24">Customer Code<span class="required-star">*</span></label>
-                    <input pInputText 
-                           id="customerCode" 
-                           class="flex-auto p-disabled" 
-                           autocomplete="off" 
-                           formControlName="customerCode" 
-                           [disabled]="true" />
+                    <label for="customerCode" class="font-semibold w-24">{{ 'LBL.CUSTOMER_CODE' | translate }}<span
+                            class="required-star">*</span></label>
+                    <input pInputText id="customerCode" class="flex-auto p-disabled" autocomplete="off"
+                        formControlName="customerCode" [disabled]="true" />
                 </div>
             </div>
             <div class="mb-4 mt-4">
                 <div class="mt-4 mb-4">
-                    <h6 style="font-weight: bold;" class="mb-4 mt-4">Feature Toggle</h6>
+                    <h6 style="font-weight: bold;" class="mb-4 mt-4">{{ 'LBL.FEATURE_TOGGLE' | translate }}</h6>
                     <ul class="flex flex-wrap p-0 m-0  row">
-                        @for(feature of features; track feature.id){   
+                        @for(feature of features; track feature.id){
                         <li class="flex align-items-center gap-3  col-3">
-                            <p-toggleSwitch 
-                                
-                                [inputId]="'toggle-' + feature.id"
-                                [(ngModel)]="featureStates[feature.id]"
-                                [ngModelOptions]="{standalone: true}">
+                            <p-toggleSwitch [inputId]="'toggle-' + feature.id" [(ngModel)]="featureStates[feature.id]"
+                                [ngModelOptions]="{standalone: true}"
+                                [disabled]="!assignedFeatureIds.includes(feature.id)">
                             </p-toggleSwitch>
                             <label [for]="'toggle-' + feature.id" class="flex cursor-pointer">{{ feature.name }}</label>
                         </li>
@@ -42,26 +34,21 @@
                     </ul>
                 </div>
                 <div class="flex align-items-center mb-2">
-                    <label for="copyToCustomer" class="font-semibold w-24">Copy To<span class="required-star">*</span></label>
+                    <label for="copyToCustomer" class="font-semibold w-24">{{ 'LBL.COPY_TO' | translate }}<span
+                            class="required-star">*</span></label>
                     <i class="pi pi-info-circle ml-2" [pTooltip]="copyToTooltip" tooltipPosition="top"></i>
                 </div>
-                <div class="mt-4" style="width: min-content;" >
-                    <label for="customerName" class="font-semibold w-24 mb-4">Customer Name<span class="required-star">*</span></label>
-                    <p-select 
-                        [options]="customerNameList" 
-                        formControlName="selectedCustomer"
-                        optionLabel="companyName" 
-                        [showClear]="true" 
-                        placeholder="Select Customer Name"
-                        appendTo="body"
-                        [filter]="true"
-                        [loading]="loadingCompanies"
-                        (onShow)="onCompanyDropdownShow()"
+                <div class="mt-4" style="width: min-content;">
+                    <label for="customerName" class="font-semibold w-24 mb-4">{{ 'LBL.CUSTOMER_NAME' | translate }}<span
+                            class="required-star">*</span></label>
+                    <p-select [options]="customerNameList" formControlName="selectedCustomer" optionLabel="companyName"
+                        [showClear]="true" placeholder="{{ 'LBL.SELECT_CUSTOMER_NAME' | translate }}" appendTo="body" [filter]="true"
+                        [loading]="loadingCompanies" (onShow)="onCompanyDropdownShow()"
                         (onFilter)="onCompanySearch($event)">
                         <ng-template pTemplate="footer">
                             @if (hasMoreCompanies) {
-                                <a (click)="onCompanyLoadMore()"
-                               style="display: block; text-align: left; margin: 8px 0 8px 12px; cursor: pointer; color: #007ad9; text-decoration: underline;">
+                            <a (click)="onCompanyLoadMore()"
+                                style="display: block; text-align: left; margin: 8px 0 8px 12px; cursor: pointer; color: #007ad9; text-decoration: underline;">
                                 Load More
                             </a>
                             }

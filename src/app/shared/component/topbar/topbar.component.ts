@@ -1,4 +1,4 @@
-import { Component, computed, inject, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, NgZone } from '@angular/core';
+import { Component, computed, inject, HostListener, OnInit, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ToolbarModule } from 'primeng/toolbar';
@@ -20,6 +20,7 @@ import { CommonService } from '../../service/common/common.service';
 // import { AuthService as Auth0Service } from '@auth0/auth0-angular';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';   // ngx-translate
+import { TranslationService } from '../../service/translation-service/translation.service';
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
     Aura
@@ -48,16 +49,19 @@ declare type SurfacesType = {
     templateUrl: './topbar.component.html',
     styleUrls: ['./topbar.component.scss']
 })
-export class TopbarComponent implements OnInit, AfterViewInit {
+export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     applicationTitle = 'SMART + NAVIGATOR';
     currentSection = 'MARITIME + INSIGHTS';
-    fenchLanguage: any = {};
+    frenchLanguage: any = {};
     englishLanguage: any = {};
+    odiaLanguage: any = {};
+    hindiLanguage: any = {};
     selectedLanguageLabel='English';
     selectedLanguage: string = 'en'; // Default to English
     layoutService: LayoutService = inject(LayoutService);
     router = inject(Router);
     topbarService: TopbarsService = inject(TopbarsService);
+    translationService: TranslationService = inject(TranslationService);
     // auth0Service: Auth0Service = inject(Auth0Service);
     darkTheme = computed(() => this.layoutService.layoutConfig().darkTheme);
     menuThemeOptions: { name: string; value: string }[] = [];
@@ -83,20 +87,44 @@ export class TopbarComponent implements OnInit, AfterViewInit {
         { label: 'English', value: 'en' },
         { label: 'French', value: 'fr' },
         { label: 'Hindi', value: 'hi' },
-        
+    { label: 'Odia', value: 'or' },
+    { label: 'Bengali', value: 'bn' },
+    { label: 'Russian', value: 'ru' }
     ];
-    navMenuItems: MenuItem[] = [];
+    // Full menu set after permission filtering
+    navMenuItems: AppMenuItem[] = [];
     userMenuItems: MenuItem[] = [];
-    visibleNavMenuItems: MenuItem[] = [];
-    overflowMenuItems: MenuItem[] = [];
+    // Items rendered in the main ribbon
+    visibleNavMenuItems: AppMenuItem[] = [];
+    // Items moved into the overflow popup
+    overflowMenuItems: AppMenuItem[] = [];
     showOverflowMenu: boolean = false;
-    selectedSkin: string;
+    selectedSkin: string | null = '';
 
     @ViewChild('navigationBar', { static: false }) navigationBar!: ElementRef;
+    @ViewChild('navContainer', { static: false }) navContainer!: ElementRef<HTMLElement>;
+    private resizeObserver?: ResizeObserver;
+    private translateService: TranslateService = inject(TranslateService);
 
-    constructor(private translateService: TranslateService,private translate: TranslateService,private ngZone: NgZone
-) {}
+    constructor() {}
 
+    ngOnInit(): void {
+        this.initializeDarkModePreference();
+        this.initializeThemeColorPreference();
+
+        // Set default to English and build only after translations are ready
+        this.translateService.use('en').subscribe(() => {
+            this.selectedLanguage = 'en';
+            this.buildNavMenu();
+        });
+
+        this.userMenuItems = [
+            { label: 'Profile', icon: 'pi pi-user' },
+            { label: 'Settings', icon: 'pi pi-cog' },
+            { separator: true },
+            { label: 'Logout', icon: 'pi pi-sign-out', command: (event) => this.logoutRedirect() }
+        ];
+    }
 
     userName = 'Solution User';
     get userInitials(): string {
@@ -133,72 +161,79 @@ export class TopbarComponent implements OnInit, AfterViewInit {
         }
     }
 
-  buildNavMenu() {
-  this.translate.stream([
-    'LBL.MENU.HOME',
-    'LBL.MENU.TRACKING_LIST',
-    'LBL.MENU.FAVORITES',
-    'LBL.MENU.ALERTS',
-    'LBL.MENU.REPORTING',
-    'LBL.MENU.3PL',
-    'LBL.MENU.DATA_MANAGEMENT',
-    'LBL.MENU.USER_MANAGEMENT',
-    'LBL.MENU.MASTER_DATA'
-  ]).subscribe(translations => {
-    this.navMenuItems = [
-      { label: translations['LBL.MENU.HOME'], icon: 'pi pi-home', routerLink: '/home' },
-      { label: translations['LBL.MENU.TRACKING_LIST'], icon: 'pi pi-list', routerLink: '/tracking-list' },
-      { label: translations['LBL.MENU.FAVORITES'], icon: 'pi pi-star', routerLink: '/favorites' },
-      { label: translations['LBL.MENU.ALERTS'], icon: 'pi pi-bell', routerLink: '/alerts' },
-      { label: translations['LBL.MENU.REPORTING'], icon: 'pi pi-chart-line', routerLink: '/reporting' },
-      { label: translations['LBL.MENU.3PL'], icon: 'pi pi-refresh', items: [] },
-      { label: translations['LBL.MENU.DATA_MANAGEMENT'], icon: 'pi pi-database', items: [] },
-      { label: translations['LBL.MENU.USER_MANAGEMENT'], icon: 'pi pi-users', command: () => this.router.navigate(['/user-control']) },
-      { label: translations['LBL.MENU.MASTER_DATA'], icon: 'pi pi-cog', items: [] }
-    ];
+    /**
+     * Build the navigation menu from centralized constants, applying
+     * permission-based filtering so items like Home can be hidden
+     * for users without access.
+     */
+    buildNavMenu() {
+        // In a real app, wire this to your auth/roles service.
+        const hasHomeAccess = this.userHasPermission('HOME_VISIBLE');
 
-    this.calculateResponsiveMenu();
-  });
-}
+        // Filter by permission rules
+        const filterByPermission = (items: AppMenuItem[] = []): AppMenuItem[] =>
+            items
+                .filter(i => !i.permission || (i.permission === 'HOME_VISIBLE' ? hasHomeAccess : this.userHasPermission(i.permission)))
+                .map(i => ({
+                    ...i,
+                    items: i.items ? filterByPermission(i.items) : undefined
+                }));
 
+        const filtered = filterByPermission(MENU_ITEMS);
+
+        // Deep-translate labels for live language switching
+        const translateItems = (items: AppMenuItem[] = []): AppMenuItem[] =>
+            items.map(i => ({
+                ...i,
+                label: typeof i.label === 'string' ? this.translateService.instant(i.label) : i.label,
+                items: i.items ? translateItems(i.items) : undefined
+            }));
+
+        this.navMenuItems = translateItems(filtered);
+        this.calculateResponsiveMenu();
+    }
+
+    /**
+     * Dummy permission check stub. Replace with your actual auth/role check.
+     */
+    private userHasPermission(_permission: string): boolean {
+        // TODO: integrate with real permission checks (e.g., from JWT/roles)
+        // Special case: return false here to test hiding Home.
+        return true;
+    }
+
+    /**
+     * Compute which items can fit on the first line and which should be moved
+     * into the overflow menu. Uses container width and an average item width
+     * heuristic for robust behavior across zoom/resolutions.
+     */
     private calculateResponsiveMenu(): void {
-        // Enhanced responsive calculation based on screen size
-        const screenWidth = window.innerWidth;
-        let maxVisibleItems: number;
+        const container = this.navContainer?.nativeElement;
+        const containerWidth = container?.offsetWidth || window.innerWidth;
 
-        // Define responsive breakpoints and maximum visible items
-        if (screenWidth >= 1400) {
-            maxVisibleItems = 9; // Show all items on very wide screens
-        } else if (screenWidth >= 1200) {
-            maxVisibleItems = 7;
-        } else if (screenWidth >= 992) {
-            maxVisibleItems = 6;
-        } else if (screenWidth >= 768) {
-            maxVisibleItems = 5;
-        } else if (screenWidth >= 576) {
-            maxVisibleItems = 4;
-        } else {
-            maxVisibleItems = 3; // Minimum items on small screens
-        }
+        // Heuristic: average width per top-level item (icon + label + padding)
+        const avgItemWidth = 150; // px
+        const overflowButtonWidth = 48; // px for the ellipsis button
 
-        // Ensure we don't try to show more items than we have
+        // How many items can we show with room for the overflow button
+        let maxVisibleItems = Math.floor((containerWidth - overflowButtonWidth) / avgItemWidth);
+        if (maxVisibleItems < 1) maxVisibleItems = 1;
+
         maxVisibleItems = Math.min(maxVisibleItems, this.navMenuItems.length);
 
         if (maxVisibleItems >= this.navMenuItems.length) {
-            // Show all menu items
             this.visibleNavMenuItems = [...this.navMenuItems];
             this.overflowMenuItems = [];
             this.showOverflowMenu = false;
         } else {
-            // Show limited items and put rest in overflow
             this.visibleNavMenuItems = this.navMenuItems.slice(0, maxVisibleItems);
             this.overflowMenuItems = this.navMenuItems.slice(maxVisibleItems);
             this.showOverflowMenu = this.overflowMenuItems.length > 0;
         }
     }
 
-    @HostListener('window:resize', ['$event'])
-    onWindowResize(event: any): void {
+    @HostListener('window:resize')
+    onWindowResize(): void {
         this.calculateResponsiveMenu();
     }
 
@@ -475,14 +510,39 @@ export class TopbarComponent implements OnInit, AfterViewInit {
     selectedPrimaryColor = computed(() => {
         return this.layoutService.layoutConfig().primary;
     });
-  onLanguageChange(event: any) {
-  const lang = event.value;
-  this.translate.use(lang);
+     onLanguageChange(event: any) {
+    const lang = event.value;
+    this.selectedLanguage = lang;
 
-  // Nav menu ko dubara rebuild karna hoga 
-  this.buildNavMenu();
+    // Optional: keep custom translation service in sync
+    switch (lang) {
+        case 'en':
+            this.translationService.setLanguage(lang, this.englishLanguage);
+            break;
+        case 'fr':
+            this.translationService.setLanguage(lang, this.frenchLanguage);
+            break;
+        case 'hi':
+            this.translationService.setLanguage(lang, this.hindiLanguage);
+            break;
+        case 'or':
+            this.translationService.setLanguage(lang, this.odiaLanguage);
+            break;
+        case 'bn':
+            this.translationService.setLanguage(lang, {});
+            break;
+        case 'ru':
+            this.translationService.setLanguage(lang, {});
+            break;
+        default:
+            this.translationService.setLanguage(lang, this.englishLanguage);
+    }
+
+    // Wait for ngx-translate to load the JSON, then rebuild the menu so instant() resolves
+    this.translateService.use(lang).subscribe(() => {
+        this.buildNavMenu();
+    });
 }
-
 
     public logoutRedirect() {
         // Optional: Clear theme preferences on logout
@@ -495,33 +555,30 @@ export class TopbarComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit(): void {
         // Calculate responsive menu after view is initialized
-        setTimeout(() => {
-            this.calculateResponsiveMenu();
-        }, 100);
+        setTimeout(() => this.calculateResponsiveMenu(), 100);
+        // Observe container size changes to avoid global resize costs
+        if (typeof ResizeObserver !== 'undefined' && this.navContainer?.nativeElement) {
+            let rafId: number | null = null;
+            this.resizeObserver = new ResizeObserver(() => {
+                if (rafId) cancelAnimationFrame(rafId);
+                rafId = requestAnimationFrame(() => this.calculateResponsiveMenu());
+            });
+            this.resizeObserver.observe(this.navContainer.nativeElement);
+        }
     }
 
-  ngOnInit(): void {
-  // Initialize dark mode and theme color preferences
-  this.initializeDarkModePreference();
-  this.initializeThemeColorPreference();
+    ngOnDestroy(): void {
+        this.resizeObserver?.disconnect();
+    }
 
-  // Menu items ko translation ke sath set karo
-  this.buildNavMenu();
+    // Ensure only one popup menu is open at a time to avoid overlay overlap
+    onOverflowButtonClick(event: Event, overflowMenu: any, userMenu: any) {
+        try { userMenu?.hide?.(); } catch (err) { console.error('Error hiding user menu:', err); }
+        overflowMenu?.toggle?.(event);
+    }
 
-  // User menu items translation ke sath
-  this.translate.stream([
-  'LBL.PROFILE',
-  'LBL.SETTINGS',
-  'LBL.LOGOUT'
-]).subscribe(translations => {
-  this.ngZone.run(() => {
-    this.userMenuItems = [
-      { label: translations['LBL.PROFILE'], icon: 'pi pi-user' },
-      { label: translations['LBL.SETTINGS'], icon: 'pi pi-cog' },
-      { separator: true },
-      { label: translations['LBL.LOGOUT'], icon: 'pi pi-sign-out', command: () => this.logoutRedirect() }
-    ];
-  });
-});
-  }
+    onUserAvatarClick(event: Event, userMenu: any, overflowMenu: any) {
+        try { overflowMenu?.hide?.(); } catch {}
+        userMenu?.toggle?.(event);
+    }
 }

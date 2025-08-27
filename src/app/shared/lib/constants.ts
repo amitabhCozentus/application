@@ -11,7 +11,7 @@ export interface TableHeaders {
     header: string;
     sortable?: boolean;
     filter?: boolean;
-    type?: string;
+    type?: 'text' | 'numeric' | 'date' | 'boolean' | 'select';
 }
 export const USER_TABLE_HEADERS: TableHeaders[] = [
     { field: 'userName', header: 'Name', sortable: true, filter: true, type: 'text' },
@@ -21,31 +21,41 @@ export const USER_TABLE_HEADERS: TableHeaders[] = [
 ];
 
 export const ROLE_TABLE_HEADERS: TableHeaders[] = [
-  { field: 'status', header: 'LBL.STATUS', sortable: true, filter: true },
-  { field: 'roleName', header: 'LBL.NAME', sortable: true, filter: true },
-  { field: 'roleDescription', header: 'LBL.DESCRIPTION', sortable: true, filter: true },
-  { field: 'rolePrivileges', header: 'LBL.PRIVILEGES', sortable: true, filter: true },
-  { field: 'customLanding', header: 'LBL.CUSTOM_LANDING', sortable: true, filter: true },
-  { field: 'defaultLanding', header: 'LBL.DEFAULT_LANDING', sortable: true, filter: true },
-  { field: 'skin', header: 'LBL.SKIN', sortable: true, filter: true },
-  { field: 'createdBy', header: 'LBL.CREATED_BY', sortable: true, filter: true },
-  { field: 'createdOn', header: 'LBL.CREATED_ON', sortable: true, filter: true },
-  { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true },
-  { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true }
+    { field: 'status', header: 'LBL.STATUS', sortable: true, filter: true, type: 'boolean' },
+    { field: 'roleName', header: 'LBL.ROLE_NAME', sortable: true, filter: true, type: 'text' },
+    { field: 'roleDescription', header: 'LBL.ROLE_DESCRIPTION', sortable: true, filter: true, type: 'text' },
+    { field: 'rolePrivileges', header: 'LBL.ROLE_PRIVILEGES', sortable: true, filter: true, type: 'text' },
+    { field: 'customLanding', header: 'LBL.CUSTOM_LANDING', sortable: true, filter: true, type: 'text' },
+    { field: 'defaultLanding', header: 'LBL.DEFAULT_LANDING', sortable: true, filter: true, type: 'text' },
+    { field: 'skin', header: 'LBL.SKIN', sortable: true, filter: true, type: 'text' },
+    { field: 'createdBy', header: 'LBL.CREATED_BY', sortable: true, filter: true, type: 'text' },
+    { field: 'createdOn', header: 'LBL.CREATED_ON', sortable: true, filter: true, type: 'date' },
+    { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true, type: 'text' },
+    { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' }
 ];
 
 export const RELEASE_NOTES_TABLE_HEADERS: TableHeaders[] = [
-    { field: 'releaseName', header: 'LBL.RELEASE_NAME', sortable: true, filter: true },
-    { field: 'releaseDate', header: 'LBL.RELEASE_DATE', sortable: true, filter: true },
-    { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true },
-    { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true }
+    { field: 'releaseName', header: 'LBL.RELEASE_NAME', sortable: true, filter: true, type: 'text' },
+    { field: 'releaseDate', header: 'LBL.RELEASE_DATE', sortable: true, filter: true, type: 'date' },
+    { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
+    { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
 ];
 
 export const USER_MANUAL_TABLE_HEADERS: TableHeaders[] = [
-  { field: 'manualName', header: 'LBL.MANUAL_NAME', sortable: true, filter: true },
-  { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true },
-  { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true },
-{ field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true }
+    { field: 'manualName', header: 'LBL.MANUAL_NAME', sortable: true, filter: true, type: 'text' },
+    { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
+    { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
+    { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
+];
+
+export const SUBSCRIPTION_TABLE_HEADERS: TableHeaders[] = [
+  { field: 'customerName', header: 'LBL.CUSTOMER_NAME', sortable: true, filter: true, type: 'text' },
+  { field: 'customerCode', header: 'LBL.CUSTOMER_CODE', sortable: true, filter: true, type: 'numeric' },
+  { field: 'subscriptionTypeName', header: 'LBL.SUBSCRIPTION_TYPE', sortable: true, filter: true, type: 'text' },
+  { field: 'onboardedOn', header: 'LBL.ONBOARDED_ON', sortable: true, filter: true, type: 'date' },
+  { field: 'onboardedSourceName', header: 'LBL.ONBOARDED_SOURCE', sortable: true, filter: true, type: 'text' },
+  { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
+  { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true, type: 'text' }
 ];
 
 export const PETA_TABLE_HEADERS: TableHeaders[] = [
@@ -58,8 +68,6 @@ export const PETA_TABLE_HEADERS: TableHeaders[] = [
   { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true, type: 'text' },
   { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' }
 ];
-
-
 
 export interface SelectOption {
     label: string;
@@ -174,4 +182,25 @@ export interface ApiResponse {
     content: ApiRole[];
   };
   timestamp: string;
+}
+
+export const enum FilterOperation {
+  Contains = 'cnt:',
+  NotContains = 'ncnt:',
+  StartsWith = 'sw:',
+  EndsWith = 'ew:',
+  Equals = 'eq:',
+  NotEquals = 'ne:',
+  GreaterThan = 'gt:',
+  GreaterThanOrEqual = 'gte:',
+  LessThan = 'lt:',
+  LessThanOrEqual = 'lte:',
+  DateGreaterThan = 'dgt:',
+  DateGreaterThanOrEqual = 'dgte:',
+  DateLessThan = 'dlt:',
+  DateLessThanOrEqual = 'dlte:',
+  DateEquals = 'deq:',
+  DateNotEquals = 'dne:',
+  DateBetween = 'dbetween:',
+  In = 'in:'
 }
