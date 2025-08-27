@@ -11,6 +11,7 @@ import Aura from '@primeng/themes/aura';
 import { updatePreset, updateSurfacePalette } from '@primeng/themes';
 import { LayoutService } from '../../../../shared/service/layout/layout.service';
 import { MessageService } from 'primeng/api';
+import { CommonTableFilterComponent } from '../../../../shared/component/common-table-filter/common-table-filter.component';
 
 declare type KeyOfType<T> = keyof T extends infer U ? U : never;
 const presets = {
@@ -37,7 +38,7 @@ declare type SurfacesType = {
 @Component({
     selector: "app-role-control",
     standalone: true,
-    imports: [PrimengModule, CommonTableSearchComponent, RoleConfigurationComponent],
+    imports: [PrimengModule, CommonTableSearchComponent, RoleConfigurationComponent,CommonTableFilterComponent],
     providers: [MessageService],
     templateUrl: "./role-control.component.html",
     styleUrls: ["./role-control.component.scss"],

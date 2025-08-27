@@ -1,0 +1,7 @@
+<i class="pi"
+       [ngClass]="{
+         'pi-filter-fill': isColumnFiltered(),
+         'pi-filter': !isColumnFiltered()
+       }"
+       [style.color]="isColumnFiltered() ? 'var(--p-primary-color)' : ''">
+    </i>

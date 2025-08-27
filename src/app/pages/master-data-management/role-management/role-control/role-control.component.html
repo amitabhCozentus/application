@@ -42,20 +42,52 @@
                                 {{ col.header | translate }} <p-sortIcon [field]="col.field" />
                                 @if (col.field === 'status') {
                                 <p-columnFilter field="status" matchMode="equals" display="menu">
+                                <ng-template #filtericon>
+                                        <app-filter-icon [field]="'status'" [table]="roleTable"></app-filter-icon>
+                                    </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
-                                        <p-select [(ngModel)]="value" [options]="statuses" optionLabel="label" optionValue="value" (onChange)="filter($event.value)" placeholder="Select One" class="w-full"></p-select>
+                                        <p-select [(ngModel)]="value"
+                                                [options]="statuses"
+                                                optionLabel="label"
+                                                optionValue="value"
+                                                (onChange)="filter($event.value)"
+                                                placeholder="Select One"
+                                                class="w-full">
+                                        </p-select>
                                     </ng-template>
                                 </p-columnFilter>
-                                } @else if (col.type === 'date') {
-                                <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true" />
-                                } @else {
-                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu" />
+                                }
+
+                                <!-- Date Filter -->
+                                @else if (col.type === 'date') {
+                                <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true">
+                                    <ng-template #filtericon>
+                                        <app-filter-icon [field]="col.field" [table]="roleTable"></app-filter-icon>
+                                    </ng-template>
+                                </p-columnFilter>
+                                }
+
+                                <!-- Boolean Filter -->
+                                @else if (col.type === 'boolean') {
+                                <p-columnFilter type="boolean" [field]="col.field" display="menu">
+                                    <ng-template #filtericon>
+                                        <app-filter-icon [field]="col.field" [table]="roleTable"></app-filter-icon>
+                                    </ng-template>
+                                </p-columnFilter>
+                                }
+
+                                <!-- Other Filters -->
+                                @else {
+                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
+                                    <ng-template #filtericon>
+                                        <app-filter-icon [field]="col.field" [table]="roleTable"></app-filter-icon>
+                                    </ng-template>
+                                </p-columnFilter>
                                 }
                             </th>
                             }
                         </tr>
                     </ng-template>
-
                     <!-- Body -->
                     <ng-template pTemplate="body" let-assignment let-columns="columns">
                         <tr>
