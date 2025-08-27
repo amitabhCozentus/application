@@ -26,6 +26,9 @@
   "LBL.MENU.ALERTS": "Оповещения",
   "LBL.MENU.REPORTING": "Отчётность",
   "LBL.MENU.3PL": "3PL",
+  "LBL.MENU.UPLOAD": "Загрузить",
+  "LBL.MENU.REPORT_BUILDER": "Конструктор отчетов",
+  "LBL.MENU.ANALYTICS": "Аналитика",
   "LBL.MENU.DATA_MANAGEMENT": "Управление данными",
   "LBL.MENU.USER_MANAGEMENT": "Управление пользователями",
   "LBL.MENU.MASTER_DATA": "Справочные данные",
@@ -88,6 +91,7 @@
   "LBL.FEATURE_TOGGLE": "Переключатель функций",
   "LBL.COPY_TO": "Копировать в",
   "LBL.SELECT_CUSTOMER_NAME": "Выберите имя клиента",
+  "LBL.COPY_SUBSCRIPTION": "Копировать подписку",
 
   "LBL.BUTTON.ADD_SUBSCRIPTION": "Добавить подписку",
 

@@ -57,7 +57,7 @@ export const MENU_ITEMS: AppMenuItem[] = [
             { label: 'LBL.MENU.UPLOAD', routerLink: '/3pl/upload' },
             { label: 'LBL.MENU.EXCEPTION_MANAGER', routerLink: '/3pl/exception-manager' },
             { label: 'LBL.MENU.EXCEPTION_CONFIGURATOR', routerLink: '/3pl/exception-configurator' },
-            { label: 'LBL.MENU.EVENT_MANAGEMENT', routerLink: '/3pl/event-manager' },
+            { label: 'LBL.MENU.EVENT_MANAGER', routerLink: '/3pl/event-manager' },
             { label: 'LBL.MENU.SHIPMENT_REPROCESSING', routerLink: '/3pl/shipment-reprocessing' }
         ]
     },

@@ -26,6 +26,9 @@
   "LBL.MENU.ALERTS": "ଆଲର୍ଟ୍",
   "LBL.MENU.REPORTING": "ରିପୋର୍ଟିଂ",
   "LBL.MENU.3PL": "3PL",
+  "LBL.MENU.UPLOAD": "ଅପଲୋଡ୍",
+  "LBL.MENU.REPORT_BUILDER": "ରିପୋର୍ଟ୍ ବିଲ୍ଡର୍",
+  "LBL.MENU.ANALYTICS": "ଏନାଲିଟିକ୍ସ",
   "LBL.MENU.DATA_MANAGEMENT": "ଡାଟା ପରିଚାଳନା",
   "LBL.MENU.USER_MANAGEMENT": "ବ୍ୟବହାରକାରୀ ପରିଚାଳନା",
   "LBL.MENU.MASTER_DATA": "ମାଷ୍ଟର୍ ଡାଟା",
@@ -88,6 +91,7 @@
   "LBL.FEATURE_TOGGLE": "ଫିଚର୍ ଟୋଗଲ୍",
   "LBL.COPY_TO": "କପି କରନ୍ତୁ",
   "LBL.SELECT_CUSTOMER_NAME": "ଗ୍ରାହକ ନାମ ଚୟନ କରନ୍ତୁ",
+  "LBL.COPY_SUBSCRIPTION": "ସଦସ୍ୟତା କପି କରନ୍ତୁ",
 
   "LBL.BUTTON.ADD_SUBSCRIPTION": "ସଦସ୍ୟତା ଯୋଡ଼ନ୍ତୁ",
 

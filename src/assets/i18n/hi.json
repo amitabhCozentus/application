@@ -26,6 +26,9 @@
   "LBL.MENU.ALERTS": "अलर्ट",
   "LBL.MENU.REPORTING": "रिपोर्टिंग",
   "LBL.MENU.3PL": "3पीएल",
+  "LBL.MENU.UPLOAD": "अपलोड करें",
+  "LBL.MENU.REPORT_BUILDER": "रिपोर्ट बिल्डर",
+  "LBL.MENU.ANALYTICS": "विश्लेषिकी",
   "LBL.MENU.DATA_MANAGEMENT": "डेटा प्रबंधन",
   "LBL.MENU.USER_MANAGEMENT": "उपयोगकर्ता प्रबंधन",
   "LBL.MENU.MASTER_DATA": "मास्टर डेटा",
@@ -88,6 +91,7 @@
   "LBL.FEATURE_TOGGLE": "फीचर टॉगल",
   "LBL.COPY_TO": "कॉपी करें",
   "LBL.SELECT_CUSTOMER_NAME": "ग्राहक का नाम चुनें",
+  "LBL.COPY_SUBSCRIPTION": "सदस्यता कॉपी करें",
 
   "LBL.BUTTON.ADD_SUBSCRIPTION": "सदस्यता जोड़ें",
 

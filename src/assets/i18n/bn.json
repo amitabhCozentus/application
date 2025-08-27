@@ -26,6 +26,9 @@
   "LBL.MENU.ALERTS": "অ্যালার্ট",
   "LBL.MENU.REPORTING": "রিপোর্টিং",
   "LBL.MENU.3PL": "3PL",
+  "LBL.MENU.UPLOAD": "আপলোড করুন",
+  "LBL.MENU.REPORT_BUILDER": "রিপোর্ট বিল্ডার",
+  "LBL.MENU.ANALYTICS": "বিশ্লেষণ",
   "LBL.MENU.DATA_MANAGEMENT": "ডাটা ব্যবস্থাপনা",
   "LBL.MENU.USER_MANAGEMENT": "ব্যবহারকারী ব্যবস্থাপনা",
   "LBL.MENU.MASTER_DATA": "মাস্টার ডাটা",
@@ -88,6 +91,7 @@
   "LBL.FEATURE_TOGGLE": "ফিচার টগল",
   "LBL.COPY_TO": "কপি করুন",
   "LBL.SELECT_CUSTOMER_NAME": "গ্রাহকের নাম নির্বাচন করুন",
+  "LBL.COPY_SUBSCRIPTION": "সদস্যতা কপি করুন",
 
   "LBL.BUTTON.ADD_SUBSCRIPTION": "সাবস্ক্রিপশন যোগ করুন",
 
