@@ -27,7 +27,8 @@
                                         [(ngModel)]="petaGlobal"></p-radiobutton>
                                     <label for="petaNo">No</label>
                                 </div>
-                                <button pButton label="Save" class="p-button-primary" (click)="saveGlobal()"></button>
+<button pButton [label]="'LBL.BUTTON.SAVE' | translate"  class="p-button-primary"  (click)="saveGlobal()">
+</button>
                             </div>
                         </div>
                     </ng-template>
@@ -37,7 +38,7 @@
                         <tr>
                             @if (canEdit) {
                             <th> <p-tableHeaderCheckbox /> </th>
-                            <th>Action</th>
+                            <th>{{'LBL.ACTION' | translate}}</th>
                             }
                             @for (col of columns; track col.field) {
                             <th [pSortableColumn]="col.sortable ? col.field : null">

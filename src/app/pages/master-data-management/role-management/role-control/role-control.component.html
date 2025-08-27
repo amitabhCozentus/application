@@ -35,7 +35,8 @@
                     <ng-template pTemplate="header" let-columns>
                         <tr>
                             @if (canEdit) {
-                            <th>{{ 'Action' | translate }}</th>
+                            <th> {{ 'LBL.ACTION' | translate }}
+ </th>
                             }
                             @for (col of columns; track col.field) {
                             <th [pSortableColumn]="col.field">

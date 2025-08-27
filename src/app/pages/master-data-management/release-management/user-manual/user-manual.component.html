@@ -17,7 +17,8 @@
                     <ng-template #header let-columns>
                         <tr>
                             <th>
-                                Action
+                                {{ 'LBL.ACTION' | translate }}
+
                             </th>
                             @for (col of columns; track col.field) { <th>{{ col.header }}</th> }
                         </tr>

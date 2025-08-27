@@ -7,7 +7,7 @@ import { AppRoutes } from '../../../../shared/lib/api-constant';
 import { SubscriptionService } from '../../../../shared/service/subscription/subscription.service';
 import { SubscriptionCopyDialogComponent } from '../../../../shared/component/dialog/subscription-copy-dialog/subscription-copy-dialog.component';
 import { SubscriptionTierDialogComponent } from '../../../../shared/component/dialog/subscription-tier-dialog/subscription-tier-dialog.component';
-import { DATE_TIME_FORMAT } from '../../../../shared/lib/constants';
+import { DATE_TIME_FORMAT, SUBSCRIPTION_TABLE_HEADERS, TableHeaders } from '../../../../shared/lib/constants';
 // import { SubscriptionDialogComponent } from 'src/app/shared/component/dialog/subscription-dialog/subscription-dialog.component';
 interface Header{
 field:string,
@@ -48,7 +48,7 @@ export class SubscriptionComponent {
   selectedSubscription: Subscription | null = null;
   selectedCopySubscription: Subscription | null = null;
   subscription:any[];
-  subscriptionTableHeader:Header[];
+  subscriptionTableHeader: TableHeaders[] = SUBSCRIPTION_TABLE_HEADERS;
   subscriptionList:Subscription[] = [];
   selectedUsers: Subscription[] = [];
   features: number[] = [];
@@ -80,15 +80,7 @@ export class SubscriptionComponent {
     totalRecords: 0
   };
   constructor(private commonService:CommonService,private subscriptionService: SubscriptionService,private readonly changeDetector: ChangeDetectorRef)  {
-  this.subscriptionTableHeader =  [
-        { field: 'customerName', header: 'Customer Name', type: 'text' },
-        { field: 'customerCode', header: 'Customer Code', type: 'text' },
-        { field: 'subscriptionType', header: 'subscriptionType', type: 'text' },
-        { field: 'onBoardedOn', header: 'Onboarded On', type: 'date' },
-        { field: 'onBoardedSource', header: 'Onboarded Source', type: 'text' },
-        { field: 'updatedOn', header: 'Updated On', type: 'date' },
-        { field: 'updatedBy', header: 'Updated By', type: 'text' },
-      ];
+  
       // this.subscriptionList = [
       //   {
       //     "customerName": 'John Doe',

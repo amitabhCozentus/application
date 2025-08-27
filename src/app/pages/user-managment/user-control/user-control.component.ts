@@ -5,6 +5,7 @@ import { AppRoutes } from '../../../shared/lib/api-constant';
 import { CommonService } from '../../../shared/service/common/common.service';
 import { CommonTableSearchComponent } from 'src/app/shared/component/table-search/common-table-search.component';
 import { TranslateModule } from '@ngx-translate/core';
+import { TableHeaders, USER_CONTROL_TABLE_HEADERS } from 'src/app/shared/lib/constants';
 
 
 interface userInfo{
@@ -21,7 +22,7 @@ interface userInfo{
 export class UserControlComponent {
 
   hasExistingUsers:boolean=true;
-  usersTableHeader:any=[];
+  usersTableHeader: TableHeaders[] = USER_CONTROL_TABLE_HEADERS; 
   inActiveTableHeader:any=[];
   activeIndex:any=0;
   usersList:any[]=[];
@@ -29,15 +30,7 @@ export class UserControlComponent {
   selectedUser:userInfo[]=[]
   showAssignDialog:boolean=false;
 constructor(private userControlService:UserControlService,private commonService:CommonService) {
-    this.usersTableHeader =  [
-  { field: 'userName', header: 'LBL.USER_NAME' },
-  { field: 'userType', header: 'LBL.USER_TYPE' },
-  { field: 'userId', header: 'LBL.USER_EMAIL_ID' },
-  { field: 'companies', header: 'LBL.COMPANY_NAME' },
-  { field: 'roleGranted', header: 'LBL.ROLE_GRANTED' },
-  { field: 'updatedBy', header: 'LBL.UPDATED_BY' },
-  { field: 'updatedOn', header: 'LBL.UPDATED_ON' }
-];
+   
     //this.inActiveTableHeader = this.userControlService.getTableHeaders(1);
     this.usersList=[ {
         "userId": "madhusudhan.murmu@bdpint.com",

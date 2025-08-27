@@ -32,7 +32,7 @@ describe('ToastComponent', () => {
       severity: 'success',
       summary: '',
       detail: 'Test success message',
-      life: 300000
+  life: 300
     });
   });
 
@@ -84,7 +84,7 @@ describe('ToastComponent', () => {
       severity: 'success',
       summary: 'Custom Summary',
       detail: 'Test success message',
-      life: 300000
+  life: 300
     });
   });
 });

@@ -34,12 +34,12 @@
                             <tr>
                                 <th style="width: 4rem"><p-tableHeaderCheckbox /></th>
                                 <th>
-                                    Actions
+{{ 'LBL.ACTION' | translate }}
                                 </th>
 
                                 @for (col of subscriptionTableHeader; track col) {
                                     <th [pSortableColumn]="col.field">
-                                        {{ col.header }}
+                                        {{ col.header|translate }}
                                         <p-sortIcon [field]="col.field" />
                                         <p-columnFilter type="text" [field]="col.field" display="menu" />
                                     </th>

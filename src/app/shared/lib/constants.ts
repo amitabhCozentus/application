@@ -59,7 +59,26 @@ export const PETA_TABLE_HEADERS: TableHeaders[] = [
   { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' }
 ];
 
+export const USER_CONTROL_TABLE_HEADERS: TableHeaders[] = [
+      { field: 'userName', header: 'LBL.USER_NAME', sortable: true, filter: true, type: 'text' },
+      { field: 'userType', header: 'LBL.USER_TYPE', sortable: true, filter: true, type: 'text' },
+      { field: 'userId', header: 'LBL.USER_EMAIL_ID', sortable: true, filter: true, type: 'text' },
+      { field: 'companies', header: 'LBL.COMPANY_NAME', sortable: false, filter: false, type: 'text' },
+      { field: 'roleGranted', header: 'LBL.ROLE_GRANTED', sortable: false, filter: false, type: 'text' },
+      { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true, type: 'text' },
+      { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' }
 
+];
+
+export const SUBSCRIPTION_TABLE_HEADERS: TableHeaders[] = [
+  { field: 'customerName', header: 'LBL.CUSTOMER_NAME', sortable: true, filter: true, type: 'text' },
+  { field: 'customerCode', header: 'LBL.CUSTOMER_CODE', sortable: true, filter: true, type: 'text' },
+  { field: 'subscriptionType', header: 'LBL.SUBSCRIPTION_TYPE', sortable: true, filter: true, type: 'text' },
+  { field: 'onBoardedOn', header: 'LBL.ONBOARDED_ON', sortable: true, filter: true, type: 'date' },
+  { field: 'onBoardedSource', header: 'LBL.ONBOARDED_SOURCE', sortable: false, filter: false, type: 'text' },
+  { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
+  { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true, type: 'text' },
+];
 
 export interface SelectOption {
     label: string;
