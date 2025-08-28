@@ -40,36 +40,53 @@
                             @for (col of columns; track col.field) {
                             <th [pSortableColumn]="col.field">
                                 {{ col.header | translate }} <p-sortIcon [field]="col.field" />
+
+                                <!-- Status Filter -->
                                 @if (col.field === 'status') {
                                 <p-columnFilter field="status" matchMode="equals" display="menu">
                                 <ng-template #filtericon>
                                         <app-common-table-filter [field]="'status'" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
-                                        <p-select [(ngModel)]="value"
-                                                [options]="statuses"
-                                                optionLabel="label"
-                                                optionValue="value"
-                                                (onChange)="filter($event.value)"
-                                                placeholder="Select One"
-                                                class="w-full">
+                                        <p-select [(ngModel)]="value" [options]="statuses" optionLabel="label" optionValue="value"
+                                            (onChange)="filter($event.value)" placeholder="Select One" class="w-full">
+                                    
+                                            <!-- Dropdown item template -->
+                                            <ng-template let-option pTemplate="item">
+                                                <p-tag [value]="option.label" [ngClass]="getSeverity(option.value)">
+                                                </p-tag>
+                                            </ng-template>
+                                    
+                                            <!-- Selected value template -->
+                                            <ng-template pTemplate="selectedItem" let-option>
+                                                <ng-container *ngIf="option">
+                                                    <p-tag [value]="option.label" [ngClass]="getSeverity(option.value)">
+                                                    </p-tag>
+                                                </ng-container>
+                                            </ng-template>
                                         </p-select>
                                     </ng-template>
-                                </p-columnFilter>
-                                }
+                                    </p-columnFilter>
+                                    }
+
+                                    <!-- For Custom landing -->
+
+                                     @if (col.field === 'customLanding') {
+                                <p-columnFilter field="custimLanding" matchMode="equals" display="menu">
+                                <ng-template #filtericon>
+                                        <app-common-table-filter [field]="'customLanding'" [table]="roleTable"></app-common-table-filter>
+                                    </ng-template>
+                                    <ng-template #filter let-value let-filter="filterCallback">
+                                        <p-select [(ngModel)]="value" [options]="customLanding" optionLabel="label" optionValue="value"
+                                            (onChange)="filter($event.value)" placeholder="Select One" class="w-full">
+                                        </p-select>
+                                    </ng-template>
+                                    </p-columnFilter>
+                                    }
 
                                 <!-- Date Filter -->
                                 @else if (col.type === 'date') {
                                 <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true">
-                                    <ng-template #filtericon>
-                                        <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
-                                    </ng-template>
-                                </p-columnFilter>
-                                }
-
-                                <!-- Boolean Filter -->
-                                @else if (col.type === 'boolean') {
-                                <p-columnFilter type="boolean" [field]="col.field" display="menu">
                                     <ng-template #filtericon>
                                         <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
@@ -105,7 +122,7 @@
                                 <div>
                                     <button pButton pRipple class="p-button-primary"
                                         [ngClass]="assignment.status === 'Active' ? 'status-active' : 'status-inactive'"
-                                        class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none">
+                                        class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold pe-none">
                                         {{ assignment.status }}
                                     </button>
                                 </div>

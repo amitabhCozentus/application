@@ -6,6 +6,10 @@ export const STATUSES = [
   { label: 'Active', value: true },
   { label: 'Inactive', value: false }
 ];
+export const CUSTOM_LANDING = [
+  { label: 'Yes', value: 'Yes' },
+  { label: 'No', value: 'No' }
+];
 export interface TableHeaders {
     field: string;
     header: string;
