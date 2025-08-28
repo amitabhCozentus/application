@@ -6,7 +6,7 @@
                     [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
                     [columns]="roleTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
-                    [currentPageReportTemplate]="'table.pageReport' | translate"
+                    currentPageReportTemplate="{{ 'LBL.TABLE.PAGE_REPORT' | translate }}"
                     styleClass="p-datatable-customers p-datatable-striped"
                     [globalFilterFields]="['roleName', 'roleDescription']" [lazy]="true"
                     (onLazyLoad)="onLazyLoad($event)">
@@ -23,7 +23,7 @@
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                     (click)="refresh()"></button>
                                 @if (canEdit) {
-                                <button pButton pRipple [label]="'AddRole' | translate" class="p-button-primary"
+                                <button pButton pRipple label="{{ 'LBL.ADD_ROLE' | translate }}" class="p-button-primary"
                                     style="min-width: 120px; white-space: nowrap;" (click)="openAddRoleDialog()">
                                 </button>
                                 }
@@ -35,27 +35,59 @@
                     <ng-template pTemplate="header" let-columns>
                         <tr>
                             @if (canEdit) {
-                            <th>{{ 'Action' | translate }}</th>
+                            <th>{{ 'LBL.ACTION' | translate }}</th>
                             }
                             @for (col of columns; track col.field) {
                             <th [pSortableColumn]="col.field">
                                 {{ col.header | translate }} <p-sortIcon [field]="col.field" />
                                 @if (col.field === 'status') {
                                 <p-columnFilter field="status" matchMode="equals" display="menu">
+                                <ng-template #filtericon>
+                                        <app-common-table-filter [field]="'status'" [table]="roleTable"></app-common-table-filter>
+                                    </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
-                                        <p-select [(ngModel)]="value" [options]="statuses" optionLabel="label" optionValue="value" (onChange)="filter($event.value)" placeholder="Select One" class="w-full"></p-select>
+                                        <p-select [(ngModel)]="value"
+                                                [options]="statuses"
+                                                optionLabel="label"
+                                                optionValue="value"
+                                                (onChange)="filter($event.value)"
+                                                placeholder="Select One"
+                                                class="w-full">
+                                        </p-select>
                                     </ng-template>
                                 </p-columnFilter>
-                                } @else if (col.type === 'date') {
-                                <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true" />
-                                } @else {
-                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu" />
+                                }
+
+                                <!-- Date Filter -->
+                                @else if (col.type === 'date') {
+                                <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true">
+                                    <ng-template #filtericon>
+                                        <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
+                                    </ng-template>
+                                </p-columnFilter>
+                                }
+
+                                <!-- Boolean Filter -->
+                                @else if (col.type === 'boolean') {
+                                <p-columnFilter type="boolean" [field]="col.field" display="menu">
+                                    <ng-template #filtericon>
+                                        <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
+                                    </ng-template>
+                                </p-columnFilter>
+                                }
+
+                                <!-- Other Filters -->
+                                @else {
+                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
+                                    <ng-template #filtericon>
+                                        <app-common-table-filter [field]="col.field" [table]="roleTable"></app-common-table-filter>
+                                    </ng-template>
+                                </p-columnFilter>
                                 }
                             </th>
                             }
                         </tr>
                     </ng-template>
-
                     <!-- Body -->
                     <ng-template pTemplate="body" let-assignment let-columns="columns">
                         <tr>
@@ -143,7 +175,7 @@
                         <tr>
                             <td [attr.colspan]="(canEdit ? roleTableHeaders.length + 1 : roleTableHeaders.length)"
                                 class="text-center">
-                                No Roles found.
+                                {{ 'LBL.TABLE.EMPTY_MESSAGE' | translate }}
                             </td>
                         </tr>
                     </ng-template>

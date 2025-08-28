@@ -52,8 +52,10 @@ declare type SurfacesType = {
 export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     applicationTitle = 'SMART + NAVIGATOR';
     currentSection = 'MARITIME + INSIGHTS';
-    fenchLanguage: any = {};
+    frenchLanguage: any = {};
     englishLanguage: any = {};
+    odiaLanguage: any = {};
+    hindiLanguage: any = {};
     selectedLanguageLabel='English';
     selectedLanguage: string = 'en'; // Default to English
     layoutService: LayoutService = inject(LayoutService);
@@ -83,7 +85,11 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedCompany: any;
     languageOptions: SelectItem[] = [
         { label: 'English', value: 'en' },
-        { label: 'French', value: 'fr' }
+        { label: 'French', value: 'fr' },
+        { label: 'Hindi', value: 'hi' },
+    { label: 'Odia', value: 'or' },
+    { label: 'Bengali', value: 'bn' },
+    { label: 'Russian', value: 'ru' }
     ];
     // Full menu set after permission filtering
     navMenuItems: AppMenuItem[] = [];
@@ -98,9 +104,27 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('navigationBar', { static: false }) navigationBar!: ElementRef;
     @ViewChild('navContainer', { static: false }) navContainer!: ElementRef<HTMLElement>;
     private resizeObserver?: ResizeObserver;
+    private translateService: TranslateService = inject(TranslateService);
 
-    constructor(private translateService: TranslateService) {}
+    constructor() {}
 
+    ngOnInit(): void {
+        this.initializeDarkModePreference();
+        this.initializeThemeColorPreference();
+
+        // Set default to English and build only after translations are ready
+        this.translateService.use('en').subscribe(() => {
+            this.selectedLanguage = 'en';
+            this.buildNavMenu();
+        });
+
+        this.userMenuItems = [
+            { label: 'Profile', icon: 'pi pi-user' },
+            { label: 'Settings', icon: 'pi pi-cog' },
+            { separator: true },
+            { label: 'Logout', icon: 'pi pi-sign-out', command: (event) => this.logoutRedirect() }
+        ];
+    }
 
     userName = 'Solution User';
     get userInitials(): string {
@@ -155,7 +179,17 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
                     items: i.items ? filterByPermission(i.items) : undefined
                 }));
 
-        this.navMenuItems = filterByPermission(MENU_ITEMS);
+        const filtered = filterByPermission(MENU_ITEMS);
+
+        // Deep-translate labels for live language switching
+        const translateItems = (items: AppMenuItem[] = []): AppMenuItem[] =>
+            items.map(i => ({
+                ...i,
+                label: typeof i.label === 'string' ? this.translateService.instant(i.label) : i.label,
+                items: i.items ? translateItems(i.items) : undefined
+            }));
+
+        this.navMenuItems = translateItems(filtered);
         this.calculateResponsiveMenu();
     }
 
@@ -476,16 +510,38 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedPrimaryColor = computed(() => {
         return this.layoutService.layoutConfig().primary;
     });
-   onLanguageChange(event: any) {
-  const lang = event.value;
-  this.translateService.use(lang);
-  const selectedLanguage = event.value;
+     onLanguageChange(event: any) {
+    const lang = event.value;
+    this.selectedLanguage = lang;
 
-  selectedLanguage === 'en'
-    ? this.translationService.setLanguage(selectedLanguage, this.englishLanguage)
-    : this.translationService.setLanguage(selectedLanguage, this.fenchLanguage);
+    // Optional: keep custom translation service in sync
+    switch (lang) {
+        case 'en':
+            this.translationService.setLanguage(lang, this.englishLanguage);
+            break;
+        case 'fr':
+            this.translationService.setLanguage(lang, this.frenchLanguage);
+            break;
+        case 'hi':
+            this.translationService.setLanguage(lang, this.hindiLanguage);
+            break;
+        case 'or':
+            this.translationService.setLanguage(lang, this.odiaLanguage);
+            break;
+        case 'bn':
+            this.translationService.setLanguage(lang, {});
+            break;
+        case 'ru':
+            this.translationService.setLanguage(lang, {});
+            break;
+        default:
+            this.translationService.setLanguage(lang, this.englishLanguage);
+    }
 
-  this.buildNavMenu();
+    // Wait for ngx-translate to load the JSON, then rebuild the menu so instant() resolves
+    this.translateService.use(lang).subscribe(() => {
+        this.buildNavMenu();
+    });
 }
 
     public logoutRedirect() {
@@ -524,50 +580,5 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     onUserAvatarClick(event: Event, userMenu: any, overflowMenu: any) {
         try { overflowMenu?.hide?.(); } catch {}
         userMenu?.toggle?.(event);
-    }
-
-    ngOnInit(): void {
-        this.initializeDarkModePreference();
-        this.initializeThemeColorPreference();
-
-    // Build from centralized menu constants
-    this.buildNavMenu();
-
-        this.userMenuItems = [
-            { label: 'Profile', icon: 'pi pi-user' },
-            { label: 'Settings', icon: 'pi pi-cog' },
-            { separator: true },
-            { label: 'Logout', icon: 'pi pi-sign-out', command: (event) => this.logoutRedirect() }
-        ];
-
-        this.topbarService.getFrenchItemTranslation('topbar.company').subscribe((translation: any) => {
-            if (translation && translation.success && translation.data) {
-                this.fenchLanguage = translation.data[0];
-            }
-        });
-
-
-
-
-        this.topbarService.getEnglishItemTranslation('topbar.company').subscribe((translation: any) => {
-            if (translation && translation.success && translation.data) {
-                this.englishLanguage = translation.data[0];
-
-                // Check if englishLanguage exists and has languageCode before accessing it
-                if (this.englishLanguage && this.englishLanguage.languageCode) {
-                    this.translationService.setLanguage(this.englishLanguage.languageCode, this.englishLanguage);
-                    this.buildNavMenu();
-                } else {
-                    console.warn('English language data missing languageCode, using fallback');
-                    // Fallback: use default English language code
-                    this.translationService.setLanguage('en', this.englishLanguage);
-                    this.buildNavMenu();
-                }
-            } else {
-                console.error('Invalid English translation response structure');
-            }
-        });
-
-
     }
 }

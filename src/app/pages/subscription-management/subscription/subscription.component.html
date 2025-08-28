@@ -5,12 +5,12 @@
                 <div class="card">
                     <p-table #existingUserTable [value]="subscriptionList" [(selection)]="selectedUsers"
                         styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" [rows]="10"
-                        [showCurrentPageReport]="true" [scrollable]="true"  (onPage)="onPageChange($event)"
-                        (selectionChange)="onSelectionChange($event)"
-                        [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" dataKey="customerCode"
-                        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                        [filterDelay]="0" [resizableColumns]="true" [columns]="subscriptionTableHeader"
-                        [reorderableColumns]="true" [totalRecords]="totalRecords" [lazy]="true" [globalFilterFields]="[
+                        [showCurrentPageReport]="true" [scrollable]="true" (onPage)="onPageChange($event)"
+                        (selectionChange)="onSelectionChange($event)" [rowsPerPageOptions]="[10, 25, 50]"
+                        [paginator]="true" dataKey="customerCode"
+                        [currentPageReportTemplate]="'LBL.TABLE.PAGE_REPORT' | translate" [filterDelay]="0"
+                        [resizableColumns]="true" [columns]="subscriptionTableHeader" [reorderableColumns]="true"
+                        [totalRecords]="totalRecords" [lazy]="true" [globalFilterFields]="[
                                 'customerName',
                                 'customerCode',
                                 'subscriptionType',
@@ -22,11 +22,12 @@
                                     <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
                                         (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
                                 </div>
-                                <button pButton
-                                    label="Subscription Tier"
-                                    (click)="openSubscriptionTierDialog()"
-                                    [disabled]="!isSubscriptionTierButtonActive">
-                                </button>
+                                <button 
+  pButton 
+  [label]="'LBL.SUBSCRIPTION_TIER' | translate" 
+  (click)="openSubscriptionTierDialog()" 
+  [disabled]="!isSubscriptionTierButtonActive">
+</button>
                             </div>
                         </ng-template>
 
@@ -38,7 +39,7 @@
                                 </th>
 
                                 <th *ngFor="let col of subscriptionTableHeader" pSortableColumn="{{col.field}}">
-                                    {{ col.header }}
+                                    {{ col.header| translate }}
                                     <p-sortIcon field="{{col.field}}" />
                                     <p-columnFilter type="text" field="{{col.field}}" display="menu" />
                                 </th>
@@ -70,7 +71,8 @@
 
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="8">No Data found.</td>
+                                <td colspan="8"> {{ 'LBL.TABLE.EMPTY_MESSAGE' | translate }}
+                                </td>
                             </tr>
                         </ng-template>
                     </p-table>
@@ -79,23 +81,23 @@
                             [features]="features"
                             [subscription]="selectedSubscription"
                             (onClose)="handleDialogClose()"
-                            (onUpdateSuccess)="loadSubscriptionList()">
-                        </app-subscription-dialog> 
+                        (onUpdateSuccess)="loadSubscriptionList()">
+                    </app-subscription-dialog>
 
                         <app-subscription-copy-dialog
                             [visible]="showAssignDialog"
                             [features]="features"
                             [subscription]="selectedCopySubscription"
                             (onClose)="handleCopyDialogClose()"
-                            (onUpdateSuccess)="handleCopyUpdateSuccess()">
-                        </app-subscription-copy-dialog>
+                        (onUpdateSuccess)="handleCopyUpdateSuccess()">
+                    </app-subscription-copy-dialog>
 
                         <app-subscription-tier-dialog
                             [visible]="showSubscriptionTierDialog"
                             [selectedRows]="selectedUsers"
                             (onClose)="closeSubscriptionTierDialog()"
                             (onSave)="handleSubscriptionTierSave()">
-                        </app-subscription-tier-dialog>
+                    </app-subscription-tier-dialog>
                 </div>
             </div>
         </div>

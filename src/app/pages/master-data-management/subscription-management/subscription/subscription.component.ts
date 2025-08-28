@@ -1,3 +1,13 @@
+
+import { toSignal } from '@angular/core/rxjs-interop';
+import { computed, inject, OnInit, ViewChild } from '@angular/core';
+import { map, catchError, startWith } from 'rxjs/operators';
+import { of } from 'rxjs';
+import { signal } from '@angular/core';
+import { TablePageEvent } from 'primeng/table';
+import { FilterOperation, SUBSCRIPTION_TABLE_HEADERS } from '../../../../shared/lib/constants';
+import { Table } from 'primeng/table';
+
 import { ChangeDetectorRef, Component, EventEmitter, Inject, Output, output } from '@angular/core';
 import { PrimengModule } from '../../../../shared/primeng/primeng.module';
 import { CommonTableSearchComponent } from '../../../../shared/component/table-search/common-table-search.component';
@@ -8,11 +18,11 @@ import { SubscriptionService } from '../../../../shared/service/subscription/sub
 import { SubscriptionCopyDialogComponent } from '../../../../shared/component/dialog/subscription-copy-dialog/subscription-copy-dialog.component';
 import { SubscriptionTierDialogComponent } from '../../../../shared/component/dialog/subscription-tier-dialog/subscription-tier-dialog.component';
 import { DATE_TIME_FORMAT } from '../../../../shared/lib/constants';
-// import { SubscriptionDialogComponent } from 'src/app/shared/component/dialog/subscription-dialog/subscription-dialog.component';
+
 interface Header{
-field:string,
-header:string,
-type:string
+  field: string;
+  header: string;
+  filterType?: string;
 }
 
 interface Subscription {
@@ -33,6 +43,17 @@ interface PaginationState {
   totalRecords: number;
 }
 
+interface SearchFilter {
+  searchText: string;
+  columns?: string[];
+}
+
+interface ColumnFilter {
+  columnName: string;
+  filter: string;
+  sort: string;
+}
+
 @Component({
   selector: 'app-subscription',
   imports: [PrimengModule, CommonTableSearchComponent, SubscriptionDialogComponent,SubscriptionCopyDialogComponent, SubscriptionTierDialogComponent],
@@ -41,19 +62,61 @@ interface PaginationState {
 })
 
 
-export class SubscriptionComponent {
+export class SubscriptionComponent implements OnInit {
   @Output() enableSubscriptionDialog: EventEmitter<boolean> = new EventEmitter<boolean>();
   showAssignDialog:boolean = false;
   isDialogOpen: boolean = false;
   selectedSubscription: Subscription | null = null;
   selectedCopySubscription: Subscription | null = null;
   subscription:any[];
-  subscriptionTableHeader:Header[];
+  subscriptionTableHeader: Header[] = SUBSCRIPTION_TABLE_HEADERS;
   subscriptionList:Subscription[] = [];
   selectedUsers: Subscription[] = [];
-  features: number[] = [];
+
+  commonService=inject(CommonService);
+  subscriptionService=inject(SubscriptionService);
+  changeDetectorRef=inject(ChangeDetectorRef);
+
+  private configMasterSignal = toSignal(
+    this.subscriptionService.getConfigMaster().pipe(
+      map(response => Array.isArray(response?.data) ? response.data : []),
+      catchError(err => {
+        console.error('API Error:', err);
+        return of([]);
+      }),
+      startWith([])
+    )
+  );
+
+  features = computed(() =>
+    this.configMasterSignal()?.filter((item: any) => item.configType === 'FEATURE_TOGGLE')
+      .map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        configType: item.configType
+      }))
+  );
+
+  subscriptionTier = computed(() =>
+    this.configMasterSignal()?.filter((item: any) => item.configType === 'SUBSCRIPTION_TYPE')
+      .map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        configType: item.configType
+      }))
+  );
+
   isSubscriptionTierButtonActive: boolean = false;
   showSubscriptionTierDialog: boolean = false;
+  searchTerm: string = '';
+  columnFilters: ColumnFilter[] = [];
+  sortFields: any[] = [];
+
+  // Only initialize signals once in the class, not in both property and loadSubscriptionList.
+  subscriptionListSignal = signal<Subscription[]>([]);
+  totalRecordsSignal = signal<number>(0);
+
+  @ViewChild('existingSubscriptionTable') existingSubscriptionTable: Table | undefined;
   dateTimeFormat = DATE_TIME_FORMAT;
 
   onSelectionChange(event: any) {
@@ -74,104 +137,84 @@ export class SubscriptionComponent {
 
    paginationState: PaginationState = {
     first: 0,
-    rows: 10,
+    rows: 10, // Always default to 10 rows per page
     pageIndex: 0,
     pageCount: 0,
     totalRecords: 0
   };
-  constructor(private commonService:CommonService,private subscriptionService: SubscriptionService,private readonly changeDetector: ChangeDetectorRef)  {
-  this.subscriptionTableHeader =  [
-        { field: 'customerName', header: 'Customer Name', type: 'text' },
-        { field: 'customerCode', header: 'Customer Code', type: 'text' },
-        { field: 'subscriptionType', header: 'subscriptionType', type: 'text' },
-        { field: 'onBoardedOn', header: 'Onboarded On', type: 'date' },
-        { field: 'onBoardedSource', header: 'Onboarded Source', type: 'text' },
-        { field: 'updatedOn', header: 'Updated On', type: 'date' },
-        { field: 'updatedBy', header: 'Updated By', type: 'text' },
-      ];
-      // this.subscriptionList = [
-      //   {
-      //     "customerName": 'John Doe',
-      //     "customerCode": 'CUST123',
-      //     "subscriptionType": 'Premium',
-      //     "onBoardedOn": '2023-01-01',
-      //     "onBoardedSource": 'Website',
-      //   },
-      //    {
-      //     "customerName": 'John lee',
-      //     "customerCode": 'CUST123',
-      //     "subscriptionType": 'Premium',
-      //     "onBoardedOn": '2023-01-01',
-      //     "onBoardedSource": 'Website',
-      //   },
-      //    {
-      //     "customerName": 'Don Doe',
-      //     "customerCode": 'CUST123',
-      //     "subscriptionType": 'Premium',
-      //     "onBoardedOn": '2023-01-01',
-      //     "onBoardedSource": 'Website',
-      //   },
-      //    {
-      //     "customerName": 'acryle Doe',
-      //     "customerCode": 'CUST123',
-      //     "subscriptionType": 'Premium',
-      //     "onBoardedOn": '2023-01-01',
-      //     "onBoardedSource": 'Website',
-      //   }
-      // ];
 
-      }
 
-  loadSubscriptionList(page: number = 0, size: number = 10) {
-  const requestBody = {
-    pagination: { page, size }
-  };
+  loadSubscriptionList(
+    page: number = 0,
+    size: number = 10,
+    searchText: string = '',
+    columns: ColumnFilter[] = []
+  ) {
+    // Trim spaces from searchText before using in API call
+    const trimmedSearchText = (searchText ?? '').trim();
 
-  this.subscriptionService.getCustomerSubscriptionList(requestBody).subscribe({
-    next: (response: { data: { content: Array<any>, totalElements: number } }) => {
-      const content = response?.data?.content || [];
-      this.totalRecords = response?.data?.totalElements || 0;
-      this.subscriptionList = content.map((item): Subscription => ({
-        customerName: item.customerName,
-        customerCode: item.customerCode,
-        subscriptionType: item.subscriptionTypeName,
-        onBoardedOn: item.onboardedOn,
-        onBoardedSource: item.onboardedSourceName,
-        updatedOn: item.updatedOn,
-        updatedBy: item.updatedBy,
-        featureIds: item.featureIds || []
-      }));
-    },
-    error: (error) => {
-      console.error('Error fetching subscription list', error);
+    // Only fire API if search is empty or at least 3 characters
+    if (trimmedSearchText && trimmedSearchText.length < 3) {
+      // Optionally clear results if you want, or just return
+      return;
     }
-  });
-}
+
+    const requestBody = {
+      pagination: { page, size },
+      searchFilter: { searchText: trimmedSearchText },
+      columns: columns ?? []
+    };
+
+    // Only call the API once per invocation
+    this.subscriptionService.getCustomerSubscriptionList(requestBody).pipe(
+      map((response: { data: { content: Array<any>, totalElements: number } }) => {
+        const content = response?.data?.content || [];
+        const total = response?.data?.totalElements || 0;
+        this.subscriptionListSignal.set(content);
+        this.totalRecordsSignal.set(total);
+      }),
+      catchError(error => {
+        console.error('Error fetching subscription list', error);
+        this.subscriptionListSignal.set([]);
+        this.totalRecordsSignal.set(0);
+        return of();
+      })
+    ).subscribe();
+  }
 
   ngOnInit() {
-    this.loadSubscriptionList();
+    // Remove table state persistence for rows per page only here
+    localStorage.removeItem('existingUserTableState');
+    this.paginationState.rows = 10;
+    this.paginationState.first = 0;
+    this.paginationState.pageIndex = 0;
+    this.loadSubscriptionList(0, 10, this.searchTerm, this.columnFilters);
+  }
 
-  // Fetch config master features
-    this.subscriptionService.getConfigMaster().subscribe({
-      next: (response) => {
-        this.features = response.data
-          .filter((item: any) => item.configType === 'FEATURE_TOGGLE')
-          .map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            configType: item.configType
-          }));
-        // console.log('Features loaded:', this.features);
-        this.changeDetector.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error fetching config master features', error);
+  refresh() {
+    // Remove table state persistence for rows per page and filters on manual refresh
+    localStorage.removeItem('existingUserTableState');
+    this.paginationState = {
+      first: 0,
+      rows: 10,
+      pageIndex: 0,
+      pageCount: 0,
+      totalRecords: 0
+    };
+    this.searchTerm = '';
+    this.columnFilters = [];
+
+    // Clear PrimeNG table filters in the UI
+    setTimeout(() => {
+      if (this.existingSubscriptionTable) {
+        this.existingSubscriptionTable.clear();
       }
     });
-}
 
+    this.loadSubscriptionList(0, 10, '', []);
+  }
 
-   onCopyClick(subscription: Subscription) {
+  onCopyClick(subscription: Subscription) {
     this.selectedCopySubscription = subscription;
     this.showAssignDialog = true;
   }
@@ -182,7 +225,9 @@ export class SubscriptionComponent {
   }
 
   handleCopyUpdateSuccess() {
-    this.loadSubscriptionList();
+    this.paginationState.first = 0;
+    this.paginationState.pageIndex = 0;
+    this.loadSubscriptionList(0, this.paginationState.rows, this.searchTerm, this.columnFilters);
     this.handleCopyDialogClose();
   }
 
@@ -194,45 +239,29 @@ export class SubscriptionComponent {
           this.isDialogOpen = true;
         }, 0);
     }
-  onPageChange(event: any) {
-    console.log('Page change event:', event);
+  onPageChange(event: TablePageEvent) {
+    // event.page is the zero-based page index visited
     this.paginationState.first = event.first;
-    this.paginationState.rows = event.rows;
-    this.paginationState.pageIndex = event.page;
+    // Only update rows if the user changes the page size
+    if (event.rows !== this.paginationState.rows) {
+      this.paginationState.rows = event.rows;
+    }
+    this.paginationState.pageIndex = Math.floor(event.first / this.paginationState.rows);
     this.paginationState.pageCount = Math.ceil(this.totalRecords / this.paginationState.rows);
     this.paginationState.totalRecords = this.totalRecords;
 
-    const requestBody = {
-      pagination: { page: this.paginationState.first, size: this.paginationState.rows }
-      // searchFilter: { searchText: '', columns: [] as String[] },
-      // columns: [] as any[],
-      // sortFieldValidator: { validSortFields: [] as String[] }
-    };
-
-    this.subscriptionService.getCustomerSubscriptionList(requestBody).subscribe({
-      next: (response: { data: { content: Array<any>, totalElements: number } }) => {
-        const content = response?.data?.content || [];
-        this.totalRecords = response?.data?.totalElements || 0;
-        this.subscriptionList = [...content];
-        this.subscriptionList = content.map((item): Subscription => ({
-          customerName: item.customerName,
-          customerCode: item.customerCode,
-          subscriptionType: item.subscriptionTypeName,
-          onBoardedOn: item.onboardedOn,
-          onBoardedSource: item.onboardedSourceName,
-          updatedOn: item.updatedOn,
-          updatedBy: item.updatedBy
-        }));
-      },
-      error: (error) => {
-        console.error('Error fetching subscription list', error);
-      }
-    });
+    // Use current filters/search for paging
+    if (this.columnFilters && this.columnFilters.length > 0) {
+      this.loadSubscriptionList(this.paginationState.pageIndex, this.paginationState.rows, '', this.columnFilters);
+    } else {
+      this.loadSubscriptionList(this.paginationState.pageIndex, this.paginationState.rows, this.searchTerm, []);
+    }
   }
 
-  // Add this method to handle the save event from the dialog
   handleSubscriptionTierSave() {
-    this.loadSubscriptionList();
+    this.paginationState.first = 0;
+    this.paginationState.pageIndex = 0;
+    this.loadSubscriptionList(0, this.paginationState.rows, this.searchTerm, this.columnFilters);
     this.selectedUsers = [];
     this.isSubscriptionTierButtonActive = false;
   }
@@ -242,4 +271,146 @@ export class SubscriptionComponent {
     this.selectedSubscription = null;
   }
 
+  onSearch() {
+    // Only trigger search if trimmed searchTerm is at least 3 characters or empty (reset)
+    const trimmed = this.searchTerm.trim();
+    if (trimmed.length === 0 || trimmed.length >= 3) {
+      this.paginationState.first = 0;
+      this.paginationState.pageIndex = 0;
+      this.loadSubscriptionList(0, this.paginationState.rows, trimmed, []);
+    }
+  }
+
+  resetSearch() {
+    this.searchTerm = '';
+    this.paginationState.first = 0;
+    this.paginationState.pageIndex = 0;
+    this.loadSubscriptionList(0, this.paginationState.rows, '', []);
+  }
+
+  onColumnFilterChange(columns: ColumnFilter[]) {
+    this.columnFilters = columns;
+    this.paginationState.first = 0;
+    this.paginationState.pageIndex = 0;
+    // Always pass both searchTerm and columns
+    this.loadSubscriptionList(0, this.paginationState.rows, this.searchTerm, columns);
+  }
+
+  onTableFilter(event: any) {
+    const columns: ColumnFilter[] = [];
+    const sortMap: { [key: string]: string } = {};
+
+    if (event && event.multiSortMeta && Array.isArray(event.multiSortMeta)) {
+      event.multiSortMeta.forEach((meta: any) => {
+        sortMap[meta.field] = meta.order === 1 ? 'asc' : meta.order === -1 ? 'desc' : '';
+      });
+    } else if (event && event.sortField && event.sortOrder) {
+      sortMap[event.sortField] = event.sortOrder === 1 ? 'asc' : event.sortOrder === -1 ? 'desc' : '';
+    }
+
+    if (event && event.filters) {
+      Object.keys(event.filters).forEach((field) => {
+        const filterMeta = event.filters[field];
+        const isDate = this.subscriptionTableHeader.find(h => h.field === field)?.filterType === 'date';
+        if (Array.isArray(filterMeta)) {
+          filterMeta.forEach(meta => {
+            if (meta && meta.value !== undefined && meta.value !== null && meta.value !== '') {
+              let filterValue = meta.value;
+              let filterType = '';
+              if (isDate) {
+                // Convert to UTC date at midnight and format as yyyy-MM-ddTHH:mm:ss
+                if (meta.value instanceof Date) {
+                  const localDate = new Date(meta.value.getFullYear(), meta.value.getMonth(), meta.value.getDate(), 0, 0, 0, 0);
+                  const utcDate = new Date(Date.UTC(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 0, 0, 0, 0));
+                  filterValue = utcDate.toISOString().slice(0, 19);
+                }
+                switch (meta.matchMode) {
+                  case 'dateAfter': filterType = FilterOperation.DateGreaterThan; break;
+                  case 'dateAfterEquals': filterType = FilterOperation.DateGreaterThanOrEqual; break;
+                  case 'dateBefore': filterType = FilterOperation.DateLessThan; break;
+                  case 'dateBeforeEquals': filterType = FilterOperation.DateLessThanOrEqual; break;
+                  case 'dateIs': filterType = FilterOperation.DateEquals; break;
+                  case 'dateIsNot': filterType = FilterOperation.DateNotEquals; break;
+                  case 'between': filterType = FilterOperation.DateBetween; break;
+                  default: filterType = '';
+                }
+              } else {
+                switch (meta.matchMode) {
+                  case 'startsWith': filterType = FilterOperation.StartsWith; break;
+                  case 'contains': filterType = FilterOperation.Contains; break;
+                  case 'notContains': filterType = FilterOperation.NotContains; break;
+                  case 'endsWith': filterType = FilterOperation.EndsWith; break;
+                  case 'equals': filterType = FilterOperation.Equals; break;
+                  case 'notEquals': filterType = FilterOperation.NotEquals; break;
+                  case 'gt': filterType = FilterOperation.GreaterThan; break;
+                  case 'gte': filterType = FilterOperation.GreaterThanOrEqual; break;
+                  case 'lt': filterType = FilterOperation.LessThan; break;
+                  case 'lte': filterType = FilterOperation.LessThanOrEqual; break;
+                  case 'in': filterType = FilterOperation.In; break;
+                  default: filterType = '';
+                }
+              }
+              columns.push({
+                columnName: field,
+                filter: filterType + filterValue,
+                sort: sortMap[field] || ''
+              });
+            }
+          });
+        } else if (filterMeta && filterMeta.value !== undefined && filterMeta.value !== null && filterMeta.value !== '') {
+          let filterValue = filterMeta.value;
+          let filterType = '';
+          if (isDate) {
+            if (filterMeta.value instanceof Date) {
+              const localDate = new Date(filterMeta.value.getFullYear(), filterMeta.value.getMonth(), filterMeta.value.getDate(), 0, 0, 0, 0);
+              const utcDate = new Date(Date.UTC(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 0, 0, 0, 0));
+              filterValue = utcDate.toISOString().slice(0, 19);
+            }
+            switch (filterMeta.matchMode) {
+              case 'dateAfter': filterType = FilterOperation.DateGreaterThan; break;
+              case 'dateAfterEquals': filterType = FilterOperation.DateGreaterThanOrEqual; break;
+              case 'dateBefore': filterType = FilterOperation.DateLessThan; break;
+              case 'dateBeforeEquals': filterType = FilterOperation.DateLessThanOrEqual; break;
+              case 'dateIs': filterType = FilterOperation.DateEquals; break;
+              case 'dateIsNot': filterType = FilterOperation.DateNotEquals; break;
+              case 'between': filterType = FilterOperation.DateBetween; break;
+              default: filterType = '';
+            }
+          } else {
+            switch (filterMeta.matchMode) {
+              case 'startsWith': filterType = FilterOperation.StartsWith; break;
+              case 'contains': filterType = FilterOperation.Contains; break;
+              case 'notContains': filterType = FilterOperation.NotContains; break;
+              case 'endsWith': filterType = FilterOperation.EndsWith; break;
+              case 'equals': filterType = FilterOperation.Equals; break;
+              case 'notEquals': filterType = FilterOperation.NotEquals; break;
+              case 'gt': filterType = FilterOperation.GreaterThan; break;
+              case 'gte': filterType = FilterOperation.GreaterThanOrEqual; break;
+              case 'lt': filterType = FilterOperation.LessThan; break;
+              case 'lte': filterType = FilterOperation.LessThanOrEqual; break;
+              case 'in': filterType = FilterOperation.In; break;
+              default: filterType = '';
+            }
+          }
+          columns.push({
+            columnName: field,
+            filter: filterType + filterValue,
+            sort: sortMap[field] || ''
+          });
+        }
+      });
+    }
+
+    // If no filters but sorting is applied, still send sort info
+    if (columns.length === 0 && Object.keys(sortMap).length > 0) {
+      Object.keys(sortMap).forEach(field => {
+        columns.push({
+          columnName: field,
+          filter: '',
+          sort: sortMap[field]
+        });
+      });
+    }
+    this.onColumnFilterChange(columns);
+  }
 }

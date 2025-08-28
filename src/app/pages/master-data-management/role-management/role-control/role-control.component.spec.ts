@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { RoleControlComponent } from './role-control.component';
-import { PagedResult, RoleService } from "../../../shared/service/role-control/role.service";
-import { LayoutService } from '../../../shared/service/layout/layout.service';
+import { PagedResult, RoleService } from "../../../../shared/service/role-control/role.service";
+import { LayoutService } from '../../../../shared/service/layout/layout.service';
 import { of, throwError } from 'rxjs';
 import { NO_ERRORS_SCHEMA, WritableSignal, signal } from '@angular/core';
-import { RoleConfigData } from '../../../shared/lib/constants';
+import { RoleConfigData } from '../../../../shared/lib/constants';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { RoleConfigurationComponent } from '../role-configuration/role-configuration.component';
 import { from } from 'rxjs';
@@ -160,10 +160,10 @@ describe('RoleControlComponent', () => {
                 expect(this.loading).toBeTruthy();
 
                 // Call the original method to complete the test
-                return originalLoadRoles.call(this, pageIndex, pageSize);
+                return originalLoadRoles.call(this, pageIndex, pageSize, '');
             });
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
         });
 
         it('should call roleService.getActiveRoles with correct parameters', () => {
@@ -172,7 +172,7 @@ describe('RoleControlComponent', () => {
         });
 
         it('should update roles and totalRecords on successful response', (done) => {
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.roles.length).toBe(1);
@@ -184,7 +184,7 @@ describe('RoleControlComponent', () => {
         });
 
         it('should update component state on successful load', (done) => {
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.roles.length).toBe(1);
@@ -199,7 +199,7 @@ describe('RoleControlComponent', () => {
             mockRoleService.getActiveRoles.and.returnValue(throwError(() => error));
             spyOn(console, 'error');
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.loading).toBe(false);
@@ -214,7 +214,7 @@ describe('RoleControlComponent', () => {
                 total: 0
             } as PagedResult<RoleConfigData>));
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.roles).toEqual([]);
@@ -327,7 +327,7 @@ describe('RoleControlComponent', () => {
             component.searchTerm = 'test search';
             component.currentPage = 2;
 
-            component.resetSearch();
+            component.refresh();
 
             expect(component.searchTerm).toBe('');
             expect(component.currentPage).toBe(0);
@@ -675,7 +675,7 @@ describe('RoleControlComponent', () => {
             mockRoleService.getActiveRoles.and.returnValue(of(undefined as any));
             spyOn(console, 'error');
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 // Component should handle undefined gracefully and set loading to false
@@ -690,7 +690,7 @@ describe('RoleControlComponent', () => {
         it('should handle malformed service responses', (done) => {
             mockRoleService.getActiveRoles.and.returnValue(of({ invalidResponse: true } as any));
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.loading).toBe(false);
@@ -701,7 +701,7 @@ describe('RoleControlComponent', () => {
         it('should handle null service response', (done) => {
             mockRoleService.getActiveRoles.and.returnValue(of(null as any));
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.loading).toBe(false);
@@ -714,7 +714,7 @@ describe('RoleControlComponent', () => {
         it('should handle service response with null data property', (done) => {
             mockRoleService.getActiveRoles.and.returnValue(of({ data: null, total: 5 } as any));
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.loading).toBe(false);
@@ -729,7 +729,7 @@ describe('RoleControlComponent', () => {
                 data: [{ id: 1, roleName: 'Test' } as RoleConfigData]
             } as any));
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.loading).toBe(false);
@@ -745,7 +745,7 @@ describe('RoleControlComponent', () => {
             mockRoleService.getActiveRoles.and.returnValue(throwError(() => timeoutError));
             spyOn(console, 'error');
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.loading).toBe(false);
@@ -759,7 +759,7 @@ describe('RoleControlComponent', () => {
             mockRoleService.getActiveRoles.and.returnValue(throwError(() => httpError));
             spyOn(console, 'error');
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(component.loading).toBe(false);
@@ -803,7 +803,7 @@ describe('RoleControlComponent', () => {
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(2, 20, 'test');
 
             // Reset should clear search but maintain page size
-            component.resetSearch();
+            component.refresh();
             expect(component.searchTerm).toBe('');
             expect(component.currentPage).toBe(0);
             expect(component.pageSize).toBe(20); // Should remain unchanged
@@ -913,14 +913,14 @@ describe('RoleControlComponent', () => {
     describe('Service Integration Edge Cases', () => {
         it('should handle service returning empty string search term', () => {
             component.searchTerm = '';
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
         });
 
         it('should handle service call with whitespace-only search term', () => {
             component.searchTerm = '   ';
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
         });
@@ -929,9 +929,9 @@ describe('RoleControlComponent', () => {
             // Reset spy call count to start fresh
             mockRoleService.getActiveRoles.calls.reset();
 
-            component.loadRoles(0, 10);
-            component.loadRoles(1, 20);
-            component.loadRoles(2, 30);
+            component.loadRoles(0, 10, '');
+            component.loadRoles(1, 20, '');
+            component.loadRoles(2, 30, '');
 
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledTimes(3);
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
@@ -942,13 +942,13 @@ describe('RoleControlComponent', () => {
         it('should maintain loading state during multiple rapid calls', () => {
             component.loading = false;
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
             // Loading state is set to true at start of loadRoles, then set to false in subscribe
             // Since we're using mocked observables, the loading will be false after subscription completes
             expect(component.loading).toBe(false); // Observable completes immediately with mock
 
             // Simulate rapid call
-            component.loadRoles(1, 10);
+            component.loadRoles(1, 10, '');
             expect(component.loading).toBe(false); // Observable completes immediately with mock
         });
     });
@@ -962,7 +962,7 @@ describe('RoleControlComponent', () => {
 
         it('should not log roles data after successful load', (done) => {
             spyOn(console, 'log');
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(console.log).not.toHaveBeenCalled();
@@ -975,7 +975,7 @@ describe('RoleControlComponent', () => {
             mockRoleService.getActiveRoles.and.returnValue(throwError(() => customError));
             spyOn(console, 'error');
 
-            component.loadRoles(0, 10);
+            component.loadRoles(0, 10, '');
 
             setTimeout(() => {
                 expect(console.error).toHaveBeenCalledWith('Error loading roles:', customError);
@@ -997,7 +997,7 @@ describe('RoleControlComponent', () => {
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledTimes(0);
         });
 
-        it('should reset all properties correctly during resetSearch', () => {
+        it('should reset all properties correctly during refresh', () => {
             // Set non-default values
             component.searchTerm = 'test search term';
             component.currentPage = 5;
@@ -1005,11 +1005,11 @@ describe('RoleControlComponent', () => {
             component.roles = [{ id: 1, roleName: 'Test' } as RoleConfigData];
 
             spyOn(component, 'loadRoles');
-            component.resetSearch();
+            component.refresh();
 
             expect(component.searchTerm).toBe('');
             expect(component.currentPage).toBe(0);
-            // Note: totalRecords and roles will be updated by loadRoles, not resetSearch
+            // Note: totalRecords and roles will be updated by loadRoles, not refresh
             expect(component.loadRoles).toHaveBeenCalledWith(0, 10, '');
         });
 
@@ -1017,9 +1017,6 @@ describe('RoleControlComponent', () => {
             const initialPageSize = component.pageSize;
 
             component.onSearch();
-            expect(component.pageSize).toBe(initialPageSize);
-
-            component.resetSearch();
             expect(component.pageSize).toBe(initialPageSize);
 
             component.refresh();

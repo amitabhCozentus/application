@@ -24,9 +24,9 @@
                     <ng-template #header let-columns>
                         <tr>
                             <th>
-                                Action
+                                {{ 'LBL.ACTION' | translate }}
                             </th>
-                            @for (col of columns; track col.field) { <th>{{ col.header }}</th> }
+                            @for (col of columns; track col.field) { <th>{{ col.header | translate }}</th> }
                         </tr>
                     </ng-template>
                     <ng-template #body let-rowData let-columns="columns">

@@ -14,8 +14,10 @@ import { MessageService } from 'primeng/api';
 export class SubscriptionTierDialogComponent {
   @Input() visible: boolean = false;
   @Input() selectedRows: any[] = [];
+  @Input() isAllSelected: boolean = false;
+  @Input() subscriptionTier: { id: number, name: string, configType: string }[] = [];
   @Output() onClose = new EventEmitter<void>();
-  @Output() onSave = new EventEmitter<{ companyCodes: number[], subscriptionTierType: number }>();
+  @Output() onSave = new EventEmitter<{ companyCodes: number[], subscriptionTierType: number, isAllSelected: boolean }>();
 
   selectedTier: string | null = null;
 
@@ -27,18 +29,31 @@ export class SubscriptionTierDialogComponent {
   }
 
   onSaveDialog() {
-    const companyCodes = (this.selectedRows || [])
-      .map(row => Number(row.customerCode))
-      .filter(code => !isNaN(code));
-    let subscriptionTierType = 0;
-    if (this.selectedTier === 'Standard') {
-      subscriptionTierType = 48;
-    } else if (this.selectedTier === 'Premium') {
-      subscriptionTierType = 49;
+    let companyCodes: number[];
+    if (this.isAllSelected) {
+      companyCodes = [0];
+    } else {
+      companyCodes = (this.selectedRows || [])
+        .map(row => Number(row.customerCode))
+        .filter(code => !isNaN(code));
     }
+    // Find config id for selected tier
+    const selectedConfig = this.subscriptionTier.find(cfg => cfg.name === this.selectedTier);
+    const subscriptionTierType = selectedConfig ? selectedConfig.id : undefined;
+
+    if (typeof subscriptionTierType !== 'number') {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Please select a valid subscription tier.'
+      });
+      return;
+    }
+
     const requestBody = {
       companyCodes,
-      subscriptionTierType
+      subscriptionTierType,
+      isAllSelected: this.isAllSelected
     };
     this.subscriptionService.bulkUpdateSubscriptionTier(requestBody).subscribe({
       next: () => {
@@ -61,3 +76,4 @@ export class SubscriptionTierDialogComponent {
     });
   }
 }
+

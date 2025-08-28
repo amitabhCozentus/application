@@ -7,7 +7,7 @@ import { MessageService } from 'primeng/api';
 interface Subscription {
   customerName: string;
   customerCode: string;
-  subscriptionType: string;
+  subscriptionTypeName: string;
   onBoardedOn: string;
   onBoardedSource: string;
   updatedOn?: string;
@@ -34,6 +34,7 @@ export class SubscriptionDialogComponent implements OnInit {
   changeDetector=inject(ChangeDetectorRef);
   @Input() visible: boolean = false;
   @Input() features: Feature[] = [];
+  @Input() subscriptionTier: { id: number, name: string, configType: string }[] = [];
   featureStates: { [key: number]: boolean } = {};
 
   @Input() set subscription(value: Subscription | null) {
@@ -41,9 +42,9 @@ export class SubscriptionDialogComponent implements OnInit {
       this.subscriptionForm.patchValue({
         customerName: value.customerName,
         customerCode: value.customerCode,
-        subscriptionType: value.subscriptionType
+        subscriptionTypeName: value.subscriptionTypeName
       });
-      
+
       // Initialize feature states from featureIds
       this.features.forEach(feature => {
         this.featureStates[feature.id] = value.featureIds?.includes(feature.id) || false;
@@ -58,7 +59,7 @@ export class SubscriptionDialogComponent implements OnInit {
   subscriptionForm = new FormGroup({
     customerName: new FormControl('', Validators.required),
     customerCode: new FormControl('', Validators.required),
-    subscriptionType: new FormControl('', Validators.required),
+    subscriptionTypeName: new FormControl('', Validators.required),
     
   });
 
@@ -86,10 +87,11 @@ export class SubscriptionDialogComponent implements OnInit {
         .filter(([_, isEnabled]) => isEnabled)
         .map(([id]) => Number(id));
 
-      // Get form values
       const customerCode = this.subscriptionForm.get('customerCode')?.value;
-      const subscriptionType = this.subscriptionForm.get('subscriptionType')?.value;
-      const subscriptionTierTypeNumber = subscriptionType === 'Standard' ? 48 : 49;
+      const subscriptionTypeName = this.subscriptionForm.get('subscriptionTypeName')?.value;
+      // Use config id from subscriptionTier array
+      const selectedConfig = this.subscriptionTier.find(cfg => cfg.name === subscriptionTypeName);
+      const subscriptionTierTypeNumber = selectedConfig ? selectedConfig.id : null;
 
       const customerName = this.subscriptionForm.get('customerName')?.value;
       
@@ -132,3 +134,4 @@ export class SubscriptionDialogComponent implements OnInit {
     this.onClose.emit();
   }
 }
+

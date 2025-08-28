@@ -6,7 +6,7 @@
                     [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
                     [columns]="roleTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
-                    [currentPageReportTemplate]="'table.pageReport' | translate"
+                    [currentPageReportTemplate]="'LBL.TABLE.PAGE_REPORT' | translate"
                     styleClass="p-datatable-customers p-datatable-striped"
                     [globalFilterFields]="['roleName', 'roleDescription']" [lazy]="true"
                     (onLazyLoad)="onLazyLoad($event)" [loading]="loading">
@@ -23,8 +23,8 @@
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                     (click)="refresh()"></button>
                                 @if (canEdit) {
-                                <button pButton pRipple [label]="'AddRole' | translate" class="p-button-primary"
-                                    style="min-width: 120px; white-space: nowrap;" (click)="openAddRoleDialog()">
+                                <button pButton pRipple [label]="'LBL.ADD_ROLE' | translate" class="p-button-primary"
+                                     style="min-width: 120px; white-space: nowrap;" (click)="openAddRoleDialog()">
                                 </button>
                                 }
                             </div>
@@ -35,7 +35,7 @@
                     <ng-template pTemplate="header" let-columns>
                         <tr>
                             @if (canEdit) {
-                            <th>{{ 'Action' | translate }}</th>
+                            <th>{{ 'LBL.ACTION' | translate }}</th>
                             }
                             @for (col of columns; track col) {
                             <th pSortableColumn="{{col.field}}">
@@ -134,27 +134,28 @@
                     </ng-template>
 
                     <!-- Filter -->
-                    <ng-template pTemplate="filter" let-columns>
-                        <tr>
+                   <ng-template pTemplate="filter" let-columns>
+  <tr>
                             @for (col of columns; track col) {
                             <th>
                                 @if (col.filter) {
-                                <input pInputText type="text"
+      <input pInputText type="text"
                                     (input)="roleTable.filter($event.target.value, col.field, 'contains')"
                                     [placeholder]="'table.searchPlaceholder' | translate" class="p-column-filter" />
 
                                 }
-                            </th>
+    </th>
                             }
-                        </tr>
-                    </ng-template>
+  </tr>
+</ng-template>
+
 
                     <!-- Empty -->
                     <ng-template pTemplate="emptymessage">
                         <tr>
                             <td [attr.colspan]="(canEdit ? roleTableHeaders.length + 1 : roleTableHeaders.length)"
                                 class="text-center">
-                                No Roles found.
+                                {{ 'LBL.TABLE.EMPTY_MESSAGE' | translate }}
                             </td>
                         </tr>
                     </ng-template>

@@ -33,7 +33,7 @@ export class RoleConfigurationComponent implements OnInit {
 
   landingPages: SelectOption[] = [];
   skinOptions: SelectOption[] = [];
-  
+
   // Store full data for ID mapping
   private landingPagesData: any[] = [];
   private skinOptionsData: any[] = [];
@@ -535,14 +535,14 @@ get displayText(): string {
 
     // Wait for privilege tree to be fully loaded before mapping
     const waitForTree = () => {
-      if (this.privilegeTreeOptions.length > 0) {
+        if (this.privilegeTreeOptions.length > 0) {
         // Tree is loaded, now map the privileges
-        this.mapPrivilegesToNodes(existingPrivileges);
-      } else {
+          this.mapPrivilegesToNodes(existingPrivileges);
+        } else {
         // Tree not loaded yet, wait and try again
         setTimeout(waitForTree, 100);
-      }
-    };
+        }
+      };
 
     waitForTree();
   }
@@ -849,29 +849,31 @@ get displayText(): string {
     }
 
 
+  //   //Commented partttt
 
-    // Use appropriate service method based on edit mode
-    const serviceCall = this.isEditMode
-      ? this.roleService.updateRole(payload)
-      : this.roleService.createRole(payload);
 
-    serviceCall.subscribe({
-      next: (response) => {
-        this.close();
+  //   // Use appropriate service method based on edit mode
+  //   const serviceCall = this.isEditMode
+  //     ? this.roleService.updateRole(payload)
+  //     : this.roleService.createRole(payload);
 
-        // Check for successful response - if we get here, the HTTP call was successful
-        if (response) {
-          this.showSuccessNotification();
-        } else {
-          this.showErrorNotification('Failed to save role. Please try again.');
-        }
-      },
-      error: (error) => {
-        this.close();
-        this.showErrorNotification('Failed to save role. Please try again.');
-      }
-    });
-  }
+  //   serviceCall.subscribe({
+  //     next: (response) => {
+  //     this.close();
+
+  //       // Check for successful response - if we get here, the HTTP call was successful
+  //       if (response) {
+  //       this.showSuccessNotification();
+  //     } else {
+  //         this.showErrorNotification('Failed to save role. Please try again.');
+  //     }
+  //     },
+  //     error: (error) => {
+  //     this.close();
+  //       this.showErrorNotification('Failed to save role. Please try again.');
+  //     }
+  //   });
+   }
 
   /** Extract selected privilege IDs from the current selection */
   private getSelectedPrivilegeIds(): number[] {

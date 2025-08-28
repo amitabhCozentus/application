@@ -1,0 +1,340 @@
+<!-- Show Filters Button - Only highlight when saved filters are applied -->
+<p-button [label]="'Show Filters'" [outlined]="!hasSavedFiltersApplied()"
+    [severity]="hasSavedFiltersApplied() ? 'primary' : 'secondary'" icon="pi pi-sliders-h" (onClick)="showFilterPanel()">
+</p-button>
+ 
+<!-- Filter Panel Drawer - Opens from left to match button position -->
+<p-drawer [visible]="visible()" (onHide)="closePanel()" position="left" [modal]="true" [dismissible]="true" 
+    [showCloseIcon]="false" [style]="{ width: '25rem', maxWidth: '90vw' }">
+ 
+    <ng-template pTemplate="header">
+        <div class="flex align-items-center gap-2">
+            <h3 class="m-0 text-color font-semibold text-xl">Filters</h3>
+        </div>
+    </ng-template>
+ 
+    <div class="h-full overflow-y-auto" 
+         style="scrollbar-width: none; -ms-overflow-style: none;">
+       
+ 
+        <!-- Header actions -->
+        <div class="flex align-items-center justify-content-left gap-1 mb-4">
+            <p-button [text]="true" icon="pi pi-times" label="Clear Filters" severity="primary" size="small"
+                (onClick)="clearFilters()">
+            </p-button>
+ 
+            <p-button label="Apply" size="small" [disabled]="!hasActiveFilters()"
+                [severity]="hasActiveFilters() ? 'primary' : 'secondary'" (onClick)="applyFilters()">
+            </p-button>
+        </div>
+ 
+        <!-- Save current + Settings -->
+        <div class="flex align-items-center gap-2 mb-4">
+            <p-button [disabled]="!hasActiveFilters()" (onClick)="showSaveFilterDialog()" styleClass="text-sm"
+                label="Save Current Filter Criteria">
+            </p-button>
+ 
+            <p-button [text]="true" icon="pi pi-cog" size="small" (onClick)="toggleSavedFilters()">
+            </p-button>
+        </div>
+ 
+        <!-- Inline Save panel (modal-like) -->
+        @if (showSaveDialog()) {
+        <div class="mb-4 p-3 border-1 border-solid border-color-200 border-round">
+            <div class="mb-3">
+                <label class="block font-medium mb-2 text-sm">Enter a Name to Save</label>
+                <input type="text" pInputText styleClass="w-full" [(ngModel)]="saveFilterName"
+                    placeholder="Filter name">
+            </div>
+            <div class="flex gap-2">
+                <p-button [outlined]="true" size="small" (onClick)="cancelSaveFilter()" label="Cancel"></p-button>
+                <p-button size="small" [disabled]="!canSaveFilter()" (onClick)="saveCurrentFilter()"
+                    label="Save Filters"></p-button>
+            </div>
+            <p class="text-xs mt-2 mb-0">
+                Saved Filters can be accessed under <span class="text-primary font-medium">settings</span>.
+            </p>
+        </div>
+        }
+ 
+        <!-- Saved Filters Manager (inline panel) -->
+        @if (showSavedFiltersDialog()) {
+        <div class="mb-4 p-3 border-1 border-solid border-color-200 border-round bg-surface-50">
+            <div class="flex align-items-center justify-content-between mb-3">
+                <h4 class="font-medium text-color m-0">Saved Filters</h4>
+                <p-button [text]="true" icon="pi pi-times" size="small" 
+                    (onClick)="showSavedFiltersDialog.set(false)" 
+                    severity="secondary" title="Close">
+                </p-button>
+            </div>
+ 
+            @if (savedFilters().length === 0) {
+            <div class="text-center text-color-secondary py-4">
+                <i class="pi pi-filter text-3xl mb-2 block"></i>
+                <p class="mb-0 text-sm">No saved filters found</p>
+            </div>
+            } @else {
+            <div class="flex flex-column gap-2 max-h-20rem overflow-y-auto">
+                @for (f of savedFilters(); track f.id) {
+                <div class="flex align-items-center justify-content-between p-2 border-round hover:bg-surface-100 transition-colors transition-duration-150">
+                    <div class="flex-1">
+                        <!-- Clickable filter name that loads the filter -->
+                        <button
+                            class="text-primary text-sm bg-transparent border-none cursor-pointer p-0 hover:text-primary-600 transition-colors transition-duration-150 font-medium"
+                            type="button" (click)="applySavedFilter(f)">
+                            {{ f.name }}
+                        </button>
+                        <div class="text-xs text-color-secondary mt-1">
+                            Created: {{ f.createdDate | date:'short' }}
+                        </div>
+                    </div>
+                    <div class="flex align-items-center gap-1">
+                        <button
+                            class="p-1 border-none bg-transparent cursor-pointer text-color-secondary hover:text-primary transition-colors transition-duration-150"
+                            type="button" (click)="editSavedFilter(f)" title="Edit Filter">
+                            <i class="pi pi-pencil text-xs"></i>
+                        </button>
+                        <button
+                            class="p-1 border-none bg-transparent cursor-pointer text-color-secondary hover:text-red-500 transition-colors transition-duration-150"
+                            type="button" (click)="confirmDelete(f)" title="Delete Filter">
+                            <i class="pi pi-trash text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </div>
+        }
+ 
+        <!-- Fields in the exact order specified in requirements -->
+        <div class="flex flex-column gap-4">
+ 
+            <!-- 1. Shipment Status (Ontime, Early, Late, Undefined) -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Shipment Status</label>
+                <p-select [options]="shipmentStatusOptions" [(ngModel)]="filterCriteria().shipmentStatus"
+                    (ngModelChange)="updateShipmentStatus($event)" placeholder="Select Status" [showClear]="true"
+                    styleClass="w-full">
+                </p-select>
+            </div>
+ 
+            <!-- 2. Mode of Transport (Air, Ocean, Rail, Road) -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Mode of Transport</label>
+                <p-multiSelect [options]="modeOfTransportOptions" [(ngModel)]="filterCriteria().modeOfTransport"
+                    (ngModelChange)="updateModeOfTransport($event)" [maxSelectedLabels]="3"
+                    selectedItemsLabel="{0} modes selected" [showClear]="true" placeholder="Select" styleClass="w-full">
+                </p-multiSelect>
+            </div>
+ 
+            <!-- 3. Customer Service Representative -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Customer Service Representative</label>
+ 
+                <p-autoComplete [ngModel]="filterCriteria().customerServiceRep"
+                    (ngModelChange)="updateCustomerServiceRep($event)" [suggestions]="csrSuggestions"
+                    (completeMethod)="filterCustomerServiceRep($event)" field="label" [multiple]="true" [minLength]="3"
+                    [showEmptyMessage]="true" emptyMessage="No results found"
+                    placeholder="Type to search Customer Service Representatives" styleClass="w-full" [dropdown]="false"
+                    [forceSelection]="false" [delay]="300" appendTo="body" panelStyleClass="max-w-full">
+ 
+                    <!-- Selected chip: render label; keep your custom remove -->
+                    <ng-template pTemplate="selectedItem" let-value>
+                        <span
+                            class="inline-flex align-items-center text-primary-contrast border-round text-sm font-medium mr-1 ">
+                            {{ value?.label ?? value }}
+                        </span>
+                    </ng-template>
+ 
+                    <ng-template pTemplate="item" let-option>
+                        <div class="p-2 cursor-pointer hover:bg-primary-50 transition-colors transition-duration-150">
+                            <span>{{ option.label }}</span>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 4. LSP Name (Applicable only for 4PL shipments) -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">
+                    LSP Name
+                    <span class="text-xs text-color-secondary ml-1">(4PL shipments only)</span>
+                </label>
+               
+                <p-autoComplete [(ngModel)]="filterCriteria().lspName" (ngModelChange)="updateLspName($event)"
+                    [suggestions]="lspSuggestions" (completeMethod)="filterLspName($event)" field="label"
+                    [multiple]="true" [disabled]="!isLspNameEnabled()" [minLength]="3" [showEmptyMessage]="true"
+                    emptyMessage="No results found" placeholder="Type LSP Representative Name" styleClass="w-full"
+                    appendTo="body" panelStyleClass="max-w-full">
+ 
+                    <!-- Selected chip: render label to match CSR style -->
+                    <ng-template pTemplate="selectedItem" let-value>
+                        <span
+                            class="inline-flex align-items-center text-primary-contrast border-round text-sm font-medium mr-1 ">
+                            {{ value?.label ?? value }}
+                        </span>
+                    </ng-template>
+ 
+                    <!-- Simple item template without checkboxes -->
+                    <ng-template pTemplate="item" let-option>
+                        <div class="p-2 cursor-pointer hover:bg-primary-50 transition-colors transition-duration-150">
+                            <span>{{ option.label }}</span>
+                        </div>
+                    </ng-template>
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 5. Origin Region -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Origin Region</label>
+                <p-multiSelect [options]="originRegionOptions" [(ngModel)]="filterCriteria().originRegion"
+                    (ngModelChange)="updateOriginRegion($event)" [filter]="true" filterPlaceholder="Search regions"
+                    [maxSelectedLabels]="3" selectedItemsLabel="{0} regions selected" [showClear]="true"
+                    placeholder="Select" styleClass="w-full" emptyFilterMessage="No results found">
+                   
+                    <!-- Custom template for empty message when no results found -->
+                    <ng-template pTemplate="emptyfilter">
+                        <div class="p-3 text-center text-color-secondary">
+                            <span>No results found</span>
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
+            </div>
+ 
+            <!-- 6. Origin Country -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Origin Country</label>
+                <p-multiSelect [options]="filteredOriginCountries()" [(ngModel)]="filterCriteria().originCountry"
+                    (ngModelChange)="updateOriginCountry($event)" [filter]="true" filterPlaceholder="Search countries"
+                    [maxSelectedLabels]="3" selectedItemsLabel="{0} countries selected" [showClear]="true"
+                    placeholder="Select" styleClass="w-full" emptyFilterMessage="No results found">
+                   
+                    <!-- Custom template for empty message when no results found -->
+                    <ng-template pTemplate="emptyfilter">
+                        <div class="p-3 text-center text-color-secondary">
+                            <span>No results found</span>
+                        </div>
+                    </ng-template>
+                </p-multiSelect>
+            </div>
+ 
+            <!-- 7. Origin Port (Seaport/Airport) -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Origin Port (Seaport/Airport)</label>
+                <p-autoComplete [(ngModel)]="filterCriteria().originPort" (ngModelChange)="updateOriginPort($event)"
+                    [suggestions]="originPortSuggestions" (completeMethod)="completeOriginPort($event)" field="label"
+                    [multiple]="true" [minLength]="3" [showEmptyMessage]="true" emptyMessage="No results found"
+                    placeholder="Type port name" styleClass="w-full">
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 8. Place of Receipt -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Place of Receipt</label>
+                <p-autoComplete [(ngModel)]="filterCriteria().placeOfReceipt"
+                    (ngModelChange)="updatePlaceOfReceipt($event)" [suggestions]="porSuggestions"
+                    (completeMethod)="completePoR($event)" field="label" [multiple]="true" [minLength]="3"
+                    [showEmptyMessage]="true" emptyMessage="No results found" placeholder="Type place of receipt"
+                    styleClass="w-full">
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 9. Destination Region -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Destination Region</label>
+                <p-multiSelect [options]="destinationRegionOptions" [(ngModel)]="filterCriteria().destinationRegion"
+                    (ngModelChange)="updateDestinationRegion($event)" [filter]="true" filterPlaceholder="Search regions"
+                    [maxSelectedLabels]="3" selectedItemsLabel="+{0} items selected" [showClear]="true"
+                    placeholder="Select" styleClass="w-full">
+                </p-multiSelect>
+            </div>
+ 
+            <!-- 10. Destination Country -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Destination Country</label>
+                <p-multiSelect [options]="filteredDestinationCountries()"
+                    [(ngModel)]="filterCriteria().destinationCountry" (ngModelChange)="updateDestinationCountry($event)"
+                    [filter]="true" filterPlaceholder="Search countries" [maxSelectedLabels]="3"
+                    selectedItemsLabel="{0} countries selected" [showClear]="true" placeholder="Select"
+                    styleClass="w-full">
+                </p-multiSelect>
+            </div>
+ 
+            <!-- 11. Destination Port (Seaport/Airport) -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Destination Port (Seaport/Airport)</label>
+                <p-autoComplete [(ngModel)]="filterCriteria().destinationPort"
+                    (ngModelChange)="updateDestinationPort($event)" [suggestions]="destinationPortSuggestions"
+                    (completeMethod)="completeDestinationPort($event)" field="label" [multiple]="true" [minLength]="3"
+                    [showEmptyMessage]="true" emptyMessage="No results found" placeholder="Type port name"
+                    styleClass="w-full">
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 12. Place of Delivery -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Place of Delivery</label>
+                <p-autoComplete [(ngModel)]="filterCriteria().placeOfDelivery"
+                    (ngModelChange)="updatePlaceOfDelivery($event)" [suggestions]="podSuggestions"
+                    (completeMethod)="completePoD($event)" field="label" [multiple]="true" [minLength]="3"
+                    [showEmptyMessage]="true" emptyMessage="No results found" placeholder="Type place of delivery"
+                    styleClass="w-full">
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 13. Carrier (Ocean or Air) -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Carrier (Ocean or Air)</label>
+                <p-multiSelect [options]="carrierOptions" [(ngModel)]="filterCriteria().carrier"
+                    (ngModelChange)="updateCarrier($event)" [filter]="true" filterPlaceholder="Search carriers"
+                    [maxSelectedLabels]="3" selectedItemsLabel="{0} carriers selected" [showClear]="true"
+                    placeholder="Select" styleClass="w-full">
+                </p-multiSelect>
+            </div>
+ 
+            <!-- 14. Vessel Name -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Vessel Name</label>
+                <p-autoComplete [(ngModel)]="filterCriteria().vesselName" (ngModelChange)="updateVesselName($event)"
+                    [suggestions]="vesselSuggestions" (completeMethod)="completeVessel($event)" field="label"
+                    [multiple]="true" [disabled]="!isVesselNameEnabled()" [minLength]="3" [showEmptyMessage]="true"
+                    emptyMessage="No results found" placeholder="Type vessel name" styleClass="w-full">
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 15. Flight Number -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Flight Number</label>
+                <p-autoComplete [(ngModel)]="filterCriteria().flightNumber" (ngModelChange)="updateFlightNumber($event)"
+                    [suggestions]="flightSuggestions" (completeMethod)="completeFlight($event)" field="label"
+                    [multiple]="true" [disabled]="!isFlightNumberEnabled()" [minLength]="2" [showEmptyMessage]="true"
+                    emptyMessage="No results found" placeholder="Type flight number" styleClass="w-full">
+                </p-autoComplete>
+            </div>
+ 
+            <!-- 16. Cargo Type (FCL, LCL, Air, FTL, LTL) -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Cargo Type</label>
+                <p-multiSelect [options]="cargoTypeOptions" [(ngModel)]="filterCriteria().cargoType"
+                    (ngModelChange)="updateCargoType($event)" [maxSelectedLabels]="3"
+                    selectedItemsLabel="{0} items selected" [showClear]="true" placeholder="Select" styleClass="w-full">
+                </p-multiSelect>
+            </div>
+ 
+            <!-- 17. Hazardous Material Indicator -->
+            <div>
+                <label class="block text-color font-medium mb-2 text-sm">Hazardous Material Indicator</label>
+                <p-select [options]="hazardousMaterialOptions" [(ngModel)]="filterCriteria().hazardousMaterial"
+                    (ngModelChange)="updateHazardousMaterial($event)" [showClear]="true" placeholder="Select"
+                    styleClass="w-full">
+                </p-select>
+            </div>
+        </div>
+    </div>
+</p-drawer>
+ 
+
+ 
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
