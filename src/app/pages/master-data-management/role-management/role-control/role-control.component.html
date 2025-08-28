@@ -71,8 +71,8 @@
 
                                     <!-- For Custom landing -->
 
-                                     @if (col.field === 'customLanding') {
-                                <p-columnFilter field="custimLanding" matchMode="equals" display="menu">
+                                     @else if (col.field === 'customLanding') {
+                                <p-columnFilter field="customLanding" matchMode="equals" display="menu">
                                 <ng-template #filtericon>
                                         <app-common-table-filter [field]="'customLanding'" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
