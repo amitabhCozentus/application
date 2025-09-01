@@ -1,9 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { UserEndPoint } from '../../lib/api-constant';
+import { AppRoutes } from '../../lib/api-constant';
 
-const BASE_URL = "http://localhost:8080/api/v1/";
 @Injectable({
   providedIn: 'root'
 })
@@ -13,30 +12,23 @@ export class SubscriptionService {
   constructor(protected http: HttpClient) { }
 
   getCustomerSubscriptionList(requestBody: any) {
-    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.GET_COMPANY_SUBSCRIPTION_LIST;
-    return this.http.post<any>(endpoint, requestBody);
+    return this.http.post<any>(AppRoutes.CustomerSubscription.GET_COMPANY_SUBSCRIPTION_LIST, requestBody);
   }
   updateCustomerSubscriptionList(requestBody: any) {
-    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.UPDATE_CUSTOMER_SUBSCRIPTION_LIST;
-    return this.http.put<any>(endpoint, requestBody);
+    return this.http.put<any>(AppRoutes.CustomerSubscription.UPDATE_CUSTOMER_SUBSCRIPTION_LIST, requestBody);
   }
   getConfigMaster() {
-    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.GET_COMPANY_CONFIG;
-    return this.http.get<any>(endpoint);
+    return this.http.get<any>(AppRoutes.CustomerSubscription.GET_COMPANY_CONFIG);
   }
   getCustomerSubscriptionCompanies(requestBody: any) {
-    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.GET_COMPANY_SUBSCRIPTION_COMPANIES;
-    return this.http.post<any>(endpoint, requestBody);
+    return this.http.post<any>(AppRoutes.CustomerSubscription.GET_COMPANY_SUBSCRIPTION_COMPANIES, requestBody);
   }
   updateCopySubscription(requestBody: any) {
-    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.UPDATE_CUSTOMER_SUBSCRIPTION_THROUGH_COPY;
-    return this.http.post<any>(endpoint, requestBody);
+    return this.http.post<any>(AppRoutes.CustomerSubscription.UPDATE_CUSTOMER_SUBSCRIPTION_THROUGH_COPY, requestBody);
   }
 
   bulkUpdateSubscriptionTier(requestBody: any) {
-    const endpoint = BASE_URL + UserEndPoint.CustomerSubscription.BULK_UPDATE_CUSTOMER_SUBSCRIPTION_TIER;
-    return this.http.put<any>(endpoint, requestBody);
+    return this.http.put<any>(AppRoutes.CustomerSubscription.BULK_UPDATE_CUSTOMER_SUBSCRIPTION_TIER, requestBody);
   }
 
 }
-  

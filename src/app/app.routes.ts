@@ -74,5 +74,5 @@ export const routes: Routes = [
         component: UploadDownloadDialogComponent,
     },
     // Fallback
-    { path: '**', redirectTo: '' }
+    { path: 'app/**', redirectTo: '' }
 ];

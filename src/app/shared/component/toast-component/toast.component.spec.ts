@@ -11,7 +11,7 @@ describe('ToastComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ToastComponent, ToastModule],
-      providers: [MessageService] 
+      providers: [MessageService]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ToastComponent);
@@ -32,7 +32,7 @@ describe('ToastComponent', () => {
       severity: 'success',
       summary: '',
       detail: 'Test success message',
-      life: 300000
+      life: 3000
     });
   });
 
@@ -43,7 +43,8 @@ describe('ToastComponent', () => {
     expect(messageService.add).toHaveBeenCalledWith({
       severity: 'error',
       summary: '',
-      detail: 'Test error message'
+      detail: 'Test error message',
+      life: 3000
     });
   });
 
@@ -84,7 +85,7 @@ describe('ToastComponent', () => {
       severity: 'success',
       summary: 'Custom Summary',
       detail: 'Test success message',
-      life: 300000
+      life: 300
     });
   });
 });

@@ -168,7 +168,7 @@ describe('RoleControlComponent', () => {
 
         it('should call roleService.getActiveRoles with correct parameters', () => {
             component.loadRoles(1, 20, 'test');
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 20, 'test');
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 20, 'test', component['lastColumnFilters']);
         });
 
         it('should update roles and totalRecords on successful response', (done) => {
@@ -234,7 +234,7 @@ describe('RoleControlComponent', () => {
 
             expect(component.currentPage).toBe(2);
             expect(component.pageSize).toBe(25);
-            expect(component.loadRoles).toHaveBeenCalledWith(2, 25, '');
+            expect(component.loadRoles).toHaveBeenCalledWith(2, 25, '', component['lastColumnFilters']);
         });
 
         it('should handle first page correctly', () => {
@@ -245,9 +245,80 @@ describe('RoleControlComponent', () => {
 
             expect(component.currentPage).toBe(0);
             expect(component.pageSize).toBe(10);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, '');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, '', component['lastColumnFilters']);
         });
     });
+
+        describe('Lazy load filtering and sorting', () => {
+            it('builds column filters from event and calls service with mapped fields', () => {
+                // Arrange: spy through to real onLazyLoad logic
+                const spyLoad = spyOn(component, 'loadRoles');
+                const event: any = {
+                    first: 0,
+                    rows: 10,
+                    filters: {
+                        roleName: { matchMode: 'contains', value: 'adm' },
+                        status: { constraints: [{ matchMode: 'equals', value: true }] },
+                        createdOn: { matchMode: 'dateIs', value: new Date('2025-08-27') },
+                    },
+                    multiSortMeta: [ { field: 'updatedOn', order: -1 } ]
+                };
+
+                // Act
+                component.onLazyLoad(event);
+
+                // Assert
+                expect(component.currentPage).toBe(0);
+                expect(component.pageSize).toBe(10);
+                expect(spyLoad).toHaveBeenCalled();
+                const args = spyLoad.calls.mostRecent().args;
+                expect(args[0]).toBe(0);
+                expect(args[1]).toBe(10);
+                expect(args[2]).toBe('');
+                const filters = args[3];
+                // Should contain mapped descriptors
+                expect(filters).toEqual(jasmine.arrayContaining([
+                    jasmine.objectContaining({ columnName: 'name', filter: 'cnt:adm' }),
+                    jasmine.objectContaining({ columnName: 'isActive', filter: 'eq:true' }),
+                    jasmine.objectContaining({ columnName: 'createdOn', filter: 'deq:2025-08-27' }),
+                    jasmine.objectContaining({ columnName: 'updatedOn', sort: 'desc' }),
+                ]));
+            });
+
+            it('suppresses next lazy event after refresh-induced clear', () => {
+                const spyLoad = spyOn(component, 'loadRoles');
+                // Mark to suppress next lazy event
+                (component as any)['suppressNextLazyLoad'] = true;
+                component.onLazyLoad({ first: 0, rows: 10 });
+                expect(spyLoad).not.toHaveBeenCalled();
+                // Next one should go through
+                component.onLazyLoad({ first: 10, rows: 10 });
+                expect(spyLoad).toHaveBeenCalled();
+            });
+        });
+
+            describe('Search + table clear behavior', () => {
+                it('onSearch clears table filters and triggers load with trimmed term', () => {
+                    const mockTable = { clear: jasmine.createSpy('clear') } as any;
+                    (component as any)['roleTable'] = mockTable;
+                    const spyLoad = spyOn(component, 'loadRoles');
+                    component.pageSize = 25;
+                    component.searchTerm = '  admin  ';
+                    component.onSearch();
+                    expect(mockTable.clear).toHaveBeenCalled();
+                    expect(spyLoad).toHaveBeenCalledWith(0, 25, 'admin', []);
+                });
+            });
+
+        describe('getSeverity', () => {
+            it('maps status to severity levels', () => {
+                expect(component.getSeverity('Active')).toBe('status-active');
+                expect(component.getSeverity('Inactive')).toBe('status-inactive');
+                expect(component.getSeverity('unknown')).toBe('info');
+                expect(component.getSeverity('')).toBe('info');
+                expect(component.getSeverity(null as any)).toBe('info');
+            });
+        });
 
     describe('Search Functionality', () => {
         beforeEach(() => {
@@ -259,7 +330,7 @@ describe('RoleControlComponent', () => {
             component.onSearch();
 
             expect(component.currentPage).toBe(0);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'adm');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'adm', []);
         });
 
         it('should search with exactly 3 characters', () => {
@@ -267,7 +338,7 @@ describe('RoleControlComponent', () => {
             component.onSearch();
 
             expect(component.currentPage).toBe(0);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'abc');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'abc', []);
         });
 
         it('should search with more than 3 characters', () => {
@@ -275,7 +346,7 @@ describe('RoleControlComponent', () => {
             component.onSearch();
 
             expect(component.currentPage).toBe(0);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin role');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin role', []);
         });
 
         it('should not search when term has less than 3 characters', () => {
@@ -305,7 +376,7 @@ describe('RoleControlComponent', () => {
 
             // Should search because trimmed length is >= 3
             expect(component.currentPage).toBe(0);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin', []);
         });
 
         it('should not search when trimmed term has less than 3 characters', () => {
@@ -320,7 +391,7 @@ describe('RoleControlComponent', () => {
             component.onSearch();
 
             expect(component.currentPage).toBe(0);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin@#$');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin@#$', []);
         });
 
         it('should reset search term and reload data', () => {
@@ -331,12 +402,13 @@ describe('RoleControlComponent', () => {
 
             expect(component.searchTerm).toBe('');
             expect(component.currentPage).toBe(0);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, '');
+            // refresh does not trigger loadRoles directly
+            expect(component.loadRoles).not.toHaveBeenCalled();
         });
     });
 
     describe('Refresh Functionality', () => {
-        it('should reload roles with current page and size parameters', () => {
+        it('should reset state on refresh without auto-loading', () => {
             spyOn(component, 'loadRoles');
             component.currentPage = 3;
             component.pageSize = 15;
@@ -344,17 +416,20 @@ describe('RoleControlComponent', () => {
 
             component.refresh();
 
-            expect(component.loadRoles).toHaveBeenCalledWith(3, 15, 'test');
+            expect(component.currentPage).toBe(0);
+            expect(component.searchTerm).toBe('');
+            expect(component.loadRoles).not.toHaveBeenCalled();
         });
 
-        it('should maintain search term during refresh', () => {
+        it('should clear search term during refresh', () => {
             component.searchTerm = 'admin';
             component.currentPage = 1;
             component.pageSize = 20;
 
             component.refresh();
 
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 20, 'admin');
+            expect(component.searchTerm).toBe('');
+            expect(mockRoleService.getActiveRoles).not.toHaveBeenCalled();
         });
     });
 
@@ -778,8 +853,8 @@ describe('RoleControlComponent', () => {
             component.onSearch();
 
             expect(component.currentPage).toBe(0);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin');
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, 'admin');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, 'admin', []);
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, 'admin', []);
         });
 
         it('should perform complete pagination workflow', () => {
@@ -789,7 +864,7 @@ describe('RoleControlComponent', () => {
 
             expect(component.currentPage).toBe(1);
             expect(component.pageSize).toBe(15);
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 15, '');
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 15, '', component['lastColumnFilters']);
         });
 
         it('should maintain state across multiple operations', () => {
@@ -800,7 +875,8 @@ describe('RoleControlComponent', () => {
 
             // Refresh should maintain current state
             component.refresh();
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(2, 20, 'test');
+            // refresh clears filters and does not auto-load; no immediate call expected
+            expect(mockRoleService.getActiveRoles).not.toHaveBeenCalled();
 
             // Reset should clear search but maintain page size
             component.refresh();
@@ -820,9 +896,10 @@ describe('RoleControlComponent', () => {
             component.refresh();
 
             // Should end up with latest state
-            expect(component.currentPage).toBe(1);
+            // refresh resets currentPage to 0 and clears searchTerm
+            expect(component.currentPage).toBe(0);
             expect(component.pageSize).toBe(15);
-            expect(component.searchTerm).toBe('test');
+            expect(component.searchTerm).toBe('');
         });
 
         it('should preserve search term across page changes', () => {
@@ -834,7 +911,7 @@ describe('RoleControlComponent', () => {
 
             // Search term should be preserved
             expect(component.searchTerm).toBe('admin');
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(2, 10, 'admin');
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(2, 10, 'admin', component['lastColumnFilters']);
         });
 
         it('should handle component destruction gracefully', () => {
@@ -896,7 +973,7 @@ describe('RoleControlComponent', () => {
             component.onPage(largePageEvent);
 
             expect(component.pageSize).toBe(1000);
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 1000, '');
+            expect(component.loadRoles).toHaveBeenCalledWith(0, 1000, '', component['lastColumnFilters']);
         });
 
         it('should handle negative page values gracefully', () => {
@@ -906,7 +983,7 @@ describe('RoleControlComponent', () => {
             component.onPage(negativePageEvent);
 
             expect(component.currentPage).toBe(-1);
-            expect(component.loadRoles).toHaveBeenCalledWith(-1, 10, '');
+            expect(component.loadRoles).toHaveBeenCalledWith(-1, 10, '', component['lastColumnFilters']);
         });
     });
 
@@ -915,14 +992,14 @@ describe('RoleControlComponent', () => {
             component.searchTerm = '';
             component.loadRoles(0, 10, '');
 
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '', component['lastColumnFilters']);
         });
 
         it('should handle service call with whitespace-only search term', () => {
             component.searchTerm = '   ';
             component.loadRoles(0, 10, '');
 
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '', component['lastColumnFilters']);
         });
 
                 it('should handle multiple consecutive loadRoles calls', () => {
@@ -934,9 +1011,9 @@ describe('RoleControlComponent', () => {
             component.loadRoles(2, 30, '');
 
             expect(mockRoleService.getActiveRoles).toHaveBeenCalledTimes(3);
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '');
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 20, '');
-            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(2, 30, '');
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(0, 10, '', component['lastColumnFilters']);
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(1, 20, '', component['lastColumnFilters']);
+            expect(mockRoleService.getActiveRoles).toHaveBeenCalledWith(2, 30, '', component['lastColumnFilters']);
         });
 
         it('should maintain loading state during multiple rapid calls', () => {
@@ -1010,7 +1087,7 @@ describe('RoleControlComponent', () => {
             expect(component.searchTerm).toBe('');
             expect(component.currentPage).toBe(0);
             // Note: totalRecords and roles will be updated by loadRoles, not refresh
-            expect(component.loadRoles).toHaveBeenCalledWith(0, 10, '');
+            expect(component.loadRoles).not.toHaveBeenCalled();
         });
 
         it('should maintain pageSize across different operations', () => {

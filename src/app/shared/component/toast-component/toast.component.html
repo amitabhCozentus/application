@@ -1,6 +1,7 @@
 <p-toast [baseZIndex]="5000" class="bdp-toaster">
     <ng-template let-message pTemplate="message">
-        <div class="flex flex-row align-items-center justify-content-between h-3rem">
+        <!-- Removed fixed height to allow message to grow naturally -->
+        <div class="flex flex-row align-items-start justify-content-between">
             <div class="flex align-items-center gap-2">
                 @switch (message.severity) {
                     @case ('success') { <i class="fal fa-check-circle bpd-success mr-2" style="font-size: 1.5rem; color: #04D2A1;"></i> }
@@ -8,9 +9,9 @@
                     @case ('warn') { <i class="fal fa-info-circle bdp-info mr-2" style="font-size: 1.25rem"></i> }
                     @case ('info') { <i class="fal fa-info-circle bdp-info mr-2" style="font-size: 1.25rem"></i> }
                 }
-                <div class="flex align-items-center">
+                <div class="flex align-items-start">
                     @if (message.summary) { <p class="bdp-message-title" style="font-weight: bold; margin: 0; margin-right: 0.5rem;">{{ message.summary }}</p> }
-                    <p style="margin: 0;">{{ message.detail }}</p>
+                    <p class="bdp-message-detail" style="margin: 0;">{{ message.detail }}</p>
                 </div>
             </div>
         </div>

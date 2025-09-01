@@ -109,5 +109,7 @@
   "LBL.PETA_CALLING": "Вызов PETA",
   "LBL.OCEAN_FREQUENCY": "Частота морских",
   "LBL.AIR_FREQUENCY": "Частота авиа",
-  "LBL.RAIL_ROAD_FREQUENCY": "Частота ж/д и авто"
+  "LBL.RAIL_ROAD_FREQUENCY": "Частота ж/д и авто",
+  "LBL.YES": "Да",
+  "LBL.NO": "Нет"
 }

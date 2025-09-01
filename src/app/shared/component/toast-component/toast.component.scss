@@ -1,0 +1,11 @@
+/* Ensure toast content grows with message length */
+:host {
+  display: block;
+}
+
+/* Allow long details to wrap and not constrain height */
+.bdp-message-detail {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+}

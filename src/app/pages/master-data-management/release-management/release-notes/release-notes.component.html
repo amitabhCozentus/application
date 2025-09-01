@@ -33,10 +33,10 @@
                         <tr>
                             <td>
                                 <div class="flex">
-                                    <img src="../../../../assets/bdp/images/bdp_edit_icon.svg" alt="edit"
-                                        (click)="editReleaseNotes(rowData)" style="cursor: pointer;" class="mr-2">
-                                    <img src="../../../../assets/bdp/images/bdp_refresh_icon.svg" alt="delete"
-                                        (click)="deleteReleaseNotes(rowData)" style="cursor: pointer;">
+                                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text mr-2 shadow-none"
+                                        (click)="editReleaseNotes(rowData)"></button>
+                                    <button pButton pRipple icon="pi pi-refresh" class="p-button-rounded p-button-text mr-2 shadow-none"
+                                        (click)="deleteReleaseNotes(rowData)"></button>
                                 </div>
                             </td>
                             @for (col of columns; track col.field) {

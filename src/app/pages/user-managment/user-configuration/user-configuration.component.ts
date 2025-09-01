@@ -1,433 +1,235 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { PrimengModule } from '../../../shared/primeng/primeng.module'
+import { AfterViewInit, ChangeDetectorRef, Component, inject, OnInit, signal } from '@angular/core';
+import { firstValueFrom, tap } from 'rxjs';
+
 import { TreeNode } from 'primeng/api';
+import { UserControlService } from '../../../shared/service/user-control/user-control.service';
+import { CommonService } from '../../../shared/service/common/common.service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { PrimengModule } from '../../../shared/primeng/primeng.module';
+import { catchError, map, of, startWith } from 'rxjs';
+import { ApiResponse, ApiResponseWithoutContent } from '../../../shared/lib/constants';
+import { ApiRequestBody } from '../../../shared/lib/api-request';
+import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
+import { PaginationState } from '../../../shared/lib/constants';
+
+export const initialPSARequestBody: ApiRequestBody = {
+    dataTableRequest: {
+        pagination: {
+            page: 0,
+            size: 10
+        },
+        searchFilter: {
+            searchText: ''
+        },
+        columns: []
+    },
+    type: 'PSA'
+}
+export const initialNonPSARequestBody: ApiRequestBody = {
+    dataTableRequest: {
+        pagination: {
+            page: 0,
+            size: 10
+        },
+        searchFilter: {
+            searchText: ''
+        },
+        columns: []
+    },
+    type: 'NON-PSA'
+}
 
 interface Column {
-    field: string;
     header: string;
+    field: string;
 }
+
+export interface UserType {
+    id: number;
+    roleName: string;
+}
+
 @Component({
-  selector: 'app-user-configuration',
-  imports: [PrimengModule],
-  templateUrl: './user-configuration.component.html',
-  styleUrl: './user-configuration.component.scss'
+    selector: 'app-user-configuration',
+    imports: [PrimengModule, CommonTableSearchComponent],
+    templateUrl: './user-configuration.component.html',
+    styleUrl: './user-configuration.component.scss'
 })
-export class UserConfigurationComponent implements OnInit{
-  selectedUser:any={userId:"Abhishek.kumar@bdpint.com"};
-  selectedIndex: string = '419';
-  selectedCompanyIndex:String='419';
 
-    files!: TreeNode[];
 
-    cols!: Column[];
+export class UserConfigurationComponent {
+    psaPaginationState: PaginationState = {
+        first: 0,
+        rows: 10,
+        pageIndex: 0,
+        pageCount: 0,
+        totalRecords: 0
+    };
 
+    nonPsaPaginationState: PaginationState = {
+        first: 0,
+        rows: 10,
+        pageIndex: 0,
+        pageCount: 0,
+        totalRecords: 0
+    };
+
+    selectedUser: any = { userId: "Abhishek.kumar@bdpint.com" };
+    cols: Column[] = [];
+    selectedIndex: string = '419';
+    selectedCompanyIndex: String = '419';
+    searchTerm: string = '';
+    userTypeList: UserType[] = [];
+    roleType: number | null = null;
     totalRecords!: number;
+    viewPsaCompanyList: TreeNode[] = [];
+    viewNonPsaCompanyList: TreeNode[] = [];
     selectionKeys = {};
+    userControlService: UserControlService = inject(UserControlService);
+    commonService: CommonService = inject(CommonService);
+    loading = signal(true);
+    error = signal(false);
 
-    loading: boolean = false;
-
-    constructor(private cd: ChangeDetectorRef) {}
-
-    ngOnInit() {
+    constructor() {
         this.cols = [
-            { field: 'name', header: 'Name' },
-            { field: 'code', header: 'code' }
+            { header: 'Company Name', field: 'companyName' },
+            { header: 'Company Code', field: 'id' },
+            { header: 'Type', field: 'subscriptionType' }
         ];
+        this.callSignal(initialPSARequestBody);
+        this.callSignal(initialNonPSARequestBody);
+    }
 
-        this.files=[
-            {
-                key: '419',
-                data: {
-                    name: 'Applications',
-                    code: '1419419',
-                    type: 'Folder'
-                },
-                children: [
-                    {
-                        key: '419-419',
-                        data: {
-                            name: 'React',
-                            code: '25',
-                            type: 'Folder'
-                        },
-                        children: [
-                            {
-                                key: '419-419-419',
-                                data: {
-                                    name: 'react.app',
-                                    code: '1419',
-                                    type: 'Application'
-                                },
-                             children: [
-                            {
-                                key: '419-419-419-419',
-                                data: {
-                                    name: 'ABCDEF',
-                                    code: '1419',
-                                    type: 'Application'
-                                }
-                            }],
-                            },
-                            {
-                                key: '419-419-1',
-                                data: {
-                                    name: 'native.app',
-                                    code: '1419',
-                                    type: 'Application'
-                                }
-                            },
-                            {
-                                key: '419-419-2',
-                                data: {
-                                    name: 'mobile.app',
-                                    code: '5',
-                                    type: 'Application'
-                                }
-                            }
-                        ]
+    onCompanyTabChange() {
+        // console.log('Signal data:', this.psaCompanyList());
+        const signalData:any = [];
+        if (signalData && signalData.length > 0) {
+            this.viewPsaCompanyList = [...signalData];
+        }
+    }
+
+
+    onTabChange(event: any) {
+        switch (event) {
+            case '0':
+
+                break;
+            case '1':
+                this.userTypeList.length === 0 ? this.userControlService.getRoleList().subscribe({
+                    next: (response: ApiResponseWithoutContent) => {
+                        this.userTypeList = response.success ? response.data : [];
                     },
-                    {
-                        key: '419-1',
-                        data: {
-                            name: 'editor.app',
-                            code: '25',
-                            type: 'Application'
-                        }
-                    },
-                    {
-                        key: '419-2',
-                        data: {
-                            name: 'settings.app',
-                            code: '5419',
-                            type: 'Application'
-                        }
+                    error: (err) => {
+                        console.error('Error fetching role list:', err);
                     }
-                ]
-            },
-            {
-                key: '1',
-                data: {
-                    name: 'Cloud',
-                    code: '2419',
-                    type: 'Folder'
+                }) : undefined;
+                break;
+            case '2':
+                this.selectedIndex = '2';
+                break;
+        }
+    }
+    onSearch(type: string) {
+        if (this.searchTerm.length < 3) {
+            return;
+        }
+        const searchText = this.searchTerm;
+        this.loading.set(true);
+        const requestBody: ApiRequestBody = {
+            dataTableRequest: {
+                pagination: {
+                    page: 0,
+                    size: 10
                 },
-                children: [
-                    {
-                        key: '1-419',
-                        data: {
-                            name: 'backup-1.zip',
-                            code: '1419',
-                            type: 'Zip'
-                        }
-                    },
-                    {
-                        key: '1-1',
-                        data: {
-                            name: 'backup-2.zip',
-                            code: '1419',
-                            type: 'Zip'
-                        }
-                    }
-                ]
-            },
-            {
-                key: '2',
-                data: {
-                    name: 'Desktop',
-                    code: '15419',
-                    type: 'Folder'
+                searchFilter: {
+                    searchText: searchText
                 },
-                children: [
-                    {
-                        key: '2-419',
-                        data: {
-                            name: 'note-meeting.txt',
-                            code: '5419',
-                            type: 'Text'
-                        }
-                    },
-                    {
-                        key: '2-1',
-                        data: {
-                            name: 'note-todo.txt',
-                            code: '1419419',
-                            type: 'Text'
-                        }
-                    }
-                ]
+                columns: []
             },
-            {
-                key: '3',
-                data: {
-                    name: 'Documents',
-                    code: '75',
-                    type: 'Folder'
-                },
-                children: [
-                    {
-                        key: '3-419',
-                        data: {
-                            name: 'Work',
-                            code: '55',
-                            type: 'Folder'
-                        },
-                        children: [
-                            {
-                                key: '3-419-419',
-                                data: {
-                                    name: 'Expenses.doc',
-                                    code: '3419',
-                                    type: 'Document'
-                                }
-                            },
-                            {
-                                key: '3-419-1',
-                                data: {
-                                    name: 'Resume.doc',
-                                    code: '25',
-                                    type: 'Resume'
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        key: '3-1',
-                        data: {
-                            name: 'Home',
-                            code: '2419',
-                            type: 'Folder'
-                        },
-                        children: [
-                            {
-                                key: '3-1-419',
-                                data: {
-                                    name: 'Invoices',
-                                    code: '2419',
-                                    type: 'Text'
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                key: '4',
-                data: {
-                    name: 'Downloads',
-                    code: '25',
-                    type: 'Folder'
-                },
-                children: [
-                    {
-                        key: '4-419',
-                        data: {
-                            name: 'Spanish',
-                            code: '1419',
-                            type: 'Folder'
-                        },
-                        children: [
-                            {
-                                key: '4-419-419',
-                                data: {
-                                    name: 'tutorial-a1.txt',
-                                    code: '5',
-                                    type: 'Text'
-                                }
-                            },
-                            {
-                                key: '4-419-1',
-                                data: {
-                                    name: 'tutorial-a2.txt',
-                                    code: '5',
-                                    type: 'Text'
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        key: '4-1',
-                        data: {
-                            name: 'Travel',
-                            code: '15',
-                            type: 'Text'
-                        },
-                        children: [
-                            {
-                                key: '4-1-419',
-                                data: {
-                                    name: 'Hotel.pdf',
-                                    code: '1419',
-                                    type: 'PDF'
-                                }
-                            },
-                            {
-                                key: '4-1-1',
-                                data: {
-                                    name: 'Flight.pdf',
-                                    code: '5',
-                                    type: 'PDF'
-                                }
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                key: '5',
-                data: {
-                    name: 'Main',
-                    code: '5419',
-                    type: 'Folder'
-                },
-                children: [
-                    {
-                        key: '5-419',
-                        data: {
-                            name: 'bin',
-                            code: '5419',
-                            type: 'Link'
-                        }
-                    },
-                    {
-                        key: '5-1',
-                        data: {
-                            name: 'etc',
-                            code: '1419419',
-                            type: 'Link'
-                        }
-                    },
-                    {
-                        key: '5-2',
-                        data: {
-                            name: 'var',
-                            code: '1419419',
-                            type: 'Link'
-                        }
-                    }
-                ]
-            },
-            {
-                key: '6',
-                data: {
-                    name: 'Other',
-                    code: '5',
-                    type: 'Folder'
-                },
-                children: [
-                    {
-                        key: '6-419',
-                        data: {
-                            name: 'todo.txt',
-                            code: '3',
-                            type: 'Text'
-                        }
-                    },
-                    {
-                        key: '6-1',
-                        data: {
-                            name: 'logo.png',
-                            code: '2',
-                            type: 'Picture'
-                        }
-                    }
-                ]
-            },
-            {
-                key: '7',
-                data: {
-                    name: 'Pictures',
-                    code: '15419',
-                    type: 'Folder'
-                },
-                children: [
-                    {
-                        key: '7-419',
-                        data: {
-                            name: 'barcelona.jpg',
-                            code: '9419',
-                            type: 'Picture'
-                        }
-                    },
-                    {
-                        key: '7-1',
-                        data: {
-                            name: 'primeng.png',
-                            code: '3419',
-                            type: 'Picture'
-                        }
-                    },
-                    {
-                        key: '7-2',
-                        data: {
-                            name: 'prime.jpg',
-                            code: '3419',
-                            type: 'Picture'
-                        }
-                    }
-                ]
-            },
-            {
-                key: '8',
-                data: {
-                    name: 'Videos',
-                    code: '15419419',
-                    type: 'Folder'
-                },
-                children: [
-                    {
-                        key: '8-419',
-                        data: {
-                            name: 'primefaces.mkv',
-                            code: '1419419419',
-                            type: 'Video'
-                        }
-                    },
-                    {
-                        key: '8-1',
-                        data: {
-                            name: 'intro.avi',
-                            code: '5419419',
-                            type: 'Video'
-                        }
-                    }
-                ]
-            }
-        ];
-        this.selectionKeys = {
-            '419': {
-                partialChecked: true
-            },
-            '419-419': {
-                partialChecked: false,
-                checked: true
-            },
-            '419-419-419': {
-                checked: true
-            },
-            '419-419-1': {
-                checked: true
-            },
-            '419-419-2': {
-                checked: true
-            }
+            type: type
         };
-
-        this.totalRecords = 1419419419;
-
-        this.loading = true;
+        this.userControlService.getCompanyList(requestBody).subscribe({
+            next: (data: any) => {
+                if (type === 'PSA') {
+                    this.viewPsaCompanyList = data.data.companyTreeNodes;
+                } else {
+                    this.viewNonPsaCompanyList = data.data.companyTreeNodes;
+                }
+            },
+            error: (err) => {
+                console.error('Error fetching company list:', err);
+            }
+        });
     }
 
-    onCompanyTabChange(){
-
+    onPageChange(event: any, type: string) {
+        this.loading.set(true);
+        const requestBody: ApiRequestBody = {
+            dataTableRequest: {
+                pagination: {
+                    page: (event.first / event.rows),
+                    size: event.rows
+                },
+                searchFilter: {
+                    searchText: ''
+                },
+                columns: []
+            },
+            type: type
+        };
+        this.userControlService.getCompanyList(requestBody).subscribe({
+            next: (data: any) => {
+                if (type === 'PSA') {
+                    this.viewPsaCompanyList = data.data.companyTreeNodes;
+                } else {
+                    this.viewNonPsaCompanyList = data.data.companyTreeNodes;
+                }
+            },
+            error: (err) => {
+                console.error('Error fetching company list:', err);
+            }
+        });
     }
 
-    onTabChange(){
-
+    callSignal(companyListPayLoad: ApiRequestBody) {
+        const companyList = toSignal<TreeNode[]>(
+            this.userControlService.getCompanyList(companyListPayLoad).pipe(
+                map((response: ApiResponse<TreeNode>) => {
+                    this.loading.set(false);
+                    this.error.set(false);
+                    // Return the array from response.data.content
+                    return response.data;
+                }),
+                catchError(err => {
+                    console.error('API Error:', err);
+                    this.loading.set(false);
+                    this.error.set(true);
+                    return of([] as TreeNode[]);
+                }),
+                tap((data: any) => {
+                    if (companyListPayLoad.type === 'NON-PSA') {
+                        this.viewNonPsaCompanyList = data.companyTreeNodes;
+                        this.nonPsaPaginationState.totalRecords = data.totalSize;
+                    }
+                    if (companyListPayLoad.type === 'PSA') {
+                        this.viewPsaCompanyList = data.companyTreeNodes;
+                        this.psaPaginationState.totalRecords = data.totalSize;
+                    }
+                })
+            ),
+        );
     }
 
+    continueSetup(configurationType: string) {
+        switch (configurationType) {
+            case 'confirmCompanySelection':
+                
+                break;
+
+        }
 
 
+
+    }
 
 }
-
-

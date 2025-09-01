@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
   selector: 'app-toast-component',
   standalone: true,
   imports: [PrimengModule, CommonModule],
+  providers: [MessageService],
   templateUrl: './toast.component.html',
   styleUrl: './toast.component.scss'
 })
@@ -27,7 +28,7 @@ export class ToastComponent implements OnInit {
       severity: 'success',
       summary: summary || '',
       detail: detail,
-      life: 300
+      life: 3000
     });
   }
 
@@ -41,7 +42,7 @@ export class ToastComponent implements OnInit {
       severity: 'error',
       summary: summary || '',
       detail: detail,
-      life: 300
+      life: 3000
     });
   }
 

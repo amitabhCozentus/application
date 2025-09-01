@@ -1,4 +1,4 @@
-import { HttpBackend, HttpClient, provideHttpClient } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpBackend, HttpClient, provideHttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
@@ -13,7 +13,7 @@ import { routes } from '../app/app.routes'
 import { HashLocationStrategy, LocationStrategy } from '@angular/common';
 import { provideTranslateService } from "@ngx-translate/core";
 import { provideTranslateHttpLoader } from "@ngx-translate/http-loader";
-
+import { apiRequestInterceptor} from '../app/core/interceptor/api-request/api-request.interceptor';
 export interface AppConfig {
     profiles: { [key: string]: { [key: string]: unknown } };
     activeProfile: string;
@@ -135,6 +135,7 @@ export const appConfig: ApplicationConfig = {
             deps: [HttpBackend],
             multi: true,
         },
+        
 
         provideZoneChangeDetection({ eventCoalescing: true }),
         provideRouter(routes),
@@ -145,7 +146,7 @@ export const appConfig: ApplicationConfig = {
         provideHttpClient(),
         provideTranslateService({
             loader: provideTranslateHttpLoader({
-                prefix: '/assets/i18n/',
+                prefix: 'assets/i18n/',
                 suffix: '.json',
             }),
             fallbackLang: 'en', //default

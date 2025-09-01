@@ -23,6 +23,7 @@ interface Header{
   field: string;
   header: string;
   filterType?: string;
+  type?: 'text' | 'numeric' | 'date' | 'boolean' | 'select';
 }
 
 interface Subscription {
@@ -283,6 +284,8 @@ export class SubscriptionComponent implements OnInit {
 
   resetSearch() {
     this.searchTerm = '';
+  // Clear any applied column filters when resetting search
+  this.columnFilters = [];
     this.paginationState.first = 0;
     this.paginationState.pageIndex = 0;
     this.loadSubscriptionList(0, this.paginationState.rows, '', []);
@@ -308,10 +311,10 @@ export class SubscriptionComponent implements OnInit {
       sortMap[event.sortField] = event.sortOrder === 1 ? 'asc' : event.sortOrder === -1 ? 'desc' : '';
     }
 
-    if (event && event.filters) {
+  if (event && event.filters) {
       Object.keys(event.filters).forEach((field) => {
         const filterMeta = event.filters[field];
-        const isDate = this.subscriptionTableHeader.find(h => h.field === field)?.filterType === 'date';
+    const isDate = this.subscriptionTableHeader.find(h => h.field === field)?.type === 'date';
         if (Array.isArray(filterMeta)) {
           filterMeta.forEach(meta => {
             if (meta && meta.value !== undefined && meta.value !== null && meta.value !== '') {
@@ -401,14 +404,19 @@ export class SubscriptionComponent implements OnInit {
       });
     }
 
-    // If no filters but sorting is applied, still send sort info
-    if (columns.length === 0 && Object.keys(sortMap).length > 0) {
+    // Merge sort info: ensure a sort column exists for each sorted field
+    if (Object.keys(sortMap).length > 0) {
       Object.keys(sortMap).forEach(field => {
-        columns.push({
-          columnName: field,
-          filter: '',
-          sort: sortMap[field]
-        });
+        const existing = columns.find(c => c.columnName === field);
+        if (existing) {
+          existing.sort = sortMap[field];
+        } else {
+          columns.push({
+            columnName: field,
+            filter: '',
+            sort: sortMap[field]
+          });
+        }
       });
     }
     this.onColumnFilterChange(columns);

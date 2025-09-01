@@ -1,0 +1,22 @@
+
+<div class="home-container">
+    <ng-container *ngIf="kpiCards.length !== 0; else loadingKpi">
+        <!-- Modal Component -->
+        <div class="col-12 py-1 kpi-header">
+            <label for="">KPI Widgets <span><i (click)="openModal()" class="ml-3 pi pi-cog"></i></span></label>
+        </div>
+        <div *ngFor="let cardData of kpiCards" class="col-3 pb-2 pt-3">
+            <app-kpi-indicators [card]="cardData"></app-kpi-indicators>
+        </div>
+    </ng-container>
+
+    <ng-template #loadingKpi>
+        <div class="col-3" *ngFor="let i of [1,2,3,4]">
+            <div class="card">
+                <p-skeleton width="10rem" styleClass="mb-2"></p-skeleton>
+                <p-skeleton width="5rem" styleClass="mb-2"></p-skeleton>
+                <p-skeleton height="2rem" styleClass="mb-2"></p-skeleton>
+            </div>
+        </div>
+</ng-template>
+</div>

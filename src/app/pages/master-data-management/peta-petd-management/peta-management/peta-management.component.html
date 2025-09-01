@@ -2,32 +2,34 @@
     <div class="col-12">
         <div class="grid">
             <div class="col-12">
-                <p-table #dt [value]="companies || []" [paginator]="true" [rows]="pageSize"
-                    [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
+                <p-table #petaTable [value]="companies || []" [(selection)]="selectedCompanies" [paginator]="true" [rows]="pageSize"
+                    [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="companyCode"
                     [columns]="petaTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
-                    [currentPageReportTemplate]="'table.pageReport' | translate" [lazy]="true" selectionMode="multiple"
+                    [currentPageReportTemplate]="'LBL.TABLE.PAGE_REPORT' | translate" [lazy]="true" selectionMode="multiple"
                     styleClass="p-datatable-customers p-datatable-striped"
-                    [globalFilterFields]="['companyName','companyCode','updatedBy']" (onLazyLoad)="onLazyLoad($event)">
+                    [globalFilterFields]="['companyName','companyCode','updatedBy']" (onLazyLoad)="onLazyLoad($event)"
+                    (selectionChange)="onSelectionChange($event)" (onHeaderCheckboxToggle)="onHeaderCheckboxToggle($event)">
 
                     <!-- Caption -->
                     <ng-template pTemplate="caption">
                         <div class="flex justify-content-between align-items-center mb-3">
                             <div class="w-full md:w-30rem">
                                 <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
-                                    (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
+                                    (search)="onSearch()" (clear)="refresh()"></app-common-table-search>
                             </div>
-                            <div class="flex align-items-center gap-3">
-                                <span class="font-semibold">PETA Calling</span>
-                                <div class="flex align-items-center gap-2">
+                            <div class="peta-global-panel flex align-items-center gap-3">
+                                <span class="font-semibold">{{ 'LBL.PETA_CALLING' | translate }}</span>
+                                <div class="flex align-items-center gap-2 " [ngClass]="{ 'panel-disabled': isRadioDisabled }">
                                     <p-radiobutton name="petaGlobal" inputId="petaYes" value="Yes"
-                                        [(ngModel)]="petaGlobal"></p-radiobutton>
-                                    <label for="petaYes">Yes</label>
+                                        [(ngModel)]="petaGlobal" [disabled]="isRadioDisabled"></p-radiobutton>
+                                    <label for="petaYes">{{ 'LBL.YES' | translate }}</label>
                                     <p-radiobutton name="petaGlobal" inputId="petaNo" value="No"
-                                        [(ngModel)]="petaGlobal"></p-radiobutton>
-                                    <label for="petaNo">No</label>
+                                        [(ngModel)]="petaGlobal" [disabled]="isRadioDisabled"></p-radiobutton>
+                                    <label for="petaNo">{{ 'LBL.NO' | translate }}</label>
                                 </div>
-                                <button pButton label="Save" class="p-button-primary" (click)="saveGlobal()"></button>
+                                <button pButton label="{{ 'LBL.BUTTON.SAVE' | translate }}" class="p-button-primary save-btn"
+                                    [disabled]="isSaveDisabled" (click)="saveGlobal()"></button>
                             </div>
                         </div>
                     </ng-template>
@@ -37,7 +39,7 @@
                         <tr>
                             @if (canEdit) {
                             <th> <p-tableHeaderCheckbox /> </th>
-                            <th>Action</th>
+                            <th>{{ 'LBL.ACTION' | translate }}</th>
                             }
                             @for (col of columns; track col.field) {
                             <th [pSortableColumn]="col.sortable ? col.field : null">
@@ -46,13 +48,20 @@
                                 <p-sortIcon [field]="col.field" />
                                 }
                                 @if (col.type === 'date') {
-                                <p-columnFilter type="date" [field]="col.field" display="menu"></p-columnFilter>
+                                <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true">
+                                    <ng-template #filtericon>
+                                        <app-common-table-filter [field]="col.field" [table]="petaTable"></app-common-table-filter>
+                                    </ng-template>
+                                </p-columnFilter>
                                 } @else if (col.filter) {
-                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu"></p-columnFilter>
+                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
+                                    <ng-template #filtericon>
+                                        <app-common-table-filter [field]="col.field" [table]="petaTable"></app-common-table-filter>
+                                    </ng-template>
+                                </p-columnFilter>
                                 }
                             </th>
                             }
-
                         </tr>
                     </ng-template>
 
@@ -61,17 +70,17 @@
                         <tr>
                             @if (canEdit) {
                             <td>
-                                <p-tableCheckbox [value]="row"></p-tableCheckbox>
+                                <p-tableCheckbox [value]="row" />
                             </td>
                             <td class="white-space-nowrap">
                                 @if (!row?.isEditing) {
                                 <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text"
-                                    (click)="row.isEditing = true"></button>
+                                    (click)="startEdit(row)"></button>
                                 } @else {
                                 <button pButton pRipple icon="pi pi-check" class="p-button-rounded p-button-text mr-2"
-                                    (click)="row.isEditing = false"></button>
+                                    (click)="saveRow(row)"></button>
                                 <button pButton pRipple icon="pi pi-times" class="p-button-rounded p-button-text"
-                                    (click)="row.isEditing = false"></button>
+                                    (click)="cancelEdit(row)"></button>
                                 }
                             </td>
                             }
@@ -95,22 +104,22 @@
                                 <p-toggleswitch [(ngModel)]="row.petaEnabled"
                                     [disabled]="!row?.isEditing"></p-toggleswitch>
                                 }
-                                @case ('oceanFrequency') {
+                                @case ('oceanFrequencyId') {
                                 <ng-container [ngTemplateOutlet]="freqSelect"
-                                    [ngTemplateOutletContext]="{ model: 'oceanFrequency', options: oceanFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
+                                    [ngTemplateOutletContext]="{ model: 'oceanFrequencyId', options: oceanFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
                                 </ng-container>
                                 }
-                                @case ('airFrequency') {
+                                @case ('airFrequencyId') {
                                 <ng-container [ngTemplateOutlet]="freqSelect"
-                                    [ngTemplateOutletContext]="{ model: 'airFrequency', options: airFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
+                                    [ngTemplateOutletContext]="{ model: 'airFrequencyId', options: airFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
                                 </ng-container>
                                 }
-                                @case ('railRoadFrequency') {
+                                @case ('railRoadFrequencyId') {
                                 <ng-container [ngTemplateOutlet]="freqSelect"
-                                    [ngTemplateOutletContext]="{ model: 'railRoadFrequency', options: railRoadFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
+                                    [ngTemplateOutletContext]="{ model: 'railRoadFrequencyId', options: railRoadFrequencyOptions || [], row: row, disabled: (!row?.isEditing || !row?.petaEnabled) }">
                                 </ng-container>
                                 }
-                                @case ('updatedBy') { {{ row?.updatedBy || 'System' }} }
+                                @case ('updatedBy') { {{ row?.updatedBy }} }
                                 @case ('updatedOn') { {{ row?.updatedOn | date: dateTimeFormat }} }
                                 }
                             </td>
@@ -130,3 +139,5 @@
         </div>
     </div>
 </div>
+
+<app-toast-component></app-toast-component>

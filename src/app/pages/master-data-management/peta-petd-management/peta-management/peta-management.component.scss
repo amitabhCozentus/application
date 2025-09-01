@@ -1,0 +1,13 @@
+:host-context(:not(.app-dark)) .peta-global-panel {
+  background: var(--PSABDP-Colour-Upload-Background);
+  border-radius: var(--border-radius, 6px);
+  padding: 0.75rem 1rem;
+
+  .save-btn[disabled] {
+    cursor: not-allowed;
+  }
+}
+
+:host-context(.app-dark) .peta-global-panel {
+  background: transparent;
+}

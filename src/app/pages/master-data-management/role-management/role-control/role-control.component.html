@@ -6,7 +6,7 @@
                     [rowsPerPageOptions]="[10,25,50]" [totalRecords]="totalRecords" editMode="row" dataKey="id"
                     [columns]="roleTableHeaders" [resizableColumns]="true" [reorderableColumns]="true"
                     [showCurrentPageReport]="true" [filterDelay]="0" [rowHover]="true"
-                    currentPageReportTemplate="{{ 'LBL.TABLE.PAGE_REPORT' | translate }}"
+                    [currentPageReportTemplate]="'LBL.TABLE.PAGE_REPORT' | translate"
                     styleClass="p-datatable-customers p-datatable-striped"
                     [globalFilterFields]="['roleName', 'roleDescription']" [lazy]="true"
                     (onLazyLoad)="onLazyLoad($event)">
@@ -20,6 +20,13 @@
                             </div>
                             <div class="action-buttons p-d-flex p-ai-center p-jc-end"
                                 style="display: flex; gap: 1.5rem;">
+                                @if (filtersActive) {
+                                <button pButton pRipple type="button" icon="pi pi-filter-slash" label="Show filters" (click)="openFilters()"
+                                    class="p-button-primary"></button>
+                                } @else {
+                                <button pButton pRipple type="button" icon="pi pi-filter" label="Show filters" (click)="openFilters()"
+                                    [outlined]="!filtersActive"></button>
+                                }
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                     (click)="refresh()"></button>
                                 @if (canEdit) {
@@ -39,41 +46,37 @@
                             }
                             @for (col of columns; track col.field) {
                             <th [pSortableColumn]="col.field">
-                                {{ col.header | translate }} <p-sortIcon [field]="col.field" />
-
-                                <!-- Status Filter -->
+                                {{ col.header | translate }}
+                                @if(col.sortable) {
+                                <p-sortIcon [field]="col.field" />
+                                }
                                 @if (col.field === 'status') {
                                 <p-columnFilter field="status" matchMode="equals" display="menu">
-                                <ng-template #filtericon>
+                                    <ng-template #filtericon>
                                         <app-common-table-filter [field]="'status'" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
                                         <p-select [(ngModel)]="value" [options]="statuses" optionLabel="label" optionValue="value"
                                             (onChange)="filter($event.value)" placeholder="Select One" class="w-full">
-                                    
-                                            <!-- Dropdown item template -->
+
                                             <ng-template let-option pTemplate="item">
                                                 <p-tag [value]="option.label" [ngClass]="getSeverity(option.value)">
                                                 </p-tag>
                                             </ng-template>
-                                    
-                                            <!-- Selected value template -->
+
                                             <ng-template pTemplate="selectedItem" let-option>
-                                                <ng-container *ngIf="option">
+                                                @if (option) {
                                                     <p-tag [value]="option.label" [ngClass]="getSeverity(option.value)">
                                                     </p-tag>
-                                                </ng-container>
+                                                }
                                             </ng-template>
                                         </p-select>
                                     </ng-template>
-                                    </p-columnFilter>
-                                    }
-
-                                    <!-- For Custom landing -->
-
-                                     @else if (col.field === 'customLanding') {
+                                </p-columnFilter>
+                                }
+                                @else if (col.field === 'customLanding') {
                                 <p-columnFilter field="customLanding" matchMode="equals" display="menu">
-                                <ng-template #filtericon>
+                                    <ng-template #filtericon>
                                         <app-common-table-filter [field]="'customLanding'" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
@@ -81,10 +84,8 @@
                                             (onChange)="filter($event.value)" placeholder="Select One" class="w-full">
                                         </p-select>
                                     </ng-template>
-                                    </p-columnFilter>
-                                    }
-
-                                <!-- Date Filter -->
+                                </p-columnFilter>
+                                }
                                 @else if (col.type === 'date') {
                                 <p-columnFilter type="date" [field]="col.field" display="menu" [showMatchModes]="true">
                                     <ng-template #filtericon>
@@ -92,8 +93,6 @@
                                     </ng-template>
                                 </p-columnFilter>
                                 }
-
-                                <!-- Other Filters -->
                                 @else {
                                 <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
                                     <ng-template #filtericon>
@@ -105,6 +104,7 @@
                             }
                         </tr>
                     </ng-template>
+
                     <!-- Body -->
                     <ng-template pTemplate="body" let-assignment let-columns="columns">
                         <tr>
@@ -199,6 +199,9 @@
                 </p-table>
 
                 <app-role-configuration #roleConfig (saved)="refresh()"></app-role-configuration>
+                <app-filter-panel [(visible)]="filtersVisible"
+                    (applied)="onFiltersApplied()" (cleared)="onFiltersCleared()">
+                </app-filter-panel>
             </div>
         </div>
     </div>

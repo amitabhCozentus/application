@@ -5,6 +5,7 @@ import { SelectOption, RoleConfigData } from '../../../../shared/lib/constants';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { ToastComponent } from '../../../../shared/component/toast-component/toast.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 // Types for the privilege hierarchy dropdown (3-level strict)
 interface PrivilegeItem { label: string; value: string; disabled?: boolean; }
@@ -133,13 +134,6 @@ export class RoleConfigurationComponent implements OnInit {
             // Prevent deselect if required by others
             if (this.isPrivilegeRequiredByOthers(nodeId)) return;
             selected.delete(nodeId);
-            // If deselecting Edit, also deselect View in the same feature
-            if (isEdit) {
-                const viewPrivilege = privilege.feature.children.find((p: any) => p.label.toLowerCase() === 'view');
-                if (viewPrivilege && selected.has(viewPrivilege.nodeId)) {
-                    selected.delete(viewPrivilege.nodeId);
-                }
-            }
         } else {
             selected.add(nodeId);
             // If selecting Edit, auto-select View in the same feature

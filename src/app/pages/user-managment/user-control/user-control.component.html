@@ -299,15 +299,15 @@
             <span class="mmt-heading ml-8">Role Assign: {{selectedUser[0]?.roleName}}</span>
         </div>
         <div class="col-12  pl-0">
-            @if(selectedUser[0]?.companyAssign.length<=2){ <span class="mmt-heading">Company Assigned:
-                {{selectedUser[0]?.companyAssign}}</span>
+            @if(selectedUser[0]?.companies.length<=2){ <span class="mmt-heading">Company Assigned:
+                {{selectedUser[0]?.companies}}</span>
                 }
                 @else{
                 <div class="bdp-link">
                     <span class="mmt-heading">Company Assigned:
-                        {{selectedUser[0]?.companyAssign[0]}},{{selectedUser[0]?.companyAssign[1]}}
+                        {{selectedUser[0]?.companies[0]}},{{selectedUser[0]?.companies[1]}}
                         <a (click)="extraCompanies.toggle($event)" class="z-0">
-                            ...+{{selectedUser[0]?.companyAssign.length - 2}}more.
+                            ...+{{selectedUser[0]?.companies.length - 2}}more.
                         </a>
                     </span>
                 </div>

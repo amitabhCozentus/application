@@ -1,8 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
 
 import { SubscriptionCopyDialogComponent } from './subscription-copy-dialog.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+
+// Fake loader to avoid HTTP calls for translations
+class FakeLoader implements TranslateLoader {
+  getTranslation(lang: string) {
+    return of({});
+  }
+}
 
 describe('SubscriptionCopyDialogComponent', () => {
   let component: SubscriptionCopyDialogComponent;
@@ -13,6 +21,9 @@ describe('SubscriptionCopyDialogComponent', () => {
       imports: [
         HttpClientTestingModule,
         SubscriptionCopyDialogComponent,
+        TranslateModule.forRoot({
+          loader: { provide: TranslateLoader, useClass: FakeLoader }
+        })
       ],
     })
     .compileComponents();

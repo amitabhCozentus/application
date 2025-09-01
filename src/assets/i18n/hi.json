@@ -109,6 +109,8 @@
 "LBL.PETA_CALLING": "पीईटीए कॉलिंग",
 "LBL.OCEAN_FREQUENCY": "समुद्री आवृत्ति",
 "LBL.AIR_FREQUENCY": "हवाई आवृत्ति",
-"LBL.RAIL_ROAD_FREQUENCY": "रेल/सड़क आवृत्ति"
+"LBL.RAIL_ROAD_FREQUENCY": "रेल/सड़क आवृत्ति",
+"LBL.YES": "हाँ",
+"LBL.NO": "नहीं"
 
 }

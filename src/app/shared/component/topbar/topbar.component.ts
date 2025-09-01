@@ -84,12 +84,16 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     ];
     selectedCompany: any;
     languageOptions: SelectItem[] = [
-        { label: 'English', value: 'en' },
-        { label: 'French', value: 'fr' },
-        { label: 'Hindi', value: 'hi' },
-    { label: 'Odia', value: 'or' },
-    { label: 'Bengali', value: 'bn' },
-    { label: 'Russian', value: 'ru' }
+        { label: 'English (English)', value: 'en' },
+        { label: 'French (Français)', value: 'fr' },
+        { label: 'Hindi (हिन्दी)', value: 'hi' },
+        { label: 'Odia (ଓଡ଼ିଆ)', value: 'or' },
+        { label: 'Bengali (বাংলা)', value: 'bn' },
+        { label: 'Russian (Русский)', value: 'ru' },
+        { label: 'Urdu (اردو)', value: 'ur' },
+        { label: 'Sanskrit (संस्कृतम्)', value: 'sa' },
+        { label: 'Gujarati (ગુજરાતી)', value: 'gu' },
+        { label: 'Bhojpuri (भोजपुरी)', value: 'bho' }
     ];
     // Full menu set after permission filtering
     navMenuItems: AppMenuItem[] = [];
@@ -510,7 +514,7 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     selectedPrimaryColor = computed(() => {
         return this.layoutService.layoutConfig().primary;
     });
-     onLanguageChange(event: any) {
+    onLanguageChange(event: any) {
     const lang = event.value;
     this.selectedLanguage = lang;
 
@@ -534,6 +538,18 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
         case 'ru':
             this.translationService.setLanguage(lang, {});
             break;
+        case 'ur':
+            this.translationService.setLanguage(lang, {});
+            break;
+        case 'sa':
+            this.translationService.setLanguage(lang, {});
+            break;
+        case 'gu':
+            this.translationService.setLanguage(lang, {});
+            break;
+        case 'bho':
+            this.translationService.setLanguage(lang, {});
+            break;
         default:
             this.translationService.setLanguage(lang, this.englishLanguage);
     }
@@ -541,8 +557,18 @@ export class TopbarComponent implements OnInit, AfterViewInit, OnDestroy {
     // Wait for ngx-translate to load the JSON, then rebuild the menu so instant() resolves
     this.translateService.use(lang).subscribe(() => {
         this.buildNavMenu();
+        this.applyDirection(lang);
     });
 }
+
+    private applyDirection(lang: string) {
+        const rtlLangs = new Set(['ar', 'he', 'ur', 'fa', 'ps']);
+        const isRtl = rtlLangs.has(lang);
+        try {
+            document.documentElement.setAttribute('dir', isRtl ? 'rtl' : 'ltr');
+            document.body.classList.toggle('layout-rtl', isRtl);
+        } catch {}
+    }
 
     public logoutRedirect() {
         // Optional: Clear theme preferences on logout

@@ -109,5 +109,7 @@
   "LBL.PETA_CALLING": "PETA কলিং",
   "LBL.OCEAN_FREQUENCY": "সমুদ্র ফ্রিকোয়েন্সি",
   "LBL.AIR_FREQUENCY": "এয়ার ফ্রিকোয়েন্সি",
-  "LBL.RAIL_ROAD_FREQUENCY": "রেল/রাস্তা ফ্রিকোয়েন্সি"
+  "LBL.RAIL_ROAD_FREQUENCY": "রেল/রাস্তা ফ্রিকোয়েন্সি",
+  "LBL.YES": "হ্যাঁ",
+  "LBL.NO": "না"
 }

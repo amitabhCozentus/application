@@ -1,10 +1,11 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PrimengModule } from '../../../primeng/primeng.module';
+import { NgxDropzoneModule } from 'ngx-dropzone';
 
 @Component({
   selector: 'app-upload-download-dialog',
-  imports: [PrimengModule, ReactiveFormsModule, FormsModule],
+  imports: [PrimengModule, ReactiveFormsModule, FormsModule, NgxDropzoneModule],
   templateUrl: './upload-download-dialog.component.html',
   styleUrl: './upload-download-dialog.component.scss'
 })
@@ -12,7 +13,7 @@ export class UploadDownloadDialogComponent implements OnInit, OnChanges {
   @Input() uploadDialogVisible: boolean = true;
   @Input() editMode: boolean = false;
   @Input() selectedReleaseNote: any = null;
-  
+
   @Output() dialogClosed = new EventEmitter<void>();
   @Output() releaseNoteUpdated = new EventEmitter<any>();
 
@@ -56,7 +57,7 @@ export class UploadDownloadDialogComponent implements OnInit, OnChanges {
         uploadedBy: 'current.user@bdpint.com', // Replace with actual user
         uploadedOn: new Date().toISOString().replace('T', ' ').substring(0, 19) // Current timestamp
       };
-      
+
       this.releaseNoteUpdated.emit(formData);
       console.log('Form submitted:', formData);
     } else {

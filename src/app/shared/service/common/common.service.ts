@@ -9,6 +9,23 @@ export class CommonService {
 
   constructor(protected router: Router) { }
 
+
+  public getRoute(settings: any = {}) {
+    let rootPath: string = '/';
+    if (settings.type == 'User') {
+      rootPath = rootPath + AppRoutes.User.ROOT;
+    }
+    if (settings.type == 'Manager') {
+      rootPath = rootPath + AppRoutes.Manager.ROOT;
+    }
+    if (settings.type) {
+      rootPath = rootPath + "/" + settings.route;
+    } else {
+      rootPath = rootPath + settings.route;
+    }
+    return rootPath;
+  }
+
   navigateRouteWithState(route: any) {
     let rootPath: string = '/';
     if (route.type && route.type == 'Manager') {

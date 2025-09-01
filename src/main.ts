@@ -5,8 +5,9 @@ import { environment } from './environments/environment';
 import { bootstrapApplication } from '@angular/platform-browser';
 import {appConfig} from '../src/app/app.config'
 import{AppComponent} from '../src/app/app.component'
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { AuthModule } from '@auth0/auth0-angular';
+import { apiRequestInterceptor } from './app/core/interceptor/api-request/api-request.interceptor';
 if (environment.production) {
     enableProdMode();
 }
@@ -14,7 +15,7 @@ bootstrapApplication(AppComponent, {
   ...appConfig,
   providers: [
     ...(appConfig.providers || []),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([apiRequestInterceptor])),
     ...AuthModule.forRoot({
       domain: environment.auth.domain,
       clientId: environment.auth.clientId,

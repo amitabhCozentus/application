@@ -4,14 +4,7 @@
  */
 
 export namespace UserEndPoint {
-    export abstract class CustomerSubscription {
-        public static readonly GET_COMPANY_SUBSCRIPTION_LIST = "customer-subscriptions/list";
-        public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_LIST = "customer-subscriptions/update";
-        public static readonly GET_COMPANY_CONFIG = "customer-subscriptions/configs";
-        public static readonly GET_COMPANY_SUBSCRIPTION_COMPANIES = "customer-subscriptions/companies";
-        public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_THROUGH_COPY = "customer-subscriptions/copy";
-        public static readonly BULK_UPDATE_CUSTOMER_SUBSCRIPTION_TIER = "customer-subscriptions/bulk-update-tier";
-    }
+
     export abstract class AuthPoints {
         public static readonly ADD_USER = "user/addUser";
         public static readonly FORGOT_PASSWORD = "user/forgot-password";
@@ -36,6 +29,13 @@ export namespace AdminEndPoint {
         public static readonly LANDING_PAGES = RoleManagement.GET_ROLE + "/" + "landing-pages";
     }
 
+    export abstract class UserManagement {
+        public static readonly GET_USER = "user-management";
+        public static readonly GET_USER_LIST = UserManagement.GET_USER + "/" + "users";
+        public static readonly GET_USER_ROLES = UserManagement.GET_USER + "/" + "roles";
+        public static readonly GET_COMPANY_LIST = UserManagement.GET_USER + "/" + "company-tree";
+    }
+
 }
 
 export namespace AppRoutes {
@@ -54,6 +54,24 @@ export namespace AppRoutes {
         public static readonly RESET_PASSWORD_AUTH = "reset-password-auth";
         public static readonly NOT_ASSOCIATED = "not-association";
     }
+
+    export abstract class CustomerSubscription {
+        public static readonly GET_COMPANY_SUBSCRIPTION_LIST = "customer-subscriptions/list";
+        public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_LIST = "customer-subscriptions/update";
+        public static readonly GET_COMPANY_CONFIG = "customer-subscriptions/configs";
+        public static readonly GET_COMPANY_SUBSCRIPTION_COMPANIES = "customer-subscriptions/companies";
+        public static readonly UPDATE_CUSTOMER_SUBSCRIPTION_THROUGH_COPY = "customer-subscriptions/copy";
+        public static readonly BULK_UPDATE_CUSTOMER_SUBSCRIPTION_TIER = "customer-subscriptions/bulk-update-tier";
+    }
+
+    export abstract class PetaPetdManagement {
+        public static readonly GET_COMPANY_PETA_LIST = "peta-petd-management/list";
+        public static readonly UPDATE_COMPANY_PETA_LIST = "peta-petd-management/update";
+        public static readonly BULK_UPDATE_COMPANY_PETA_LIST = "peta-petd-management/bulk-update";
+        public static readonly GET_COMPANY_PETA_CONFIG = "peta-petd-management/configs";
+    }
+
+
     export abstract class User {
         public static readonly ROOT = "app";
         public static readonly HOME = "home";
