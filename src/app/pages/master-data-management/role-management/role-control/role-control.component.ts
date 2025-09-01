@@ -104,6 +104,7 @@ export class RoleControlComponent implements OnInit {
     searchTerm: string = "";
     allPrivileges: string[] = []; // Add this to prevent template errors
     private lastColumnFilters: ColumnFilterDescriptor[] = [];
+    private suppressDropdownLazyLoad = false; // Flag to suppress API calls from dropdown changes
     // Status filter dropdown options (shared)
     statuses = STATUSES;
     // Shared date-time display format for all date fields
@@ -175,6 +176,11 @@ export class RoleControlComponent implements OnInit {
             this.suppressNextLazyLoad = false;
             return;
         }
+        if (this.suppressDropdownLazyLoad) {
+            // Skip this lazy event when dropdown value changes
+            this.suppressDropdownLazyLoad = false;
+            return;
+        }
         const page = event.first / event.rows;
         this.currentPage = page;
         this.pageSize = event.rows;
@@ -183,10 +189,16 @@ export class RoleControlComponent implements OnInit {
         this.loadRoles(page, event.rows, this.searchTerm, columnFilters);
     }
 
-    getSeverity(statusValue: any): "status-active" | "status-inactive"  {
+    /** Handle dropdown filter changes without triggering API call */
+    onDropdownFilterChange(value: any, filterCallback: Function) {
+        this.suppressDropdownLazyLoad = true;
+        filterCallback(value);
+    }
+
+    getSeverity(statusValue: any): "status-active" | "status-inactive" | undefined {
         if (statusValue === true) return "status-active";
         else if (statusValue === false) return "status-inactive";
-       
+        return undefined;
     }
 
     /** Map UI field to API column name */

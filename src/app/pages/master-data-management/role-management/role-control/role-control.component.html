@@ -48,8 +48,10 @@
                                         <app-common-table-filter [field]="'status'" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
-                                        <p-select [(ngModel)]="value" [options]="statuses" optionLabel="label" optionValue="value"
-                                            (onChange)="filter($event.value)" placeholder="Select One" class="w-full">
+                                        <p-select [ngModel]="value" (ngModelChange)="value = $event" 
+                                            (onChange)="onDropdownFilterChange($event.value, filter)" 
+                                            [options]="statuses" optionLabel="label" optionValue="value"
+                                            placeholder="Select One" class="w-full">
                                     
                                             <!-- Dropdown item template -->
                                             <ng-template let-option pTemplate="item">
@@ -77,8 +79,10 @@
                                         <app-common-table-filter [field]="'customLanding'" [table]="roleTable"></app-common-table-filter>
                                     </ng-template>
                                     <ng-template #filter let-value let-filter="filterCallback">
-                                        <p-select [(ngModel)]="value" [options]="customLanding" optionLabel="label" optionValue="value"
-                                            (onChange)="filter($event.value)" placeholder="Select One" class="w-full">
+                                        <p-select [ngModel]="value" (ngModelChange)="value = $event" 
+                                            (onChange)="onDropdownFilterChange($event.value, filter)" 
+                                            [options]="customLanding" optionLabel="label" optionValue="value"
+                                            placeholder="Select One" class="w-full">
                                         </p-select>
                                     </ng-template>
                                     </p-columnFilter>

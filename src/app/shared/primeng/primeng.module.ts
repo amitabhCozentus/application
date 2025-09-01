@@ -71,6 +71,8 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { DividerModule } from 'primeng/divider';
 import { OverlayBadgeModule } from 'primeng/overlaybadge';
 import { TranslateModule } from '@ngx-translate/core';
+import { TagModule } from 'primeng/tag';
+
 
 const primengModules = [
     CommonModule,
@@ -145,7 +147,8 @@ const primengModules = [
     ProgressSpinnerModule,
     DividerModule,
     OverlayBadgeModule,
-    TranslateModule
+    TranslateModule,
+    TagModule
 ]
 @NgModule({
   declarations: [],
