@@ -1,4 +1,4 @@
-<p-toast position="top-right"></p-toast>
+<div class="edit-subscription-dialog">
 <p-dialog header="Edit Subscription" [modal]="true" [(visible)]="visible" [style]="{ width: '40rem' }"
     [draggable]="false" (onHide)="hideDialog()">
     <p-divider class="mt-0"></p-divider>
@@ -6,7 +6,7 @@
         <form [formGroup]="subscriptionForm" (ngSubmit)="onSubmit()">
             <div style="display:flex" class="mb-2 ">
                 <div>
-                    <label for="customerName" class="font-semibold w-24">Customer Name<span class="required-star">*</span></label>
+                    <label for="customerName" class="font-semibold w-24">{{ 'LBL.CUSTOMER_NAME' | translate }}<span class="required-star">*</span></label>
                     <input pInputText
                            id="customerName"
                            class="flex-auto p-disabled"
@@ -15,7 +15,7 @@
                            [disabled]="true" />
                 </div>
                 <div>
-                    <label for="customerCode" class="font-semibold w-24">Customer Code<span class="required-star">*</span></label>
+                    <label for="customerCode" class="font-semibold w-24">{{ 'LBL.CUSTOMER_CODE' | translate }}<span class="required-star">*</span></label>
                     <input pInputText
                            id="customerCode"
                            class="flex-auto p-disabled"
@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div class="mb-4 mt-4">
-                <h4 class="font-semibold mb-2">Subscription Type<span class="required-star">*</span></h4>
+                <h4 class="font-semibold mb-2">{{ 'LBL.SUBSCRIPTION_TIER' | translate }}<span class="required-star">*</span></h4>
                 <span>
                     <p-radioButton name="subscriptionTypeName" [value]="'Standard'" label="Standard"
                         formControlName="subscriptionTypeName"></p-radioButton>
@@ -37,14 +37,16 @@
                     <label class="ml-2">Premium</label>
                 </span>
                 <div class="mt-4 mb-4">
-                    <h6 style="font-weight: bold;" class="mb-4 mt-4">Feature Toggle</h6>
+                    <h6 style="font-weight: bold;" class="mb-4 mt-4">{{ 'LBL.FEATURE_TOGGLE' | translate }}</h6>
                     <ul class="flex flex-wrap p-0 m-0  row">
                         @for(feature of features; track feature.id) {
                         <li class="flex align-items-center gap-3 col-3">
                             <p-toggleSwitch
                                 [inputId]="'toggle-' + feature.id"
                                 [(ngModel)]="featureStates[feature.id]"
-                                [ngModelOptions]="{standalone: true}">
+                                [ngModelOptions]="{standalone: true}"
+                                [disabled]="subscriptionForm.get('subscriptionTypeName')?.value === 'Standard'"
+                                >
                             </p-toggleSwitch>
                             <label [for]="'toggle-' + feature.id" class="flex cursor-pointer">{{ feature.name }}</label>
                         </li>
@@ -56,8 +58,11 @@
         </form>
     </ng-template>
     <ng-template pTemplate="footer">
-        <button pButton type="button" label="Cancel" class="p-button-outlined" (click)="hideDialog()"></button>
-        <button pButton type="submit" label="Update" class="p-button-primary" [disabled]="!subscriptionForm.valid"
+        <button pButton type="button" label="{{'LBL.BUTTON.CANCEL' | translate}}" class="p-button-outlined" (click)="hideDialog()"></button>
+        <button pButton type="submit" label="{{'LBL.BUTTON.UPDATE' | translate}}" class="p-button-primary"
+            [disabled]="!subscriptionForm.valid || !subscriptionForm.dirty"
             (click)="onUpdateSubmit()"></button>
     </ng-template>
 </p-dialog>
+</div>
+<p-toast position="top-right"></p-toast>

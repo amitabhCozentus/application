@@ -1,15 +1,16 @@
-
 <div class="home-container">
-    <ng-container *ngIf="kpiCards.length !== 0; else loadingKpi">
-        <!-- Modal Component -->
+    <ng-container *ngIf="kpiData.length !== 0; else loadingKpi">
         <div class="col-12 py-1 kpi-header">
-            <label for="">KPI Widgets <span><i (click)="openModal()" class="ml-3 pi pi-cog"></i></span></label>
+            <label for="">KPI Widgets </label>
         </div>
-        <div *ngFor="let cardData of kpiCards" class="col-3 pb-2 pt-3">
-            <app-kpi-indicators [card]="cardData"></app-kpi-indicators>
+        <div>
+            <div class="row flex">
+                <div class="col-4" *ngFor="let card of kpiData">
+                    <app-kpi-indicators [card]="card"></app-kpi-indicators>
+                </div>
+            </div>
         </div>
     </ng-container>
-
     <ng-template #loadingKpi>
         <div class="col-3" *ngFor="let i of [1,2,3,4]">
             <div class="card">
@@ -18,5 +19,64 @@
                 <p-skeleton height="2rem" styleClass="mb-2"></p-skeleton>
             </div>
         </div>
-</ng-template>
+    </ng-template>
+    <div class="col-12">
+        <div class="card port-map m-0">
+            <div class="card-header">
+                <div class="card-header-actions flex justify-content-between">
+                    <span class="header-content">
+                        <h5 class="card-title">{{headerName}} | Shipments:{{totalShipmentCount}}</h5>
+                    </span>
+                    <span>
+                        <p-selectbutton [options]="stateOptions" [(ngModel)]="locationType" optionLabel="label"
+                            optionValue="value" aria-labelledby="basic" (onChange)="onToggleChange()" />
+                        <button pButton pRipple icon="pi pi-copy" class="p-button-rounded p-button-text mr-2"
+                            (click)="openSearchDialog()" title="Search Location (Ctrl+K)" aria-label="Search Location"
+                            pTooltip="Search Location (Ctrl+K)"></button>
+                    </span>
+                </div>
+            </div>
+            <div id="map" #mapContainer></div>
+            <div #mapTypeButton class="mapboxgl-ctrl mapboxgl-ctrl-group custom-map-type-button-group">
+                <button type="button" class="mapboxgl-ctrl-icon map-type-button" disabled="true"
+                    (click)="mapTypeOptionPanelClick($event)" title="Change Map Type">
+                    <i class="far fa-clone"></i>
+                </button>
+            </div>
+            <!-- Overlay Panel -->
+            <p-popover #mapTypeOptionPanel styleClass="map-overlay-panel">
+                <div class="bdp-map-type-option">
+                    <h5>Maps Display :</h5>
+                    <ul>
+                        <li>
+                            <span class="flex">
+                                <div>
+                                    <i class="fa-regular fa-compass"></i>
+                                    <p>Light View</p>
+                                </div>
+                                <p-toggleswitch [ngModel]="mapType === 'light'"
+                                    (onChange)="changeMapStyle('light')"></p-toggleswitch>
+                            </span>
+                        </li>
+                        <li>
+                            <span>
+                                <i class="fa-regular fa-satellite-dish"></i>
+                                <p>Satellite View</p>
+                            </span>
+                            <p-toggleswitch [ngModel]="mapType === 'satellite'"
+                                (onChange)="changeMapStyle('satellite')"></p-toggleswitch>
+                        </li>
+                        <li>
+                            <span class="flex">
+                                <i class="fa-regular fa-road"></i>
+                                <p>Street View</p>
+                            </span>
+                            <p-toggleswitch [ngModel]="mapType === 'street'"
+                                (onChange)="changeMapStyle('street')"></p-toggleswitch>
+                        </li>
+                    </ul>
+                </div>
+            </p-popover>
+        </div>
+    </div>
 </div>

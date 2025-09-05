@@ -13,11 +13,11 @@
                     </p-tablist>
                     <p-tabpanel value="0">
                         @if (hasExistingUsers) {
-                        <p-table #existingUserTable [value]="usersList"
-                            [(selection)]="selectedUsers" styleClass="p-datatable-customers p-datatable-striped"
-                            [rowHover]="true" [rows]="10" [showCurrentPageReport]="true" [scrollable]="true"
-                            scrollHeight="400px" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row"
-                            dataKey="id" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                        <p-table #existingUserTable [value]="usersList" [(selection)]="selectedUsers"
+                            styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" [rows]="10"
+                            [showCurrentPageReport]="true" [scrollable]="true" scrollHeight="400px"
+                            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row" dataKey="id"
+                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                             [filterDelay]="0" [resizableColumns]="true" [columns]="usersTableHeader"
                             [reorderableColumns]="true" [(totalRecords)]="usersList.length" [globalFilterFields]="[
                                 'userId',
@@ -44,11 +44,11 @@
                                     </th>
 
                                     @for (col of usersTableHeader; track col.field) {
-                                        <th [pSortableColumn]="col.field">
-                                            {{ col.header }}
-                                            <p-sortIcon [field]="col.field" />
-                                            <p-columnFilter type="text" [field]="col.field" display="menu" />
-                                        </th>
+                                    <th [pSortableColumn]="col.field">
+                                        {{ col.header }}
+                                        <p-sortIcon [field]="col.field" />
+                                        <p-columnFilter type="text" [field]="col.field" display="menu" />
+                                    </th>
                                     }
                                 </tr>
                             </ng-template>
@@ -73,7 +73,7 @@
                                     <td>
                                         @switch (col.field) {
                                         @case ('actions') {
-                                            <button (click)="
+                                        <button (click)="
                                                     updateUsersCompany(
                                                         assignment,
                                                         'existing'
@@ -81,56 +81,28 @@
                                                 " pButton type="button" label="Assign"></button>
                                         }
                                         @case ('userType') {
-                                            <button pButton pRipple
-                                                [ngClass]="assignment.userType === 'Existing' ? 'status-active' : 'status-new'"
-                                                class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none w-7">
-                                                {{ assignment.userType }}
-                                            </button>
+                                        <button pButton pRipple
+                                            [ngClass]="assignment.userType === 'Existing' ? 'status-active' : 'status-new'"
+                                            class="px-3 py-1 rounded shadow-none border-0 text-sl font-semibold text-gray-900 pe-none w-7">
+                                            {{ assignment.userType }}
+                                        </button>
                                         }
-                                        @case ('companies') {
-                                            <ul>
-                                                <li>
-                                                    {{
-                                                    assignment[
-                                                    "companies"
-                                                    ][0]
-                                                    }}
-                                                </li>
-                                                @if (assignment['companies'].length >= 2) {
-                                                <li>
-                                                    {{
-                                                    assignment[
-                                                    "companies"
-                                                    ][1]
-                                                    }}
-                                                </li>
-                                                }
-                                            </ul>
-                                            @if (assignment['companies'].length > 2) {
-                                            <div>
-                                                <div class="bdp-link" (click)="
-                                                        extraCompanies.toggle(
-                                                            $event
-                                                        )
+                                        @case ('companyCount') {
+                                        <div>
+                                            <div class="bdp-link" (click)="
+                                                        onCompaniesCountClick($event, assignment)
                                                     ">
-                                                    <a class="ml-5">...+{{
-                                                        assignment[
-                                                        "companies"
-                                                        ].length - 2
-                                                        }}
-                                                        more.</a>
-                                                </div>
+                                                <a class="ml-5">{{ assignment['companyCount'] }}</a>
                                             </div>
-                                            }
-                                            <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
-                                                appendTo="body">
-                                                @for (companyName of assignment['companies']; track companyName; let index = $index) {
-                                                    @if (index > 1) { <div><span>{{ companyName }}</span></div> }
-                                                }
-                                            </p-popover>
+                                        </div>
+                                        <p-popover #companies styleClass="bdp-extracompanies-panel" appendTo="body">
+                                            <p-table>
+                                            </p-table>
+                                        </p-popover>
+
                                         }
                                         @default {
-                                            {{ assignment[col.field] }}
+                                        {{ assignment[col.field] }}
                                         }
                                         }
                                     </td>
@@ -155,10 +127,10 @@
                     </p-tabpanel>
                     <p-tabpanel value="1">
                         @if (!hasExistingUsers) {
-                        <p-table #existingUserTable [value]="usersList"
-                            [(selection)]="selectedUsers" styleClass="p-datatable-customers p-datatable-striped"
-                            [rowHover]="true" [rows]="10" [showCurrentPageReport]="true"
-                            [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" editMode="row" dataKey="id"
+                        <p-table #existingUserTable [value]="usersList" [(selection)]="selectedUsers"
+                            styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" [rows]="10"
+                            [showCurrentPageReport]="true" [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true"
+                            editMode="row" dataKey="id"
                             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                             [filterDelay]="0" [resizableColumns]="true" [columns]="existingUsertableHeaders"
                             [reorderableColumns]="true" [(totalRecords)]="usersList.length" [globalFilterFields]="[
@@ -205,11 +177,12 @@
                                         Actions
                                     </th>
                                     @for (col of columns; track col.field) {
-                                        <th [pSortableColumn]="col.field">
-                                            <div class="flex justify-content-between align-items-center bdp-header-container">
-                                                {{ col.header }}
-                                            </div>
-                                        </th>
+                                    <th [pSortableColumn]="col.field">
+                                        <div
+                                            class="flex justify-content-between align-items-center bdp-header-container">
+                                            {{ col.header }}
+                                        </div>
+                                    </th>
                                     }
                                 </tr>
                             </ng-template>
@@ -232,41 +205,43 @@
                                     <td>
                                         @switch (col.field) {
                                         @case ('actions') {
-                                            <button (click)="updateUsersCompany(assignment,'existing')" pButton
-                                                type="button" label="Assign">
-                                            </button>
+                                        <button (click)="updateUsersCompany(assignment,'existing')" pButton
+                                            type="button" label="Assign">
+                                        </button>
                                         }
                                         @case ('companies') {
-                                            <ul>
-                                                <li>
-                                                    {{assignment["companies"][0]}}
-                                                </li>
-                                                @if (assignment['companies'].length >= 2) {
-                                                <li>
-                                                    {{assignment["companies"][1]}}
-                                                </li>
-                                                }
-                                            </ul>
-                                            @if (assignment['companies'].length > 2) {
-                                            <div>
-                                                <div class="bdp-link" (click)="extraCompanies.toggle($event)">
-                                                    <a class="ml-5">
-                                                        ...+{{assignment["companies"].length - 2}}more.
-                                                    </a>
-                                                </div>
-                                            </div>
+                                        <ul>
+                                            <li>
+                                                {{assignment["companies"][0]}}
+                                            </li>
+                                            @if (assignment['companies'].length >= 2) {
+                                            <li>
+                                                {{assignment["companies"][1]}}
+                                            </li>
                                             }
-                                            <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
-                                                appendTo="body">
-                                                @for (companyName of assignment['companies']; track companyName; let index = $index) {
-                                                    @if (index > 1) { <div><span>{{ companyName }}</span></div> }
-                                                }
-                                            </p-popover>
+                                        </ul>
+                                        @if (assignment['companies'].length > 2) {
+                                        <div>
+                                            <div class="bdp-link" (click)="extraCompanies.toggle($event)">
+                                                <a class="ml-5">
+                                                    ...+{{assignment["companies"].length - 2}}more.
+                                                </a>
+                                            </div>
+                                        </div>
+                                        }
+                                        <p-popover #extraCompanies styleClass="bdp-extracompanies-panel"
+                                            appendTo="body">
+                                            {{userCompanyList}}
+                                            @for (company of userCompanyList; track companyName; let index = $index) {
+                                            @if (index > -1)
+                                            { <div><span>{{ company.companyName }}</span></div> }
+                                            }
+                                        </p-popover>
                                         }
                                         @default {
-                                            {{ assignment[col.field] }}
+                                        {{ assignment[col.field] }}
                                         }
-                                    }
+                                        }
                                     </td>
                                     }
                                 </tr>
@@ -313,7 +288,7 @@
                 </div>
                 <p-popover #extraCompanies styleClass="bdp-extracompanies-panel" class="z-0">
                     @for (companyName of selectedUser[0]?.companyAssign; track companyName; let index = $index) {
-                        @if (index > 1) { <div><span>{{ companyName }}</span></div> }
+                    @if (index > 1) { <div><span>{{ companyName }}</span></div> }
                     }
                 </p-popover>
                 }

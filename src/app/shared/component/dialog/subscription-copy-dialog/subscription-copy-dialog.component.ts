@@ -21,6 +21,11 @@ interface Feature {
   keyCode: string;
 }
 
+interface Company {
+  companyCode: string;
+  companyName: string;
+}
+
 @Component({
   selector: 'app-subscription-copy-dialog',
   imports: [ReactiveFormsModule,PrimengModule],
@@ -64,12 +69,13 @@ export class SubscriptionCopyDialogComponent implements OnInit{
 
   copyToTooltip: string = 'Min 1 and max 10 customers can be added.';
 
-  customerNameList: any[] = [];
-  selectedCustomer: any = null;
+  customerNameList: Company[] = [];
+  selectedCustomer: Company | null = null;
   companyCount: number = 0;
   companySearchText: string = '';
   loadingCompanies: boolean = false;
   hasMoreCompanies: boolean = true;
+  currentFilterValue: string = '';
 
   ngOnInit() {
     // Initialize feature states if not already set
@@ -88,12 +94,67 @@ export class SubscriptionCopyDialogComponent implements OnInit{
     this.featureStates[featureId] = !this.featureStates[featureId];
   }
 
+  // Add selection change handler
+  onCustomerSelectionChange(event: { value: Company[] }) {
+    const selectedCustomers = event?.value || [];
+    
+    if (selectedCustomers.length > 10) {
+      // Remove the last selected item and show warning
+      selectedCustomers.pop();
+      this.subscriptionForm.patchValue({
+        selectedCustomer: selectedCustomers
+      });
+      
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Selection Limit Exceeded',
+        detail: 'Maximum 10 customers can be selected at a time'
+      });
+    }
+  }
+
   onUpdateSubmit() {
     // Use the form control for selectedCustomer
-    const selectedCustomer = this.subscriptionForm.get('selectedCustomer')?.value || this.selectedCustomer;
-    if (this.subscriptionForm.valid && selectedCustomer && selectedCustomer.companyCode) {
+    const selectedCustomers = this.subscriptionForm.get('selectedCustomer')?.value;
+    
+    // Handle both single selection (existing) and multiple selection (new)
+    let targetCompanyIds: string[] = [];
+    
+    if (Array.isArray(selectedCustomers)) {
+      // Multiple selection
+      if (selectedCustomers.length === 0) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'No Selection',
+          detail: 'Please select at least one customer'
+        });
+        return;
+      }
+      
+      if (selectedCustomers.length > 10) {
+        this.messageService.add({
+          severity: 'warn',
+          summary: 'Selection Limit Exceeded',
+          detail: 'Maximum 10 customers can be selected at a time'
+        });
+        return;
+      }
+      
+      targetCompanyIds = selectedCustomers.map((customer: Company) => customer.companyCode);
+    } else if (selectedCustomers && selectedCustomers.companyCode) {
+      // Single selection (existing behavior)
+      targetCompanyIds = [selectedCustomers.companyCode];
+    } else {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'No Selection',
+        detail: 'Please select at least one customer'
+      });
+      return;
+    }
+
+    if (this.subscriptionForm.valid && targetCompanyIds.length > 0) {
       const sourceCompanyId = Number(this.subscriptionForm.get('customerCode')?.value); 
-      const targetCompanyIds = [selectedCustomer.companyCode];
 
       const requestBody = {
         sourceCompanyId: sourceCompanyId,
@@ -105,7 +166,7 @@ export class SubscriptionCopyDialogComponent implements OnInit{
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail: 'Subscription copied successfully'
+            detail: response?.message || `Subscription copied successfully to ${targetCompanyIds.length} customers`
           });
           this.visible = false;
           this.onClose.emit();
@@ -115,7 +176,7 @@ export class SubscriptionCopyDialogComponent implements OnInit{
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Unable to copy subscription. Please try again.'
+            detail: error?.error?.message || 'Unable to copy subscription. Please try again.'
           });
           console.error('Error copying subscription:', error);
         }
@@ -140,11 +201,47 @@ export class SubscriptionCopyDialogComponent implements OnInit{
       this.companySearchText = '';
       this.fetchCompanies();
     }
+    
+    // Setup search icon click listener after dropdown opens
+    setTimeout(() => {
+      this.setupSearchIconClick();
+    }, 100);
+  }
+
+  // Setup click event on search icon
+  private setupSearchIconClick() {
+    const searchIcon = document.querySelector('.p-multiselect-filter-icon');
+    
+    if (searchIcon) {
+      // Remove existing listener to avoid duplicates
+      searchIcon.removeEventListener('click', this.handleSearchIconClick);
+      
+      // Add click listener
+      searchIcon.addEventListener('click', this.handleSearchIconClick);
+    }
+  }
+
+  // Handle search icon click
+  private handleSearchIconClick = () => {
+    const searchText = this.currentFilterValue.trim();
+    
+    if (searchText.length >= 3) {
+      this.companySearchText = searchText;
+      this.companyCount = 0;
+      this.customerNameList = [];
+      this.fetchCompanies();
+    } else if (searchText.length > 0) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Search Text Too Short',
+        detail: 'Please enter at least 3 characters to search'
+      });
+    }
   }
 
   // Call this when user types in search
   onCompanySearch(event: any) {
-    this.companySearchText = event?.query || '';
+    this.companySearchText = event?.query || '' ;
     this.companyCount = 0; // Reset count for new search
     this.customerNameList = [];
     this.fetchCompanies();
@@ -156,6 +253,21 @@ export class SubscriptionCopyDialogComponent implements OnInit{
     this.fetchCompanies(true);
   }
 
+  // Call this when user types in search (for (onFilter) event)
+  onCompanySearchFilter(event: any) {
+    // Trim spaces from search text and check for minimum 3 characters
+    const searchText = (event?.filter || event?.query || '').trim();
+    this.currentFilterValue = searchText;
+    
+    // If search is empty, call API immediately
+    if (searchText.length === 0) {
+      this.companySearchText = searchText;
+      this.companyCount = 0;
+      this.customerNameList = [];
+      this.fetchCompanies();
+    }
+  }
+
   fetchCompanies(append: boolean = false) {
     this.loadingCompanies = true;
     const payload = {
@@ -163,12 +275,12 @@ export class SubscriptionCopyDialogComponent implements OnInit{
       searchText: this.companySearchText
     };
     this.subscriptionService.getCustomerSubscriptionCompanies(payload).subscribe({
-      next: (response: any) => {
+      next: (response: { data: Company[] }) => {
         const companies = response?.data || [];
         if (append) {
           // Only append new companies that are not already in the list
           const existingCodes = new Set(this.customerNameList.map(c => c.companyCode));
-          const newCompanies = companies.filter((c: any) => !existingCodes.has(c.companyCode));
+          const newCompanies = companies.filter((c: Company) => !existingCodes.has(c.companyCode));
           this.customerNameList = [...this.customerNameList, ...newCompanies];
         } else {
           this.customerNameList = companies;

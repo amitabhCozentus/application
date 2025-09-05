@@ -1,4 +1,3 @@
-
 import { toSignal } from '@angular/core/rxjs-interop';
 import { computed, inject, OnInit, ViewChild } from '@angular/core';
 import { map, catchError, startWith } from 'rxjs/operators';
@@ -18,12 +17,12 @@ import { SubscriptionService } from '../../../../shared/service/subscription/sub
 import { SubscriptionCopyDialogComponent } from '../../../../shared/component/dialog/subscription-copy-dialog/subscription-copy-dialog.component';
 import { SubscriptionTierDialogComponent } from '../../../../shared/component/dialog/subscription-tier-dialog/subscription-tier-dialog.component';
 import { DATE_TIME_FORMAT } from '../../../../shared/lib/constants';
+import { CommonTableFilterComponent } from '../../../../shared/component/common-table-filter/common-table-filter.component';
 
 interface Header{
   field: string;
   header: string;
-  filterType?: string;
-  type?: 'text' | 'numeric' | 'date' | 'boolean' | 'select';
+  type?: string;
 }
 
 interface Subscription {
@@ -34,7 +33,7 @@ interface Subscription {
   onBoardedSource: string;
   updatedOn?: string;
   updatedBy?: string;
-  featureIds?: number[];
+  featureIds?: number[]; 
 }
 interface PaginationState {
   first: number;
@@ -57,7 +56,7 @@ interface ColumnFilter {
 
 @Component({
   selector: 'app-subscription',
-  imports: [PrimengModule, CommonTableSearchComponent, SubscriptionDialogComponent,SubscriptionCopyDialogComponent, SubscriptionTierDialogComponent],
+  imports: [PrimengModule, CommonTableSearchComponent, SubscriptionDialogComponent,SubscriptionCopyDialogComponent, SubscriptionTierDialogComponent, CommonTableFilterComponent],
   templateUrl: './subscription.component.html',
   styleUrl: './subscription.component.scss'
 })
@@ -72,8 +71,9 @@ export class SubscriptionComponent implements OnInit {
   subscription:any[];
   subscriptionTableHeader: Header[] = SUBSCRIPTION_TABLE_HEADERS;
   subscriptionList:Subscription[] = [];
-  selectedUsers: Subscription[] = [];
+  selectedSubscriptions: Subscription[] = [];
 
+  
   commonService=inject(CommonService);
   subscriptionService=inject(SubscriptionService);
   changeDetectorRef=inject(ChangeDetectorRef);
@@ -112,7 +112,7 @@ export class SubscriptionComponent implements OnInit {
   searchTerm: string = '';
   columnFilters: ColumnFilter[] = [];
   sortFields: any[] = [];
-
+  
   // Only initialize signals once in the class, not in both property and loadSubscriptionList.
   subscriptionListSignal = signal<Subscription[]>([]);
   totalRecordsSignal = signal<number>(0);
@@ -122,8 +122,8 @@ export class SubscriptionComponent implements OnInit {
 
   onSelectionChange(event: any) {
     // event is the array of selected assignments
-    this.selectedUsers = event || [];
-    this.isSubscriptionTierButtonActive = this.selectedUsers.length > 0;
+    this.selectedSubscriptions = event || [];
+    this.isSubscriptionTierButtonActive = this.selectedSubscriptions.length > 0;
   }
 
   openSubscriptionTierDialog() {
@@ -135,7 +135,7 @@ export class SubscriptionComponent implements OnInit {
   }
 
   totalRecords: number ;
-
+  
    paginationState: PaginationState = {
     first: 0,
     rows: 10, // Always default to 10 rows per page
@@ -143,7 +143,7 @@ export class SubscriptionComponent implements OnInit {
     pageCount: 0,
     totalRecords: 0
   };
-
+  
 
   loadSubscriptionList(
     page: number = 0,
@@ -185,7 +185,7 @@ export class SubscriptionComponent implements OnInit {
 
   ngOnInit() {
     // Remove table state persistence for rows per page only here
-    localStorage.removeItem('existingUserTableState');
+    localStorage.removeItem('existingSubscriptionTableState');
     this.paginationState.rows = 10;
     this.paginationState.first = 0;
     this.paginationState.pageIndex = 0;
@@ -194,7 +194,7 @@ export class SubscriptionComponent implements OnInit {
 
   refresh() {
     // Remove table state persistence for rows per page and filters on manual refresh
-    localStorage.removeItem('existingUserTableState');
+    localStorage.removeItem('existingSubscriptionTableState');
     this.paginationState = {
       first: 0,
       rows: 10,
@@ -263,7 +263,7 @@ export class SubscriptionComponent implements OnInit {
     this.paginationState.first = 0;
     this.paginationState.pageIndex = 0;
     this.loadSubscriptionList(0, this.paginationState.rows, this.searchTerm, this.columnFilters);
-    this.selectedUsers = [];
+    this.selectedSubscriptions = [];
     this.isSubscriptionTierButtonActive = false;
   }
 
@@ -284,8 +284,7 @@ export class SubscriptionComponent implements OnInit {
 
   resetSearch() {
     this.searchTerm = '';
-  // Clear any applied column filters when resetting search
-  this.columnFilters = [];
+    this.columnFilters = [];
     this.paginationState.first = 0;
     this.paginationState.pageIndex = 0;
     this.loadSubscriptionList(0, this.paginationState.rows, '', []);
@@ -311,15 +310,15 @@ export class SubscriptionComponent implements OnInit {
       sortMap[event.sortField] = event.sortOrder === 1 ? 'asc' : event.sortOrder === -1 ? 'desc' : '';
     }
 
-  if (event && event.filters) {
+    if (event && event.filters) {
       Object.keys(event.filters).forEach((field) => {
         const filterMeta = event.filters[field];
-    const isDate = this.subscriptionTableHeader.find(h => h.field === field)?.type === 'date';
+        const isDate = this.subscriptionTableHeader.find(h => h.field === field)?.type === 'date';
         if (Array.isArray(filterMeta)) {
           filterMeta.forEach(meta => {
             if (meta && meta.value !== undefined && meta.value !== null && meta.value !== '') {
               let filterValue = meta.value;
-              let filterType = '';
+              let type = '';
               if (isDate) {
                 // Convert to UTC date at midnight and format as yyyy-MM-ddTHH:mm:ss
                 if (meta.value instanceof Date) {
@@ -328,41 +327,41 @@ export class SubscriptionComponent implements OnInit {
                   filterValue = utcDate.toISOString().slice(0, 19);
                 }
                 switch (meta.matchMode) {
-                  case 'dateAfter': filterType = FilterOperation.DateGreaterThan; break;
-                  case 'dateAfterEquals': filterType = FilterOperation.DateGreaterThanOrEqual; break;
-                  case 'dateBefore': filterType = FilterOperation.DateLessThan; break;
-                  case 'dateBeforeEquals': filterType = FilterOperation.DateLessThanOrEqual; break;
-                  case 'dateIs': filterType = FilterOperation.DateEquals; break;
-                  case 'dateIsNot': filterType = FilterOperation.DateNotEquals; break;
-                  case 'between': filterType = FilterOperation.DateBetween; break;
-                  default: filterType = '';
+                  case 'dateAfter': type = FilterOperation.DateGreaterThan; break;
+                  case 'dateAfterEquals': type = FilterOperation.DateGreaterThanOrEqual; break;
+                  case 'dateBefore': type = FilterOperation.DateLessThan; break;
+                  case 'dateBeforeEquals': type = FilterOperation.DateLessThanOrEqual; break;
+                  case 'dateIs': type = FilterOperation.DateEquals; break;
+                  case 'dateIsNot': type = FilterOperation.DateNotEquals; break;
+                  case 'between': type = FilterOperation.DateBetween; break;
+                  default: type = '';
                 }
               } else {
                 switch (meta.matchMode) {
-                  case 'startsWith': filterType = FilterOperation.StartsWith; break;
-                  case 'contains': filterType = FilterOperation.Contains; break;
-                  case 'notContains': filterType = FilterOperation.NotContains; break;
-                  case 'endsWith': filterType = FilterOperation.EndsWith; break;
-                  case 'equals': filterType = FilterOperation.Equals; break;
-                  case 'notEquals': filterType = FilterOperation.NotEquals; break;
-                  case 'gt': filterType = FilterOperation.GreaterThan; break;
-                  case 'gte': filterType = FilterOperation.GreaterThanOrEqual; break;
-                  case 'lt': filterType = FilterOperation.LessThan; break;
-                  case 'lte': filterType = FilterOperation.LessThanOrEqual; break;
-                  case 'in': filterType = FilterOperation.In; break;
-                  default: filterType = '';
+                  case 'startsWith': type = FilterOperation.StartsWith; break;
+                  case 'contains': type = FilterOperation.Contains; break;
+                  case 'notContains': type = FilterOperation.NotContains; break;
+                  case 'endsWith': type = FilterOperation.EndsWith; break;
+                  case 'equals': type = FilterOperation.Equals; break;
+                  case 'notEquals': type = FilterOperation.NotEquals; break;
+                  case 'gt': type = FilterOperation.GreaterThan; break;
+                  case 'gte': type = FilterOperation.GreaterThanOrEqual; break;
+                  case 'lt': type = FilterOperation.LessThan; break;
+                  case 'lte': type = FilterOperation.LessThanOrEqual; break;
+                  case 'in': type = FilterOperation.In; break;
+                  default: type = '';
                 }
               }
               columns.push({
                 columnName: field,
-                filter: filterType + filterValue,
+                filter: type + filterValue,
                 sort: sortMap[field] || ''
               });
             }
           });
         } else if (filterMeta && filterMeta.value !== undefined && filterMeta.value !== null && filterMeta.value !== '') {
           let filterValue = filterMeta.value;
-          let filterType = '';
+          let type = '';
           if (isDate) {
             if (filterMeta.value instanceof Date) {
               const localDate = new Date(filterMeta.value.getFullYear(), filterMeta.value.getMonth(), filterMeta.value.getDate(), 0, 0, 0, 0);
@@ -370,53 +369,48 @@ export class SubscriptionComponent implements OnInit {
               filterValue = utcDate.toISOString().slice(0, 19);
             }
             switch (filterMeta.matchMode) {
-              case 'dateAfter': filterType = FilterOperation.DateGreaterThan; break;
-              case 'dateAfterEquals': filterType = FilterOperation.DateGreaterThanOrEqual; break;
-              case 'dateBefore': filterType = FilterOperation.DateLessThan; break;
-              case 'dateBeforeEquals': filterType = FilterOperation.DateLessThanOrEqual; break;
-              case 'dateIs': filterType = FilterOperation.DateEquals; break;
-              case 'dateIsNot': filterType = FilterOperation.DateNotEquals; break;
-              case 'between': filterType = FilterOperation.DateBetween; break;
-              default: filterType = '';
+              case 'dateAfter': type = FilterOperation.DateGreaterThan; break;
+              case 'dateAfterEquals': type = FilterOperation.DateGreaterThanOrEqual; break;
+              case 'dateBefore': type = FilterOperation.DateLessThan; break;
+              case 'dateBeforeEquals': type = FilterOperation.DateLessThanOrEqual; break;
+              case 'dateIs': type = FilterOperation.DateEquals; break;
+              case 'dateIsNot': type = FilterOperation.DateNotEquals; break;
+              case 'between': type = FilterOperation.DateBetween; break;
+              default: type = '';
             }
           } else {
             switch (filterMeta.matchMode) {
-              case 'startsWith': filterType = FilterOperation.StartsWith; break;
-              case 'contains': filterType = FilterOperation.Contains; break;
-              case 'notContains': filterType = FilterOperation.NotContains; break;
-              case 'endsWith': filterType = FilterOperation.EndsWith; break;
-              case 'equals': filterType = FilterOperation.Equals; break;
-              case 'notEquals': filterType = FilterOperation.NotEquals; break;
-              case 'gt': filterType = FilterOperation.GreaterThan; break;
-              case 'gte': filterType = FilterOperation.GreaterThanOrEqual; break;
-              case 'lt': filterType = FilterOperation.LessThan; break;
-              case 'lte': filterType = FilterOperation.LessThanOrEqual; break;
-              case 'in': filterType = FilterOperation.In; break;
-              default: filterType = '';
+              case 'startsWith': type = FilterOperation.StartsWith; break;
+              case 'contains': type = FilterOperation.Contains; break;
+              case 'notContains': type = FilterOperation.NotContains; break;
+              case 'endsWith': type = FilterOperation.EndsWith; break;
+              case 'equals': type = FilterOperation.Equals; break;
+              case 'notEquals': type = FilterOperation.NotEquals; break;
+              case 'gt': type = FilterOperation.GreaterThan; break;
+              case 'gte': type = FilterOperation.GreaterThanOrEqual; break;
+              case 'lt': type = FilterOperation.LessThan; break;
+              case 'lte': type = FilterOperation.LessThanOrEqual; break;
+              case 'in': type = FilterOperation.In; break;
+              default: type = '';
             }
           }
           columns.push({
             columnName: field,
-            filter: filterType + filterValue,
+            filter: type + filterValue,
             sort: sortMap[field] || ''
           });
         }
       });
     }
 
-    // Merge sort info: ensure a sort column exists for each sorted field
-    if (Object.keys(sortMap).length > 0) {
+    // If no filters but sorting is applied, still send sort info
+    if (columns.length === 0 && Object.keys(sortMap).length > 0) {
       Object.keys(sortMap).forEach(field => {
-        const existing = columns.find(c => c.columnName === field);
-        if (existing) {
-          existing.sort = sortMap[field];
-        } else {
-          columns.push({
-            columnName: field,
-            filter: '',
-            sort: sortMap[field]
-          });
-        }
+        columns.push({
+          columnName: field,
+          filter: '',
+          sort: sortMap[field]
+        });
       });
     }
     this.onColumnFilterChange(columns);

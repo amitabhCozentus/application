@@ -13,6 +13,8 @@ interface Subscription {
   updatedOn?: string;
   updatedBy?: string;
   featureIds?: number[];
+  // featureToggle?: boolean;
+
 }
 
 interface Feature {
@@ -42,10 +44,10 @@ export class SubscriptionDialogComponent implements OnInit {
       this.subscriptionForm.patchValue({
         customerName: value.customerName,
         customerCode: value.customerCode,
-        subscriptionTypeName: value.subscriptionTypeName
+        subscriptionTypeName: value.subscriptionTypeName,
+        // featureToggle: value.featureToggle
+       
       });
-
-      // Initialize feature states from featureIds
       this.features.forEach(feature => {
         this.featureStates[feature.id] = value.featureIds?.includes(feature.id) || false;
       });
@@ -60,7 +62,7 @@ export class SubscriptionDialogComponent implements OnInit {
     customerName: new FormControl('', Validators.required),
     customerCode: new FormControl('', Validators.required),
     subscriptionTypeName: new FormControl('', Validators.required),
-    
+    // featureToggle: new FormControl()
   });
 
   ngOnInit() {
@@ -106,7 +108,7 @@ export class SubscriptionDialogComponent implements OnInit {
           this.messageService.add({
             severity: 'success',
             summary: 'Success',
-            detail:  `Subscription for ${customerName} updated successfully`
+            detail: response?.message || `Subscription for ${customerName} updated successfully`
           });
           this.visible = false;
           this.onClose.emit();
@@ -116,7 +118,7 @@ export class SubscriptionDialogComponent implements OnInit {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
-            detail: 'Unable to update subscription. Please try again.'
+            detail: error?.error?.message || 'Unable to update subscription. Please try again.'
           });
           console.error('Error updating subscription:', error);
         }
@@ -134,4 +136,5 @@ export class SubscriptionDialogComponent implements OnInit {
     this.onClose.emit();
   }
 }
+
 

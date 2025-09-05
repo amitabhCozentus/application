@@ -3,21 +3,21 @@
         <div class="grid">
             <div class="col-12">
                 <div class="card">
-                    <p-table #existingSubscriptionTable [value]="subscriptionListSignal()" [(selection)]="selectedUsers"
-                        styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true"
-                        [showCurrentPageReport]="true" [scrollable]="true" (onPage)="onPageChange($event)"
-                        [first]="paginationState.first" [rows]="paginationState.rows"
+                    <p-table #existingSubscriptionTable [value]="subscriptionListSignal()"
+                        [(selection)]="selectedSubscriptions" styleClass="p-datatable-customers p-datatable-striped"
+                        [rowHover]="true" [showCurrentPageReport]="true" [scrollable]="true"
+                        (onPage)="onPageChange($event)" [first]="paginationState.first" [rows]="paginationState.rows"
                         (selectionChange)="onSelectionChange($event)" [rowsPerPageOptions]="[10, 25, 50]"
                         [paginator]="true" dataKey="customerCode"
-                        currentPageReportTemplate="{{ 'LBL.TABLE.PAGE_REPORT' | translate }}"
-                        [filterDelay]="0" [resizableColumns]="true" [columns]="subscriptionTableHeader"
-                        [reorderableColumns]="true" [totalRecords]="totalRecordsSignal()" [lazy]="true"
-                        [globalFilterFields]="[
+                        currentPageReportTemplate="{{ 'LBL.TABLE.PAGE_REPORT' | translate }}" [filterDelay]="0"
+                        [resizableColumns]="true" [columns]="subscriptionTableHeader" [reorderableColumns]="true"
+                        [totalRecords]="totalRecordsSignal()" [lazy]="true" [globalFilterFields]="[
                             'customerName',
                             'customerCode',
                             'subscriptionType',
                             'onBoardedSource'
-                        ]" (onFilter)="onTableFilter($event)">
+                        ]" stateStorage="local" stateKey="existingSubscriptionTableState"
+                        (onFilter)="onTableFilter($event)">
                         <ng-template #caption>
                             <div class="flex justify-content-between">
                                 <div class="w-full md:w-30rem">
@@ -29,7 +29,8 @@
                                     style="display: flex; gap: 1.5rem;">
                                     <button pButton pRipple icon="pi pi-refresh" [outlined]="true"
                                         class="p-button-primary" (click)="refresh()"></button>
-                                    <button pButton label="{{ 'LBL.SUBSCRIPTION_TYPE' | translate }}" (click)="openSubscriptionTierDialog()"
+                                    <button pButton label="{{ 'LBL.SUBSCRIPTION_TYPE' | translate }}"
+                                        (click)="openSubscriptionTierDialog()"
                                         [disabled]="!isSubscriptionTierButtonActive">
                                     </button>
                                 </div>
@@ -43,15 +44,18 @@
                                 <th class="md:text-center">
                                     {{ 'LBL.ACTION' | translate }}
                                 </th>
-
                                 @for (col of subscriptionTableHeader; track col.field) {
                                 <th [pSortableColumn]="col.field">
                                     {{ col.header | translate }}
-                                    <p-sortIcon field="{{col.field}}" />
-                                    <p-columnFilter [type]="col.type" field="{{col.field}}" display="menu" />
+                                    <p-sortIcon [field]="col.field" />
+                                    <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
+                                        <ng-template #filtericon>
+                                            <app-common-table-filter [field]="col.field"
+                                                [table]="existingSubscriptionTable"></app-common-table-filter>
+                                        </ng-template>
+                                    </p-columnFilter>
                                 </th>
                                 }
-
                             </tr>
                         </ng-template>
 
@@ -71,7 +75,7 @@
                                         [disabled]="assignment.subscriptionTypeName === 'Standard'">
                                     </button>
                                 </td>
-                                @for (col of subscriptionTableHeader; track col) {
+                                @for (col of subscriptionTableHeader; track col.field) {
                                 <td>
                                     @switch (col.type) {
                                     @case ('date') { <span>{{ assignment[col.field] | date: dateTimeFormat }}</span> }
@@ -84,7 +88,7 @@
 
                         <ng-template pTemplate="emptymessage">
                             <tr>
-                                <td colspan="8">{{ 'LBL.TABLE.EMPTY_MESSAGE' | translate }}</td>
+                                <td colspan="12">{{ 'LBL.TABLE.EMPTY_MESSAGE' | translate }}</td>
                             </tr>
                         </ng-template>
                     </p-table>
@@ -98,8 +102,8 @@
                         (onUpdateSuccess)="handleCopyUpdateSuccess()">
                     </app-subscription-copy-dialog>
 
-                    <app-subscription-tier-dialog [visible]="showSubscriptionTierDialog" [selectedRows]="selectedUsers"
-                        [isAllSelected]="
+                    <app-subscription-tier-dialog [visible]="showSubscriptionTierDialog"
+                        [selectedRows]="selectedSubscriptions" [isAllSelected]="
                                 (existingSubscriptionTable?.filteredValue
                                     ? existingSubscriptionTable?.selection?.length === existingSubscriptionTable?.filteredValue?.length && existingSubscriptionTable?.filteredValue?.length > 0
                                     : existingSubscriptionTable?.selection?.length === subscriptionList?.length && subscriptionList?.length > 0

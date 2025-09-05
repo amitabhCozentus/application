@@ -17,6 +17,13 @@ export namespace UserEndPoint {
 
 }
 
+export namespace AppEndPoints {
+    export abstract class Home {
+        public static readonly GET_COUNTRY_LIST = "home/map-data";
+        public static readonly GET_KPIS_DATA = "home/kpi";
+    }
+}
+
 export namespace AdminEndPoint {
     export abstract class RoleManagement {
         public static readonly GET_ROLE = "roles";
@@ -34,6 +41,9 @@ export namespace AdminEndPoint {
         public static readonly GET_USER_LIST = UserManagement.GET_USER + "/" + "users";
         public static readonly GET_USER_ROLES = UserManagement.GET_USER + "/" + "roles";
         public static readonly GET_COMPANY_LIST = UserManagement.GET_USER + "/" + "company-tree";
+        public static readonly GET_USER_COMPANY_LIST = UserManagement.GET_USER + "/" + "user-companies";
+        public static readonly SAVE_UPDATE_USER_ROLE = UserManagement.GET_USER + "/" + "user-assignments";
+        public static readonly GET_USER_ASSIGNED_COMPANIES = UserManagement.GET_USER + "/" + "user-assigned-companies";
     }
 
 }
@@ -119,4 +129,6 @@ export namespace AppRoutes {
         public static readonly HOME = "home";
 
     }
+
+
 }

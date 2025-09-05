@@ -70,12 +70,12 @@
                 <p-tab value="0">PSA BDP Companies</p-tab>
                 <p-tab value="1">Non PSA BDP Companies</p-tab>
               </p-tablist>
-              <p-tabpanels>
+              <p-tabpanels>  
                 <p-tabpanel value="0">
                   <div class="mmt-info">
                     <div class="mmt-user-type flex">
                       <p-treetable [value]="viewPsaCompanyList" [columns]="cols" selectionMode="checkbox" [rows]="10"
-                        [rowsPerPageOptions]="[5, 10, 25]" [(selectionKeys)]="selectionKeys" dataKey="key"
+                        [rowsPerPageOptions]="[5, 10, 25]" [(selectionKeys)]="psaSelectionKeys" dataKey="key"
                         [tableStyle]="{ 'min-height': '50rem' }" [scrollable]="true" [paginator]="true"
                         [totalRecords]="psaPaginationState.totalRecords" [showCurrentPageReport]="true"
                         [first]="psaPaginationState.first" [rows]="psaPaginationState.rows" [lazy]="true"
@@ -91,10 +91,10 @@
                               style="display: flex; gap: 1.5rem;">
                               <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                 (click)="refresh()"></button>
-                              @if (canEdit) {
+                              <!-- @if (canEdit) {
                               <button pButton pRipple label="Add Role" class="p-button-primary" style="width:120px;"
                                 (click)="openAddRoleDialog()"></button>
-                              }
+                              } -->
                             </div>
                           </div>
                         </ng-template>
@@ -150,8 +150,10 @@
                     <div class="mmt-user-type flex">
                       <div class="col-12 px-0">
                         <p-treetable [value]="viewNonPsaCompanyList" [columns]="cols" selectionMode="checkbox"
-                          [rows]="10" [rowsPerPageOptions]="[5, 10, 25]" [(selectionKeys)]="selectionKeys" dataKey="key"
+                          [rows]="10" [rowsPerPageOptions]="[5, 10, 25]" [(selectionKeys)]="nonPsaSelectionKeys" dataKey="key"
                           [scrollable]="true" [paginator]="true"
+                          [totalRecords]="nonPsaPaginationState.totalRecords" [showCurrentPageReport]="true"
+                          [first]="nonPsaPaginationState.first" [rows]="nonPsaPaginationState.rows" [lazy]="true"
                           currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
                           (onPage)="onPageChange($event,'NON-PSA')" [tableStyle]="{ 'min-width': '50rem' }">
                           <ng-template pTemplate="caption">
@@ -164,10 +166,10 @@
                                 style="display: flex; gap: 1.5rem;">
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                   (click)="refresh()"></button>
-                                @if (canEdit) {
+                                <!-- @if (canEdit) {
                                 <button pButton pRipple label="Add Role" class="p-button-primary" style="width:120px;"
                                   (click)="openAddRoleDialog()"></button>
-                                }
+                                } -->
                               </div>
                             </div>
                           </ng-template>
@@ -227,3 +229,4 @@
     </div>
   </div>
 </div>
+<p-toast></p-toast>

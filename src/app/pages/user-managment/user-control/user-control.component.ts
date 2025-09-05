@@ -60,9 +60,9 @@ export class UserControlComponent {
   showAssignDialog:boolean=false;
 constructor(private userControlService:UserControlService,private commonService:CommonService) {
     this.usersTableHeader =  [
-        { field: 'userName', header: 'Name' },
+        { field: 'name', header: 'Name' },
         { field: 'userType', header: 'User Type' },
-        { field: 'userId', header: 'User Email Id' },
+        { field: 'email', header: 'User Email Id' },
         { field: 'companies', header: 'Company Name' },
         { field: 'roleGranted', header: 'Role Granted' },
         { field: 'updatedBy', header: 'Updated By' },

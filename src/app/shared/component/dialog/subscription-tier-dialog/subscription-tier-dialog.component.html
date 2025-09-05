@@ -1,8 +1,9 @@
+<div class="subscription-tier-dialog">
 <p-dialog header="Subscription Tier"
           [(visible)]="visible"
           [modal]="true"
           [style]="{ width: '40rem' }"
-          [draggable]="false"
+          [draggable]="true"
           (onHide)="onCloseDialog()">
   <p-divider class="mt-0"></p-divider>
   <ng-template pTemplate="body">
@@ -35,3 +36,5 @@
             (click)="onSaveDialog()"></button>
   </ng-template>
 </p-dialog>
+</div>
+<p-toast position="top-right"></p-toast>

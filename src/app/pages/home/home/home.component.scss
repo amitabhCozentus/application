@@ -1,0 +1,16 @@
+::ng-deep{
+    a.mapboxgl-ctrl-logo {
+        display: none !important;
+    }
+}
+ 
+#map {
+    width: 100%;
+    height: 500px;
+    border-radius: 6px;
+    position: relative;
+}
+
+.li{
+    display: flex;
+}

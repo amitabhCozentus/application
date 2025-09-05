@@ -10,14 +10,16 @@ import { AuthGuard as Auth0Guard } from '@auth0/auth0-angular';
 import { ReleaseNotesComponent } from "./pages/master-data-management/release-management/release-notes/release-notes.component";
 import { UploadDownloadDialogComponent } from "./shared/component/dialog/upload-download-dialog/upload-download-dialog.component";
 import { PagePlaceholderComponent } from "./shared/component/page-placeholder/page-placeholder.component";
+import { HomeComponent } from "./pages/home/home/home.component";
+
 export const routes: Routes = [
     {
         path: "",
        // canActivate: [Auth0Guard,AuthGuard],
-        component: PagePlaceholderComponent, data: { title: 'Home' },
+        component: HomeComponent, data: { title: 'Home' },
     },
     // Home
-    { path: 'home', component: PagePlaceholderComponent, data: { title: 'Home' } },
+    { path: 'home', component: HomeComponent, data: { title: 'Home' } },
     // Tracking/Favorites/Alerts
     { path: 'tracking-list', component: PagePlaceholderComponent, data: { title: 'Tracking List' } },
     { path: 'favorites', component: PagePlaceholderComponent, data: { title: 'Favorites' } },
@@ -62,7 +64,7 @@ export const routes: Routes = [
     { path: 'master-data/vessel', component: PagePlaceholderComponent, data: { title: 'Vessel Management' } },
     { path: 'master-data/schedule', component: PagePlaceholderComponent, data: { title: 'Schedule Manager' } },
     { path: 'master-data/email-template', component: PagePlaceholderComponent, data: { title: 'Email Template Manager' } },
-    { path: 'master-data/release', component: PagePlaceholderComponent, data: { title: 'Release Manager' } },
+    { path: 'master-data/release', component: ReleaseNotesComponent, data: { title: 'Release Manager' } },
     { path: 'master-data/eula', component: PagePlaceholderComponent, data: { title: 'EULA Manager' } },
     { path: 'master-data/audit-logs', component: PagePlaceholderComponent, data: { title: 'Audit Logs' } },
     {
