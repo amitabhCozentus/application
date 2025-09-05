@@ -75,6 +75,7 @@ ngOnInit() {
     { field: 'uploadedBy', header: this.translate.instant('LBL.UPLOADED_BY'), sortable: true, filter: true },
     { field: 'uploadedOn', header: this.translate.instant('LBL.UPLOADED_ON'), sortable: true, filter: true }
   ];
+  this.onTabChange(0);
 }
 onSearch() {
   // Implement search functionality
@@ -128,18 +129,24 @@ onReleaseNoteUpdated(updatedData: any) {
   this.selectedReleaseNote = null;
 }
 
-onTabChange(event: any) {
-  
-  if (event.index === 1) {
-    //this.loadUserManualData();
-  } else if (event.index === 0) {
-    this.loadReleaseNotesData();
-  }
-}
+
 
 
 
 loadReleaseNotesData() {
 }
 
+activeTab: number = 0;
+
+
+noteType: 'RELEASE_NOTE' | 'USER_MANUAL' = 'RELEASE_NOTE';  // <-- new property
+
+onTabChange(index: number) {   // <-- index directly, not event.index
+  this.activeTab = index;
+  this.noteType = index === 1 ? 'USER_MANUAL' : 'RELEASE_NOTE'; // <-- update property
+  console.log('Tab changed → index:', index, ' noteType:', this.noteType);
+  this.showEditDialog = false; // Close dialog on tab change
 }
+
+}
+

@@ -12,6 +12,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 })
 export class UserManualComponent {
   cols: TableHeaders[] = USER_MANUAL_TABLE_HEADERS;
+  selectedUserManualNote: any = null;
+  showEditDialog: boolean = false;
   UserManual: any[] = [
     {
       manualName: 'MMT Portal User Guide v2.1.0',
@@ -68,8 +70,8 @@ export class UserManualComponent {
   }
 
   openAddRoleDialog() {
-    // Implement add manual dialog functionality
-    console.log('Opening upload user manual dialog');
+    this.selectedUserManualNote = null;
+    this.showEditDialog = true;
   }
 
   deleteManual(rowData: any) {

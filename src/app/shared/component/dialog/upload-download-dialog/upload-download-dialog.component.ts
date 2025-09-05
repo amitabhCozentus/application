@@ -1,8 +1,10 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, Signal } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PrimengModule } from '../../../primeng/primeng.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
-
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ReleaseManagementService  } from '../../../service/release-management/release-management.service';
+import { ReleaseNoteData } from 'src/app/shared/lib/constants';
 @Component({
   selector: 'app-upload-download-dialog',
   imports: [PrimengModule, ReactiveFormsModule, FormsModule, NgxDropzoneModule],
@@ -10,17 +12,26 @@ import { NgxDropzoneModule } from 'ngx-dropzone';
   styleUrl: './upload-download-dialog.component.scss'
 })
 export class UploadDownloadDialogComponent implements OnInit, OnChanges {
-  @Input() uploadDialogVisible: boolean = true;
+   @Input() uploadDialogVisible: boolean = true;
   @Input() editMode: boolean = false;
-  @Input() selectedReleaseNote: any = null;
+  @Input() selectedReleaseNote: ReleaseNoteData | null = null;
 
   @Output() dialogClosed = new EventEmitter<void>();
-  @Output() releaseNoteUpdated = new EventEmitter<any>();
-
+  @Output() releaseNoteUpdated = new EventEmitter<ReleaseNoteData>();
+  @Output() userManualUpdated = new EventEmitter<any>();  
+  @Input() noteType: 'RELEASE_NOTE' | 'USER_MANUAL' = 'RELEASE_NOTE';
   uploadForm: FormGroup;
   files: File[] = [];
 
-  constructor(private formBuilder: FormBuilder) {
+  errorMessage: string = '';
+
+  // ✅ readonly signal for upload result
+  uploadedNote?: Signal<ReleaseNoteData | null>;
+
+  constructor(
+    private formBuilder: FormBuilder,
+    private releaseService: ReleaseManagementService
+  ) {
     this.uploadForm = this.formBuilder.group({
       releaseName: ['', Validators.required],
       releaseNotesDate: ['', Validators.required]
@@ -37,37 +48,86 @@ export class UploadDownloadDialogComponent implements OnInit, OnChanges {
 
   initializeForm() {
     if (this.editMode && this.selectedReleaseNote) {
-      // Pre-fill form with existing data for editing
       this.uploadForm.patchValue({
-        releaseName: this.selectedReleaseNote.releaseName,
-        releaseNotesDate: new Date(this.selectedReleaseNote.releaseDate)
+        releaseName: this.selectedReleaseNote.noteType,
+        releaseNotesDate: new Date(this.selectedReleaseNote.dateOfReleaseNote)
       });
     } else {
-      // Reset form for new entry
       this.uploadForm.reset();
       this.files = [];
     }
   }
 
-  onSubmit() {
-    if (this.uploadForm.valid) {
-      const formData = {
-        releaseName: this.uploadForm.value.releaseName,
-        releaseDate: this.uploadForm.value.releaseNotesDate.toISOString().split('T')[0], // Format date
-        uploadedBy: 'current.user@bdpint.com', // Replace with actual user
-        uploadedOn: new Date().toISOString().replace('T', ' ').substring(0, 19) // Current timestamp
-      };
+  //pdf ornot check
+  
+onSubmit() {
+  if (this.uploadForm.valid && this.files.length > 0) {
+    const file = this.files[0];
 
-      this.releaseNoteUpdated.emit(formData);
-      console.log('Form submitted:', formData);
+    if (this.editMode && this.selectedReleaseNote?.id) {
+      // 🔄 Re-upload API call (only runs in edit mode)
+      this.releaseService.reuploadDocument(this.selectedReleaseNote.id, file).subscribe({
+        next: (result: ReleaseNoteData) => {
+          if (this.noteType === 'RELEASE_NOTE') {
+            this.releaseNoteUpdated.emit(result);
+          } else {
+            this.userManualUpdated.emit(result);
+          }
+          this.closeDialog();
+        },
+        error: err => {
+          this.errorMessage = 'Re-upload failed. Please try again.';
+        }
+      });
+
     } else {
-      console.log('Form is invalid');
-      this.markFormGroupTouched();
+      // 🆕 Your existing Upload API code (unchanged)
+      const docType = this.noteType;
+      const releaseUserManualName = this.uploadForm.value.releaseName;
+      const releaseDate = this.uploadForm.value.releaseNotesDate
+        .toISOString()
+        .split('T')[0];
+
+      this.releaseService.uploadDocument(
+        file,
+        docType,
+        releaseUserManualName,
+        releaseDate,
+        this.noteType
+      ).subscribe({
+        next: (result: ReleaseNoteData | null) => {
+          if (result) {
+            if (this.noteType === 'RELEASE_NOTE') {
+              this.releaseNoteUpdated.emit(result);
+            } else {
+              this.userManualUpdated.emit(result);
+            }
+            this.closeDialog();
+          }
+        },
+        error: err => {
+          if (err?.status === 409) {
+            this.errorMessage =
+              'A manual with the same name exists, but the new version could not replace it. Please try again or rename the file.';
+          } else {
+            this.errorMessage =
+              'Upload failed. Please try again or contact your system administrator.';
+          }
+        }
+      });
     }
+  } else {
+    console.log('Form is invalid or no file selected');
+    this.markFormGroupTouched();
   }
+}
+
+
 
   closeDialog() {
     this.dialogClosed.emit();
+      this.errorMessage = '';
+
   }
 
   uploadFile() {
@@ -75,18 +135,30 @@ export class UploadDownloadDialogComponent implements OnInit, OnChanges {
   }
 
   onChoosingFile(event: any) {
-    console.log('File selected:', event);
-    this.files.push(...event.addedFiles);
+    if (event.addedFiles?.length > 0) {
+    const file = event.addedFiles[0];
+    if (file.type !== 'application/pdf') {
+      this.errorMessage = 'Invalid file type. Only PDF files are supported.';
+      this.files = [];
+    } else {
+      this.errorMessage = '';
+      this.files = [file];
+    }
+  }
   }
 
-  onRemove(file: any) {
-    console.log('File removed:', file);
-    this.files.splice(this.files.indexOf(file), 1);
-  }  private markFormGroupTouched() {
+  onRemove(file: File) {
+    const idx = this.files.indexOf(file);
+    if (idx > -1) {
+      this.files.splice(idx, 1);
+    }
+    this.errorMessage = '';
+  }
+
+  private markFormGroupTouched() {
     Object.keys(this.uploadForm.controls).forEach(key => {
       const control = this.uploadForm.get(key);
       control?.markAsTouched();
     });
   }
-
 }

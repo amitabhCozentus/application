@@ -1,80 +1,103 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { PrimengModule } from "../../../../shared/primeng/primeng.module";
-import { USER_MANUAL_TABLE_HEADERS, TableHeaders } from "../../../../shared/lib/constants";
+import { USER_MANUAL_TABLE_HEADERS, TableHeaders, ReleaseNoteData, toPagedResult } from "../../../../shared/lib/constants";
 import { CommonTableSearchComponent } from '../../../../shared/component/table-search/common-table-search.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReleaseManagementService } from 'src/app/shared/service/release-management/release-management.service';
+import { UploadDownloadDialogComponent } from 'src/app/shared/component/dialog/upload-download-dialog/upload-download-dialog.component';
 
 @Component({
   selector: 'app-user-manual',
-  imports: [PrimengModule, CommonTableSearchComponent, FormsModule, ReactiveFormsModule],
+  imports: [PrimengModule, CommonTableSearchComponent, FormsModule, ReactiveFormsModule,UploadDownloadDialogComponent],
   templateUrl: './user-manual.component.html',
   styleUrl: './user-manual.component.scss'
 })
 export class UserManualComponent {
-  cols: TableHeaders[] = USER_MANUAL_TABLE_HEADERS;
-  UserManual: any[] = [
-    {
-      manualName: 'MMT Portal User Guide v2.1.0',
-      updatedOn: '2025-08-15 11:00:00',
-      uploadedBy: 'admin@bdpint.com',
-      uploadedOn: '2025-08-15 11:00:00'
-    },
-    {
-      manualName: 'Release Management Guide v2.0',
-      updatedOn: '2025-08-10 14:30:00',
-      uploadedBy: 'john.doe@bdpint.com',
-      uploadedOn: '2025-08-10 14:30:00'
-    },
-    {
-      manualName: 'User Management Manual v1.5',
-      updatedOn: '2025-08-05 09:15:00',
-      uploadedBy: 'jane.smith@bdpint.com',
-      uploadedOn: '2025-08-05 09:15:00'
-    },
-    {
-      manualName: 'Subscription Management Guide v1.3',
-      updatedOn: '2025-07-28 16:45:00',
-      uploadedBy: 'mike.johnson@bdpint.com',
-      uploadedOn: '2025-07-28 16:45:00'
-    },
-    {
-      manualName: 'Role Configuration Manual v1.2',
-      updatedOn: '2025-07-20 13:20:00',
-      uploadedBy: 'sarah.wilson@bdpint.com',
-      uploadedOn: '2025-07-20 13:20:00'
-    },
-    {
-      manualName: 'Quick Start Guide v1.0',
-      updatedOn: '2025-07-15 10:00:00',
-      uploadedBy: 'david.brown@bdpint.com',
-      uploadedOn: '2025-07-15 10:00:00'
-    }
-  ];
+   cols: TableHeaders[] = USER_MANUAL_TABLE_HEADERS;
+  UserManual: ReleaseNoteData[] = [];
+
+  userManualService = inject(ReleaseManagementService);
   searchTerm: string = '';
 
+//  State for dialog
+  showEditDialog = false;
+  selectedReleaseNote: ReleaseNoteData | null = null;
+  noteType: 'USER_MANUAL' = 'USER_MANUAL';
+
+  ngOnInit() {
+    this.loadUserManualData();
+  }
+
   onSearch() {
-    // Implement search functionality
-    console.log('Searching user manuals for:', this.searchTerm);
+    this.loadUserManualData();
   }
 
   resetSearch() {
     this.searchTerm = '';
-    console.log('User manual search reset');
+    this.loadUserManualData();
   }
 
   refresh() {
-    // Implement refresh functionality
-    console.log('Refreshing user manual data');
+    this.loadUserManualData();
   }
 
   openAddRoleDialog() {
-    // Implement add manual dialog functionality
-    console.log('Opening upload user manual dialog');
+    this.selectedReleaseNote = null;
+    this.showEditDialog = true;
   }
 
-  deleteManual(rowData: any) {
-    // Implement delete functionality
-    console.log('Deleting user manual:', rowData);
+ deleteManual(rowData: any) {
+  if (!rowData?.id) {
+    console.error('No ID found for rowData:', rowData);
+    return;
   }
 
+  if (confirm(`Are you sure you want to delete "${rowData.manualName || rowData.fileName}"?`)) {
+    this.userManualService.deleteDocument(rowData.id, 'USER_MANUAL').subscribe({
+      next: () => {
+        // ✅ Remove from UI list after success
+        this.UserManual = this.UserManual.filter(m => m.id !== rowData.id);
+        console.log('User manual deleted successfully:', rowData.id);
+      },
+      error: (err) => {
+        console.error('Failed to delete user manual:', err);
+      }
+    });
+  }
+}
+
+
+  onDialogClosed() {
+    this.showEditDialog = false;
+    this.selectedReleaseNote = null;
+    console.log('User manual dialog closed');
+  }
+
+  onUserManualUpdated(updatedData: ReleaseNoteData) {
+    if (this.selectedReleaseNote) {
+      const index = this.UserManual.findIndex(m => m.id === this.selectedReleaseNote?.id);
+      if (index !== -1) {
+        this.UserManual[index] = { ...this.UserManual[index], ...updatedData };
+      }
+    } else {
+      this.UserManual.unshift(updatedData);
+    }
+    this.showEditDialog = false;
+    this.selectedReleaseNote = null;
+    console.log('User manual updated:', updatedData);
+  }
+
+  loadUserManualData() {
+    this.userManualService.getDocuments('USER_MANUAL', 0, 50, this.searchTerm).subscribe({
+      next: (res) => {
+        const result = toPagedResult<ReleaseNoteData>(res);
+        this.UserManual = result.data.map(item => ({
+          ...item,
+          manualName: item.fileName   //  map backend → UI name has been changed 
+        }));
+        console.log('User manuals loaded:', this.UserManual);
+      },
+      error: (err) => console.error('Failed to load user manuals:', err)
+    });
+  }
 }

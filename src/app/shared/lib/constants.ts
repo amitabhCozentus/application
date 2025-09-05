@@ -44,17 +44,16 @@ export const ROLE_TABLE_HEADERS: TableHeaders[] = [
 ];
 
 export const RELEASE_NOTES_TABLE_HEADERS: TableHeaders[] = [
-    { field: 'releaseName', header: 'LBL.RELEASE_NAME', sortable: true, filter: true, type: 'text' },
-    { field: 'releaseDate', header: 'LBL.RELEASE_DATE', sortable: true, filter: true, type: 'date' },
-    { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
-    { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
+  { field: 'fileName', header: 'LBL.RELEASE_NAME', sortable: true, filter: true, type: 'text' },
+  { field: 'dateOfReleaseNote', header: 'LBL.RELEASE_DATE', sortable: true, filter: true, type: 'date' },
+  { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
+  { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
 ];
-
 export const USER_MANUAL_TABLE_HEADERS: TableHeaders[] = [
-    { field: 'manualName', header: 'LBL.MANUAL_NAME', sortable: true, filter: true, type: 'text' },
-    { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
-    { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
-    { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
+  { field: 'manualName', header: 'LBL.MANUAL_NAME', sortable: true, filter: true, type: 'text' },
+  { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
+  { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
+  { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
 ];
 
 export const SUBSCRIPTION_TABLE_HEADERS: TableHeaders[] = [
@@ -314,4 +313,35 @@ export interface RequestBody {
     }>;
   };
   isActiveRole: boolean;
+}
+
+export interface ReleaseNoteData {
+  id: number;
+  noteType: 'RELEASE_NOTE' | 'USER_MANUAL';
+  fileName: string;
+  releaseUserManualName: string;
+  dateOfReleaseNote: string;
+  uploadedOn: string;
+  uploadedBy: string;
+  updatedOn: string;
+  updatedBy: string;
+}
+
+export interface ReleaseUploadResponse<T> {
+  success: boolean;
+  message: string;
+  data: ReleaseNoteData;
+  errorCode: string;
+  validationErrors: {
+    field: string;
+    rejectedValue: any;
+    message: string;
+    code: string;
+  }[];
+  path: string;
+  timestamp: string;
+  traceId: string;
+  metadata: {
+    [key: string]: any;
+  };
 }

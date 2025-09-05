@@ -39,14 +39,20 @@
                                         (click)="deleteReleaseNotes(rowData)"></button>
                                 </div>
                             </td>
-                            @for (col of columns; track col.field) {
+                          @for (col of columns; track col.field) {
                                 <td>
-                                    @if (col.field === 'releaseName') {
-                                        <a style="cursor: pointer">{{ rowData[col.field] }}</a>
+                                    @if (col.field === 'fileName') {
+                                    <a style="cursor: pointer; color: blue; text-decoration: underline;"
+                                        (click)="downloadReleaseNotes(rowData)">
+                                        {{ rowData[col.field] }}
+                                    </a>
+                                    }
+                                    @else if (col.type === 'date') {
+                                    {{ rowData[col.field] | date:'yyyy-MM-dd' }}
                                     }
                                     @else { {{ rowData[col.field] }} }
                                 </td>
-                            }
+                        }
                         </tr>
                     </ng-template>
                 </p-table>

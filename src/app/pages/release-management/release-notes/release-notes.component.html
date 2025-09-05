@@ -1,5 +1,5 @@
 <div class="card">
-    <p-tabs value="0" (onChange)="onTabChange($event)">
+    <p-tabs value="0" (onChange)="onTabChange($event) ">
         <p-tablist>
             <p-tab value="0">Release Notes</p-tab>
             <p-tab value="1">User Manual</p-tab>
@@ -67,6 +67,7 @@
     [uploadDialogVisible]="showEditDialog" 
     [editMode]="true"
     [selectedReleaseNote]="selectedReleaseNote"
+    [noteType]="noteType"
     (dialogClosed)="onDialogClosed()"
     (releaseNoteUpdated)="onReleaseNoteUpdated($event)">
 </app-upload-download-dialog>

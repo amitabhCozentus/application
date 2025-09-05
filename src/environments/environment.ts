@@ -28,7 +28,7 @@ const authConfig: AuthConfig = {
     ump_url:'',
     ump_endpoint_url: '',
     // baseurl: 'https://private-1cf213-itt.apiary-mock.com/',
-    baseurl: 'https://dev.itt.bdpsmart.com/api/v1/',
+    baseurl: 'http://localhost:8080/api/v1/',
     authConfig:authConfig,
     auth: authConfig,
     mapbox: {
