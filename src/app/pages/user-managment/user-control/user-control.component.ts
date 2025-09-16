@@ -1,10 +1,15 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject, OnInit, ViewChild } from '@angular/core';
 import { PrimengModule } from '../../../shared/primeng/primeng.module'
 import { UserControlService } from '../../../shared/service/user-control/user-control.service';
 import { AppRoutes } from '../../../shared/lib/api-constant';
 import { CommonService } from '../../../shared/service/common/common.service';
 import { CommonTableSearchComponent } from '../../../shared/component/table-search/common-table-search.component';
-import { ApiResponse, RequestBody } from '../../../shared/lib/constants';
+import { ApiResponse, ColumnFilterDescriptor, RequestBody, USER_TABLE_HEADERS } from '../../../shared/lib/constants';
+import { FilterPanelComponent } from '../../../shared/component/filter-panel/filter-panel.component';
+import { FilterService } from '../../../shared/service/filter/filter.service';
+import { SavedFiltersService } from '../../../shared/service/filter/saved-filters.service';
+import { handleRefresh, handleSearch } from '../../../shared/lib/common-utils';
+import { Table } from 'primeng/table';
 
 
 
@@ -44,11 +49,12 @@ const DEFAULT_REQUEST_BODY: RequestBody = {
 
 @Component({
   selector: 'app-user-control',
-  imports: [PrimengModule,CommonTableSearchComponent],
+  imports: [PrimengModule, CommonTableSearchComponent, FilterPanelComponent],
   templateUrl: './user-control.component.html',
   styleUrl: './user-control.component.scss'
 })
-export class UserControlComponent {
+export class UserControlComponent implements OnInit{
+  pageSize: number = 10;
   userService:UserControlService=inject(UserControlService);
   hasExistingUsers:boolean=true;
   usersTableHeader:any=[];
@@ -58,26 +64,79 @@ export class UserControlComponent {
   Users:any[]=[];
   selectedUser:userInfo[]=[]
   showAssignDialog:boolean=false;
+  filtersVisible = false;
+  private filterService = inject(FilterService);
+  private savedFilters = inject(SavedFiltersService);
+  private lastColumnFilters: ColumnFilterDescriptor[] = [];
+  currentPage: number = 0;
+  filtersActive = false; // any active criteria in current session
+  savedApplied = false;  // highlight only when a saved filter is applied
+  #filtersEff = effect(() => {
+      this.filtersActive = this.filterService.hasActiveFilters();
+      this.savedApplied = this.savedFilters.appliedSavedId() !== null;
+  });
+  searchTerm: string = "";
+  @ViewChild('existingUserTable') userTable?: Table;
+  private suppressNextLazyLoad = false;
+
 constructor(private userControlService:UserControlService,private commonService:CommonService) {
-    this.usersTableHeader =  [
-        { field: 'name', header: 'Name' },
-        { field: 'userType', header: 'User Type' },
-        { field: 'email', header: 'User Email Id' },
-        { field: 'companies', header: 'Company Name' },
-        { field: 'roleGranted', header: 'Role Granted' },
-        { field: 'updatedBy', header: 'Updated By' },
-        { field: 'updatedOn', header: 'Updated On' }
-      ];
+    this.usersTableHeader = USER_TABLE_HEADERS;
       this.userService.getUsersList(DEFAULT_REQUEST_BODY).subscribe((res:ApiResponse<userInfo>)=>{
         this.usersList = res.data.content;
       });
 
     }
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
 
 
   onCopyClick(){
     this.showAssignDialog=true;
   }
+
+  // Filters panel
+  onFiltersApplied() {
+    this.filtersActive = this.filterService.hasActiveFilters();
+    this.filtersVisible = false;
+    this.refresh();
+  }
+
+  onFiltersCleared() {
+    this.filtersActive = this.filterService.hasActiveFilters();
+    this.filtersVisible = false;
+    this.refresh();
+  }
+
+    refresh() {
+            handleRefresh({
+                setSearchTerm: (v) => (this.searchTerm = v),
+                setCurrentPage: (p) => (this.currentPage = p),
+                clearFilters: () => { this.lastColumnFilters = []; },
+                clearTable: () => this.userTable?.clear()
+            });
+        }
+
+    /** Search on Enter (min 3 chars) */
+        onSearch() {
+        const trimmed = this.searchTerm.trim();
+        if (trimmed.length === 0 || trimmed.length >= 3) {
+            // Build request body with search text
+            const requestBody: RequestBody = {
+                ...DEFAULT_REQUEST_BODY,
+                dataTableRequest: {
+                    ...DEFAULT_REQUEST_BODY.dataTableRequest,
+                    searchFilter: {
+                        ...DEFAULT_REQUEST_BODY.dataTableRequest.searchFilter,
+                        searchText: trimmed
+                    }
+                }
+            };
+            this.userService.getUsersList(requestBody).subscribe((res: ApiResponse<userInfo>) => {
+                this.usersList = res.data.content;
+            });
+        }
+    }
 
   navigateToUserAssignment(selectedUser: any) {
     this.commonService.navigateRouteWithState({
@@ -87,3 +146,4 @@ constructor(private userControlService:UserControlService,private commonService:
     });
   }
 }
+

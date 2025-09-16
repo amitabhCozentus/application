@@ -1,64 +1,85 @@
 <div id="user-manual">
-  <p-table [columns]="cols" [value]="UserManual" [tableStyle]="{ 'min-width': '50rem' }">
-    <ng-template #caption>
-      <div class="flex flex-1 justify-content-between align-items-center w-100">
-        <div class="w-full md:w-30rem">
-          <app-common-table-search [value]="searchTerm" 
-                                   (valueChange)="searchTerm = $event"
-                                   (search)="onSearch()" 
-                                   (clear)="resetSearch()">
-          </app-common-table-search>
-        </div>
-        <div>
-          <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
-                  (click)="refresh()"></button>
-          <button pButton pRipple label="Upload User Manual" class="p-button-primary ml-2"
-                  (click)="openAddRoleDialog()"></button>
-        </div>
-      </div>
-    </ng-template>
-
-    <ng-template #header let-columns>
-      <tr>
-        <th>Action</th>
-        @for (col of columns; track col.field) { 
-          <th>{{ col.header | translate }}</th> 
-        }
-      </tr>
-    </ng-template>
-
-    <ng-template #body let-rowData let-columns="columns">
-      <tr>
-        <td>
-          <div class="flex">
-            <img src="../../../../assets/bdp/images/bdp_delete_icon.svg" alt="delete"
-                 (click)="deleteManual(rowData)" style="cursor: pointer;" class="mr-2">
-          </div>
-        </td>
-        @for (col of columns; track col.field) {
-          <td>
-            @if (col.field === 'manualName') {
-              <a style="cursor: pointer">{{ rowData[col.field] }}</a>
-            }
-            @else if (col.type === 'date') {
-              {{ rowData[col.field] | date:'yyyy-MM-dd' }}
-            }
-            @else { {{ rowData[col.field] }} }
-          </td>
-        }
-      </tr>
-    </ng-template>
-  </p-table>
+    <p-confirmDialog></p-confirmDialog>
+    <p-table #userManualTable [value]="userManualListSignal()" [columns]="cols" 
+        styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" 
+        [showCurrentPageReport]="true" [scrollable]="true"
+        (onPage)="onPageChange($event)" (onLazyLoad)="onTableFilter($event)" [first]="paginationState.first" [rows]="paginationState.rows"
+        [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" 
+        currentPageReportTemplate="{{ 'LBL.TABLE.PAGE_REPORT' | translate }}" [filterDelay]="0"
+        [resizableColumns]="true" [reorderableColumns]="true"
+        [totalRecords]="totalRecordsSignal()" [lazy]="true" 
+        stateStorage="local" stateKey="userManualTableState"
+        sortMode="single" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #caption>
+            <div class="flex flex-1 justify-content-between align-items-center w-100">
+                <div class="w-full md:w-30rem">
+                    <app-common-table-search [value]="searchTerm" (valueChange)="searchTerm = $event"
+                        (search)="onSearch()" (clear)="resetSearch()"></app-common-table-search>
+                </div>
+                <div>
+                    <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
+                        (click)="refresh()"></button>
+                    <button pButton pRipple label="{{ 'LBL.BUTTON.UPLOAD_USER_MANUAL' | translate }}" class="p-button-primary ml-2"
+                        (click)="openAddDialog()"></button>
+                </div>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+            <tr>
+                <th>
+                    {{ 'LBL.ACTION' | translate }}
+                </th>
+                @for (col of cols; track col.field) { 
+                <th [pSortableColumn]="col.field">
+                    {{ col.header | translate }}
+                    <p-sortIcon [field]="col.field" />
+                    <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
+                        <ng-template #filtericon>
+                            <app-common-table-filter [field]="col.field"
+                                [table]="userManualTable"></app-common-table-filter>
+                        </ng-template>
+                    </p-columnFilter>
+                </th>
+                }
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData let-columns="columns">
+            <tr>
+                <td>
+                    <div class="flex">
+                        <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text mr-2 shadow-none"
+                            (click)="deleteManual(rowData)"></button>
+                    </div>
+                </td>
+                @for (col of cols; track col.field) {
+                    <td>
+                        @if (col.field === 'manualName') {
+                        <a style="cursor: pointer; text-decoration: underline;"
+                            (click)="downloadUserManual(rowData)">
+                            {{ rowData[col.field] }}
+                        </a>
+                        }
+                        @else if (col.type === 'date') {
+                        {{ rowData[col.field] | date:'yyyy-MM-dd' }}
+                        }
+                        @else { {{ rowData[col.field] }} }
+                    </td>
+                }
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td [attr.colspan]="cols.length + 1">{{ 'LBL.TABLE.EMPTY_MESSAGE' | translate }}</td>
+            </tr>
+        </ng-template>
+    </p-table>
 </div>
-
-<!-- ✅ Modal for Upload/Update -->
-@if (showEditDialog) {
-  <app-upload-download-dialog
+@if(showEditDialog){
+<app-upload-download-dialog
     [uploadDialogVisible]="showEditDialog"
-    [editMode]="!!selectedReleaseNote"
-    [selectedReleaseNote]="selectedReleaseNote"
-    [noteType]="noteType"
+    [selectedReleaseNote]="selectedUserManual"
+    noteType="USER_MANUAL"
     (dialogClosed)="onDialogClosed()"
     (userManualUpdated)="onUserManualUpdated($event)">
-  </app-upload-download-dialog>
+</app-upload-download-dialog>
 }

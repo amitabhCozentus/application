@@ -39,60 +39,77 @@ describe('ReleaseNotesComponent', () => {
   });
 
   it('editReleaseNotes should set selected and open dialog', () => {
-    const note = component.releaseNotes[0];
-    component.editReleaseNotes(note);
-    expect(component.selectedReleaseNote).toEqual(note);
+    // Add a dummy note to the signal for testing
+    const dummyNote = { id: 1, releaseName: 'Test', releaseUserManualName: 'Test', dateOfReleaseNote: '2024-01-01' };
+    component['rawReleaseNotesSignal'].set([dummyNote]);
+    component.editReleaseNotes(dummyNote);
+    expect(component.selectedReleaseNote).toEqual(dummyNote);
     expect(component.showEditDialog).toBeTrue();
   });
 
   it('onDialogClosed should reset dialog state', () => {
     component.showEditDialog = true;
     component.selectedReleaseNote = { releaseName: 'x' } as any;
-    const logSpy = spyOn(console, 'log');
     component.onDialogClosed();
     expect(component.showEditDialog).toBeFalse();
     expect(component.selectedReleaseNote).toBeNull();
-    expect(logSpy).toHaveBeenCalled();
   });
 
   it('onReleaseNoteUpdated should update existing when selectedReleaseNote is set', () => {
-    const original = component.releaseNotes[1];
-    component.selectedReleaseNote = { releaseName: original.releaseName };
+    const original = { id: 2, releaseName: 'Old', uploadedBy: 'old@bdpint.com' };
+    component['rawReleaseNotesSignal'].set([original]);
+    component.selectedReleaseNote = { id: 2, releaseName: 'Old' };
     component.showEditDialog = true;
     component.onReleaseNoteUpdated({ uploadedBy: 'updated@bdpint.com' });
-    const updated = component.releaseNotes.find(n => n.releaseName === original.releaseName)!;
+    const updated = component['rawReleaseNotesSignal']().find(n => n.id === 2)!;
     expect(updated.uploadedBy).toBe('updated@bdpint.com');
     expect(component.showEditDialog).toBeFalse();
     expect(component.selectedReleaseNote).toBeNull();
   });
 
-  it('onReleaseNoteUpdated should add a new item when no selection', () => {
-    const len = component.releaseNotes.length;
+  it('onReleaseNoteUpdated should reload list when no selection', () => {
+    const loadSpy = spyOn(component, 'loadReleaseNotesList');
     component.selectedReleaseNote = null;
-    component.onReleaseNoteUpdated({
-      releaseName: 'New Note',
-      releaseDate: '2025-08-27',
-      uploadedBy: 'new@bdpint.com',
-      uploadedOn: '2025-08-27 10:00:00'
-    });
-    expect(component.releaseNotes.length).toBe(len + 1);
-    expect(component.releaseNotes[0].releaseName).toBe('New Note');
+    component.paginationState.pageIndex = 1;
+    component.paginationState.rows = 5;
+    component.searchTerm = 'abc';
+    component.columnFilters = [{ columnName: 'releaseName', filter: '', sort: '' }];
+    component.onReleaseNoteUpdated({ releaseName: 'New Note' });
+    expect(loadSpy).toHaveBeenCalledWith(1, 5, 'abc', component.columnFilters);
+    expect(component.showEditDialog).toBeFalse();
+    expect(component.selectedReleaseNote).toBeNull();
   });
 
-  it('resetSearch should clear searchTerm and log', () => {
-    const logSpy = spyOn(console, 'log');
+  it('resetSearch should clear searchTerm, filters, and reload', () => {
+    const loadSpy = spyOn(component, 'loadReleaseNotesList');
     component.searchTerm = 'hello';
+    component.columnFilters = [{ columnName: 'releaseName', filter: '', sort: '' }];
     component.resetSearch();
     expect(component.searchTerm).toBe('');
-    expect(logSpy).toHaveBeenCalled();
+    expect(component.columnFilters).toEqual([]);
+    expect(loadSpy).toHaveBeenCalledWith(0, 10, '', []);
   });
 
-  it('onSearch and refresh should log without throwing', () => {
-    const logSpy = spyOn(console, 'log');
+  it('onSearch should trigger loadReleaseNotesList for valid search', () => {
+    const loadSpy = spyOn(component, 'loadReleaseNotesList');
     component.searchTerm = 'abc';
     component.onSearch();
+    expect(loadSpy).toHaveBeenCalledWith(0, 10, 'abc', []);
+    component.searchTerm = '';
+    component.onSearch();
+    expect(loadSpy).toHaveBeenCalledWith(0, 10, '', []);
+  });
+
+  it('refresh should reset state and reload', (done) => {
+    const loadSpy = spyOn(component, 'loadReleaseNotesList');
+    component.releaseNotesTable = { clear: jasmine.createSpy('clear') } as any;
     component.refresh();
-    expect(logSpy).toHaveBeenCalled();
+    setTimeout(() => {
+      expect(component.searchTerm).toBe('');
+      expect(component.columnFilters).toEqual([]);
+      expect(loadSpy).toHaveBeenCalledWith(0, 10, '', []);
+      done();
+    });
   });
 
   it('onTabChange should trigger loadReleaseNotesData when index 0', () => {

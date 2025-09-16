@@ -6,6 +6,7 @@ import {
   OnInit,
   ViewChild,
   HostListener,
+  inject,
 } from "@angular/core";
 import mapboxgl from "mapbox-gl";
 import { environment } from "../../../../environments/environment";
@@ -18,6 +19,14 @@ import { debounceTime, distinctUntilChanged } from "rxjs/operators";
 import { KpiIndicatorsComponent } from '../../../shared/component/kpi-indicators/kpi-indicators.component';
 import { Popover } from "primeng/popover";
 import { ShipmentStatus } from "../../../shared/enumeration/home";
+import { FilterService } from "../../../shared/service/filter/filter.service";
+import { handleRefresh } from "../../../shared/lib/common-utils";
+import { SavedFiltersService } from "../../../shared/service/filter/saved-filters.service";
+import { ColumnFilterDescriptor } from "../../../shared/lib/constants";
+import { Table } from "primeng/table";
+import { RoleConfigurationComponent } from "../../master-data-management/role-management/role-configuration/role-configuration.component";
+import { CommonTableFilterComponent } from "../../../shared/component/common-table-filter/common-table-filter.component";
+import { FilterPanelComponent } from "../../../shared/component/filter-panel/filter-panel.component";
 
 interface  countryList{
   locationId: number;
@@ -83,7 +92,7 @@ interface ApiResponse {
 }
 @Component({
   selector: "app-home",
-  imports: [PrimengModule, FormsModule, CommonModule, KpiIndicatorsComponent],
+  imports: [PrimengModule, FormsModule, CommonModule, KpiIndicatorsComponent,RoleConfigurationComponent, CommonTableFilterComponent, FilterPanelComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
 })
@@ -109,6 +118,15 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   searchQuery: string = "";
   filteredLocations: countryList[] = [];
   isSearching: boolean = false;
+  filtersVisible = false;
+  filtersActive = false;
+  searchTerm: string = "";
+  currentPage: number = 0;
+  private lastColumnFilters: ColumnFilterDescriptor[] = [];
+
+  private filterService = inject(FilterService);
+  private savedFilters = inject(SavedFiltersService);
+
   private searchSubject = new Subject<string>();
   private currentZoomLevel: number = 1;
   private currentBounds: mapboxgl.LngLatBounds | null = null;
@@ -129,7 +147,7 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedTransportMode: string = 'ocean';
 
   // Hardcoded KPI data for each shipment type and transport modes with different shipment counts
-
+  @ViewChild('roleTable') roleTable?: Table;
 
   constructor(private homeService: HomeService) {
     for (const status of this.shipmentStatus) {
@@ -333,11 +351,12 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
       this.map.on("click", "unclustered-point", (e: any) => {
         const coordinates = e.features[0].geometry.coordinates.slice();
         const locationName = e.features[0].properties.locationName;
+        const locationId = e.features[0].properties.locationId;
         const locationCode = e.features[0].properties.locationCode;
         const totalShipmentCount = e.features[0].properties.totalShipmentCount;
 
         // Store selected location for future API calls
-        this.selectedLocationCode = locationCode;
+        this.selectedLocationCode = locationId;
         // this.selectedLocation = {
         //   locationCode: locationCode,
         //   locationName: locationName,
@@ -806,4 +825,31 @@ export class HomeComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 100);
   }
 
+  // Filters panel
+    openFilters() { this.filtersVisible = true; }
+    onFiltersApplied() {
+    this.filtersActive = this.filterService.hasActiveFilters();
+    this.refresh();
+    }
+
+    onFiltersCleared() {
+    this.filtersActive = this.filterService.hasActiveFilters();
+    this.refresh();
+    }
+
+    refresh() {
+            handleRefresh({
+                setSearchTerm: (v) => (this.searchTerm = v),
+                setCurrentPage: (p) => (this.currentPage = p),
+                clearFilters: () => { this.lastColumnFilters = []; },
+                clearTable: () => this.roleTable?.clear()
+            });
+        }
+
+  onMapTypeToggle(type: 'light' | 'satellite' | 'street') {
+    if (this.mapType !== type) {
+      this.mapType = type;
+      this.changeMapStyle(type);
+    }
+  }
 }

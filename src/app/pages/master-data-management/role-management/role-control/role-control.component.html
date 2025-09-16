@@ -20,13 +20,13 @@
                             </div>
                             <div class="action-buttons p-d-flex p-ai-center p-jc-end"
                                 style="display: flex; gap: 1.5rem;">
-                                @if (filtersActive) {
+                                <!-- @if (filtersActive) {
                                 <button pButton pRipple type="button" icon="pi pi-filter-slash" label="Show filters" (click)="openFilters()"
                                     class="p-button-primary"></button>
                                 } @else {
                                 <button pButton pRipple type="button" icon="pi pi-filter" label="Show filters" (click)="openFilters()"
                                     [outlined]="!filtersActive"></button>
-                                }
+                                } -->
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                     (click)="refresh()"></button>
                                 @if (canEdit) {

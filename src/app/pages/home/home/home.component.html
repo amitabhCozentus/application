@@ -1,7 +1,16 @@
 <div class="home-container">
     <ng-container *ngIf="kpiData.length !== 0; else loadingKpi">
         <div class="col-12 py-1 kpi-header">
-            <label for="">KPI Widgets </label>
+            <div class="flex justify-content-between align-items-center">
+                <label for="">KPI Widgets </label>
+                @if (filtersActive) {
+            <button pButton pRipple type="button" icon="pi pi-filter-slash" label="Show filters" (click)="openFilters()"
+                class="p-button-primary"></button>
+            } @else {
+            <button pButton pRipple type="button" icon="pi pi-filter" label="Show filters" (click)="openFilters()"
+                [outlined]="!filtersActive"></button>
+            }
+            </div>
         </div>
         <div>
             <div class="row flex">
@@ -38,45 +47,51 @@
             </div>
             <div id="map" #mapContainer></div>
             <div #mapTypeButton class="mapboxgl-ctrl mapboxgl-ctrl-group custom-map-type-button-group">
-                <button type="button" class="mapboxgl-ctrl-icon map-type-button" disabled="true"
+                <button type="button" class="mapboxgl-ctrl-icon map-type-button"
                     (click)="mapTypeOptionPanelClick($event)" title="Change Map Type">
                     <i class="far fa-clone"></i>
                 </button>
             </div>
             <!-- Overlay Panel -->
             <p-popover #mapTypeOptionPanel styleClass="map-overlay-panel">
-                <div class="bdp-map-type-option">
-                    <h5>Maps Display :</h5>
-                    <ul>
-                        <li>
-                            <span class="flex">
-                                <div>
-                                    <i class="fa-regular fa-compass"></i>
-                                    <p>Light View</p>
-                                </div>
-                                <p-toggleswitch [ngModel]="mapType === 'light'"
-                                    (onChange)="changeMapStyle('light')"></p-toggleswitch>
+                <div class="bdp-map-type-option p-3" style="min-width: 240px;">
+                    <h5 class="mb-3">Maps Display</h5>
+                    <ul class="list-none p-0 m-0">
+                        <li class="mb-3 flex align-items-center justify-content-between">
+                            <span class="flex align-items-center gap-2">
+                                <i class="fa-regular fa-compass"></i>
+                                <span>Light View</span>
                             </span>
+                            <p-toggleswitch 
+                                [ngModel]="mapType === 'light'"
+                                (onChange)="onMapTypeToggle('light')">
+                            </p-toggleswitch>
                         </li>
-                        <li>
-                            <span>
+                        <li class="mb-3 flex align-items-center justify-content-between">
+                            <span class="flex align-items-center gap-2">
                                 <i class="fa-regular fa-satellite-dish"></i>
-                                <p>Satellite View</p>
+                                <span>Satellite View</span>
                             </span>
-                            <p-toggleswitch [ngModel]="mapType === 'satellite'"
-                                (onChange)="changeMapStyle('satellite')"></p-toggleswitch>
+                            <p-toggleswitch 
+                                [ngModel]="mapType === 'satellite'"
+                                (onChange)="onMapTypeToggle('satellite')">
+                            </p-toggleswitch>
                         </li>
-                        <li>
-                            <span class="flex">
+                        <li class="flex align-items-center justify-content-between">
+                            <span class="flex align-items-center gap-2">
                                 <i class="fa-regular fa-road"></i>
-                                <p>Street View</p>
+                                <span>Street View</span>
                             </span>
-                            <p-toggleswitch [ngModel]="mapType === 'street'"
-                                (onChange)="changeMapStyle('street')"></p-toggleswitch>
+                            <p-toggleswitch 
+                                [ngModel]="mapType === 'street'"
+                                (onChange)="onMapTypeToggle('street')">
+                            </p-toggleswitch>
                         </li>
                     </ul>
                 </div>
             </p-popover>
+            <app-filter-panel [(visible)]="filtersVisible" (applied)="onFiltersApplied()" (cleared)="onFiltersCleared()">
+            </app-filter-panel>
         </div>
     </div>
 </div>

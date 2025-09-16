@@ -1,12 +1,22 @@
 <div class="card">
     <p-tabs value="0" (onChange)="onTabChange($event)">
         <p-tablist>
-            <p-tab value="0">Release Notes</p-tab>
-            <p-tab value="1">User Manual</p-tab>
+            <p-tab value="0">{{ 'LBL.TAB.RELEASE_NOTES' | translate }}</p-tab>
+            <p-tab value="1">{{ 'LBL.TAB.USER_MANUAL' | translate }}</p-tab>
         </p-tablist>
         <p-tabpanels>
             <p-tabpanel value="0">
-                <p-table [columns]="cols" [value]="releaseNotes" [tableStyle]="{ 'min-width': '50rem' }">
+                <p-table #releaseNotesTable [value]="releaseNotesListSignal()" [columns]="cols" 
+                    styleClass="p-datatable-customers p-datatable-striped" [rowHover]="true" 
+                    [showCurrentPageReport]="true" [scrollable]="true"
+                    (onPage)="onPageChange($event)" (onLazyLoad)="onTableFilter($event)" [first]="paginationState.first" [rows]="paginationState.rows"
+                    [rowsPerPageOptions]="[10, 25, 50]" [paginator]="true" 
+                    currentPageReportTemplate="{{ 'LBL.TABLE.PAGE_REPORT' | translate }}" [filterDelay]="0"
+                    [resizableColumns]="true" [reorderableColumns]="true"
+                    [totalRecords]="totalRecordsSignal()" [lazy]="true" 
+                    stateStorage="local" stateKey="releaseNotesTableState"
+                    
+                    sortMode="single" [tableStyle]="{ 'min-width': '50rem' }">
                     <ng-template #caption>
                         <div class="flex flex-1 justify-content-between align-items-center w-100">
                             <div class="w-full md:w-30rem">
@@ -16,33 +26,43 @@
                             <div>
                                 <button pButton pRipple icon="pi pi-refresh" [outlined]="true" class="p-button-primary"
                                     (click)="refresh()"></button>
-                                <button pButton pRipple label="Upload Release Notes" class="p-button-primary ml-2"
+                                <button pButton pRipple label="{{ 'LBL.BUTTON.UPLOAD_RELEASE_NOTES' | translate }}" class="p-button-primary ml-2"
                                     (click)="openAddRoleDialog()"></button>
                             </div>
                         </div>
                     </ng-template>
-                    <ng-template #header let-columns>
+                    <ng-template pTemplate="header" let-columns>
                         <tr>
                             <th>
                                 {{ 'LBL.ACTION' | translate }}
                             </th>
-                            @for (col of columns; track col.field) { <th>{{ col.header | translate }}</th> }
+                            @for (col of cols; track col.field) { 
+                            <th [pSortableColumn]="col.field">
+                                {{ col.header | translate }}
+                                <p-sortIcon [field]="col.field" />
+                                <p-columnFilter [type]="col.type" [field]="col.field" display="menu">
+                                    <ng-template #filtericon>
+                                        <app-common-table-filter [field]="col.field"
+                                            [table]="releaseNotesTable"></app-common-table-filter>
+                                    </ng-template>
+                                </p-columnFilter>
+                            </th>
+                            }
                         </tr>
                     </ng-template>
-                    <ng-template #body let-rowData let-columns="columns">
+                    <ng-template pTemplate="body" let-rowData let-columns="columns">
                         <tr>
                             <td>
                                 <div class="flex">
                                     <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-text mr-2 shadow-none"
                                         (click)="editReleaseNotes(rowData)"></button>
-                                    <button pButton pRipple icon="pi pi-refresh" class="p-button-rounded p-button-text mr-2 shadow-none"
-                                        (click)="deleteReleaseNotes(rowData)"></button>
+                                    
                                 </div>
                             </td>
-                          @for (col of columns; track col.field) {
+                            @for (col of cols; track col.field) {
                                 <td>
-                                    @if (col.field === 'fileName') {
-                                    <a style="cursor: pointer; color: blue; text-decoration: underline;"
+                                    @if (col.field === 'releaseName') {
+                                    <a style="cursor: pointer; text-decoration: underline;"
                                         (click)="downloadReleaseNotes(rowData)">
                                         {{ rowData[col.field] }}
                                     </a>
@@ -52,7 +72,12 @@
                                     }
                                     @else { {{ rowData[col.field] }} }
                                 </td>
-                        }
+                            }
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td [attr.colspan]="cols.length + 1">{{ 'LBL.TABLE.EMPTY_MESSAGE' | translate }}</td>
                         </tr>
                     </ng-template>
                 </p-table>
@@ -66,9 +91,13 @@
 @if(showEditDialog){
 <app-upload-download-dialog
     [uploadDialogVisible]="showEditDialog"
-    [editMode]="true"
+    [editMode]="selectedReleaseNote !== null"
     [selectedReleaseNote]="selectedReleaseNote"
+    noteType="RELEASE_NOTE"
     (dialogClosed)="onDialogClosed()"
     (releaseNoteUpdated)="onReleaseNoteUpdated($event)">
 </app-upload-download-dialog>
+
+<!-- Toast Messages -->
+<app-toast-component></app-toast-component>
 }

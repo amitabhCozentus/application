@@ -13,6 +13,7 @@ import { CommonTableSearchComponent } from '../../../shared/component/table-sear
 import { PaginationState } from '../../../shared/lib/constants';
 import { UserConfigurationService, UserAssignmentPayload } from '../../../shared/service/user-configuration/user-configuration.service';
 import { MessageService } from 'primeng/api';
+import { Router, ActivatedRoute } from '@angular/router';
 
 export const initialPSARequestBody: ApiRequestBody = {
     dataTableRequest: {
@@ -108,7 +109,8 @@ export class UserConfigurationComponent implements OnInit {
     // Add missing properties
     isExternalAccess: boolean = false;
     canEdit: boolean = true;
-
+    router = inject(Router);
+    route = inject(ActivatedRoute);
     private cdr = inject(ChangeDetectorRef);
 
     // Add persistent storage for company details across all pages
@@ -553,6 +555,12 @@ export class UserConfigurationComponent implements OnInit {
                 const infoPayload = {
                     isBdpEmployee: this.checked
                 };
+                // Move to Role Type tab
+                this.selectedIndex = '1';
+                // Fetch role list if not already loaded
+                if (this.userTypeList.length === 0) {
+                    this.loadRoleList();
+                }
                 break;
             case 'userType':
                 // Role Type Tab: Pass roleId and isBdpEmployee and userId
@@ -561,6 +569,20 @@ export class UserConfigurationComponent implements OnInit {
                     isBdpEmployee: this.checked,
                     userId: userId
                 };
+                // Move to Company tab
+                this.selectedIndex = '2';
+                // Fetch company data if not already loaded
+                if (!this.isInitialLoadComplete) {
+                    this.initializeData().then(() => {
+                        if (!this.psaDataLoaded) {
+                            this.loadCompanyData('PSA');
+                        }
+                    });
+                } else {
+                    if (!this.psaDataLoaded) {
+                        this.loadCompanyData('PSA');
+                    }
+                }
                 break;
             case 'confirmCompanySelection':
                 // Company Tab: Pass roleId, isBdpEmployee, assignedCompanies
@@ -677,6 +699,7 @@ export class UserConfigurationComponent implements OnInit {
 
     goBack() {
         // Navigate back functionality
+        this.router.navigate(['/user-control']);
     }
 
     openAddRoleDialog() {

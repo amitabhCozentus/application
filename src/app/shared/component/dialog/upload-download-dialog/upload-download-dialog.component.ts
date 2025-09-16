@@ -1,36 +1,56 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnChanges, Signal } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, Signal, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { PrimengModule } from '../../../primeng/primeng.module';
 import { NgxDropzoneModule } from 'ngx-dropzone';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { ReleaseManagementService  } from '../../../service/release-management/release-management.service';
-import { ReleaseNoteData } from 'src/app/shared/lib/constants';
+import { ReleaseManagementService } from '../../../service/release-management/release-management.service';
+import { ToastComponent } from '../../toast-component/toast.component';
+import { TranslateService } from '@ngx-translate/core';
+
 @Component({
   selector: 'app-upload-download-dialog',
-  imports: [PrimengModule, ReactiveFormsModule, FormsModule, NgxDropzoneModule],
+  imports: [PrimengModule, ReactiveFormsModule, FormsModule, NgxDropzoneModule, ToastComponent],
   templateUrl: './upload-download-dialog.component.html',
   styleUrl: './upload-download-dialog.component.scss'
 })
 export class UploadDownloadDialogComponent implements OnInit, OnChanges {
-   @Input() uploadDialogVisible: boolean = true;
-  @Input() editMode: boolean = false;
-  @Input() selectedReleaseNote: ReleaseNoteData | null = null;
+  @ViewChild(ToastComponent) toastComponent!: ToastComponent;
+  
+  @Input() uploadDialogVisible: boolean = true;
+  @Input() editMode: boolean = false; // default to false, so dialog is always in upload mode unless explicitly set
+  @Input() selectedReleaseNote: any | null = null;
 
   @Output() dialogClosed = new EventEmitter<void>();
-  @Output() releaseNoteUpdated = new EventEmitter<ReleaseNoteData>();
-  @Output() userManualUpdated = new EventEmitter<any>();  
-  @Input() noteType: 'RELEASE_NOTE' | 'USER_MANUAL' = 'RELEASE_NOTE';
+  @Output() releaseNoteUpdated = new EventEmitter<any>();
+  @Output() userManualUpdated = new EventEmitter<any>();
+  @Input() noteType: 'RELEASE_NOTE' | 'USER_MANUAL' = 'RELEASE_NOTE'; // Must be set by parent
+  get releaseNameLabel() {
+    return this.noteType === 'USER_MANUAL' ? 'Manual Name' : 'Release Name';
+  }
+  get releaseDateLabel() {
+    return this.noteType === 'USER_MANUAL' ? 'Manual Date' : 'Release Note Date';
+  }
   uploadForm: FormGroup;
   files: File[] = [];
+  // tracks whether the server returned success for the current file
+  uploadSuccess: boolean = false;
+
+  // Options for user manual names (SelectItem format for p-dropdown)
+  manualOptions: { label: string; value: string }[] = [
+    { label: 'Customer Manual', value: 'Customer Manual' },
+    { label: 'PSA BDP Manual', value: 'PSA BDP Manual' },
+    { label: 'BNS Manual', value: 'BNS Manual' }
+  ];
 
   errorMessage: string = '';
 
   // ✅ readonly signal for upload result
-  uploadedNote?: Signal<ReleaseNoteData | null>;
+  uploadedNote?: Signal<any | null>;
 
   constructor(
     private formBuilder: FormBuilder,
     private releaseService: ReleaseManagementService
+    , private translateService: TranslateService
   ) {
     this.uploadForm = this.formBuilder.group({
       releaseName: ['', Validators.required],
@@ -49,84 +69,95 @@ export class UploadDownloadDialogComponent implements OnInit, OnChanges {
   initializeForm() {
     if (this.editMode && this.selectedReleaseNote) {
       this.uploadForm.patchValue({
-        releaseName: this.selectedReleaseNote.noteType,
+        releaseName: this.selectedReleaseNote.releaseUserManualName,
         releaseNotesDate: new Date(this.selectedReleaseNote.dateOfReleaseNote)
       });
+  // make fields readonly in re-upload/edit mode
+  this.uploadForm.get('releaseName')?.disable();
+  this.uploadForm.get('releaseNotesDate')?.disable();
     } else {
       this.uploadForm.reset();
       this.files = [];
+  this.uploadSuccess = false;
+  // ensure controls are enabled
+  this.uploadForm.get('releaseName')?.enable();
+  this.uploadForm.get('releaseNotesDate')?.enable();
     }
   }
 
   //pdf ornot check
-  
-onSubmit() {
-  if (this.uploadForm.valid && this.files.length > 0) {
-    const file = this.files[0];
 
-    if (this.editMode && this.selectedReleaseNote?.id) {
-      // 🔄 Re-upload API call (only runs in edit mode)
-      this.releaseService.reuploadDocument(this.selectedReleaseNote.id, file).subscribe({
-        next: (result: ReleaseNoteData) => {
-          if (this.noteType === 'RELEASE_NOTE') {
-            this.releaseNoteUpdated.emit(result);
-          } else {
-            this.userManualUpdated.emit(result);
-          }
-          this.closeDialog();
-        },
-        error: err => {
-          this.errorMessage = 'Re-upload failed. Please try again.';
-        }
-      });
-
-    } else {
-      // 🆕 Your existing Upload API code (unchanged)
-      const docType = this.noteType;
-      const releaseUserManualName = this.uploadForm.value.releaseName;
-      const releaseDate = this.uploadForm.value.releaseNotesDate
-        .toISOString()
-        .split('T')[0];
-
-      this.releaseService.uploadDocument(
-        file,
-        docType,
-        releaseUserManualName,
-        releaseDate,
-        this.noteType
-      ).subscribe({
-        next: (result: ReleaseNoteData | null) => {
-          if (result) {
-            if (this.noteType === 'RELEASE_NOTE') {
+  onSubmit() {
+    if (this.uploadForm.valid && this.files.length > 0) {
+      const file = this.files[0];
+      // Ensure docType is always set and valid
+      const docType = this.noteType === 'USER_MANUAL' ? 'USER_MANUAL' : 'RELEASE_NOTE';
+      if (this.editMode && this.selectedReleaseNote?.id) {
+        this.releaseService.reuploadDocument(this.selectedReleaseNote.id, file).subscribe({
+          next: (result: any) => {
+            if (docType === 'RELEASE_NOTE') {
               this.releaseNoteUpdated.emit(result);
             } else {
               this.userManualUpdated.emit(result);
             }
-            this.closeDialog();
+            // show toast via ViewChild reference
+            this.toastComponent.showSuccess(this.translateService.instant('LBL.UPLOAD.SUCCESS'));
+            this.uploadSuccess = true;
+          },
+          error: err => {
+            const msg = err?.status === 409 ? this.translateService.instant('LBL.UPLOAD.FILE_EXISTS') : this.translateService.instant('LBL.UPLOAD.INVALID_TYPE');
+            this.toastComponent.showError(msg);
           }
-        },
-        error: err => {
-          if (err?.status === 409) {
-            this.errorMessage =
-              'A manual with the same name exists, but the new version could not replace it. Please try again or rename the file.';
-          } else {
-            this.errorMessage =
-              'Upload failed. Please try again or contact your system administrator.';
+        });
+      } else {
+        const releaseUserManualName = this.uploadForm.value.releaseName;
+        const releaseDate = this.uploadForm.value.releaseNotesDate
+          .toISOString()
+          .split('T')[0];
+        this.releaseService.uploadDocument(
+          file,
+          docType,
+          releaseUserManualName,
+          releaseDate
+        ).subscribe({
+          next: (result: any | null) => {
+            if (result) {
+              if (docType === 'RELEASE_NOTE') {
+                this.releaseNoteUpdated.emit(result);
+              } else {
+                this.userManualUpdated.emit(result);
+              }
+              // Show toast via ViewChild reference
+              this.toastComponent.showSuccess(this.translateService.instant('LBL.UPLOAD.SUCCESS'));
+              this.uploadSuccess = true;
+            }
+          },
+          error: err => {
+            const msg = err?.status === 409
+              ? this.translateService.instant('LBL.UPLOAD.FILE_EXISTS')
+              : this.translateService.instant('LBL.UPLOAD.INVALID_TYPE');
+            this.toastComponent.showError(msg);
           }
-        }
-      });
+        });
+      }
+    } else {
+      console.log('Form is invalid or no file selected');
+      this.markFormGroupTouched();
     }
-  } else {
-    console.log('Form is invalid or no file selected');
-    this.markFormGroupTouched();
   }
-}
 
 
 
   closeDialog() {
-    this.dialogClosed.emit();
-      this.errorMessage = '';
+  // Discard all entered data
+  this.uploadForm.reset();
+  this.files = [];
+  this.uploadSuccess = false;
+  this.errorMessage = '';
+  // ensure controls enabled
+  this.uploadForm.get('releaseName')?.enable();
+  this.uploadForm.get('releaseNotesDate')?.enable();
+  this.dialogClosed.emit();
 
   }
 
@@ -136,22 +167,37 @@ onSubmit() {
 
   onChoosingFile(event: any) {
     if (event.addedFiles?.length > 0) {
-    const file = event.addedFiles[0];
-    if (file.type !== 'application/pdf') {
-      this.errorMessage = 'Invalid file type. Only PDF files are supported.';
-      this.files = [];
-    } else {
-      this.errorMessage = '';
+      const file = event.addedFiles[0];
+      // Client-side: enforce only the file size limit (user requested)
+      const maxSize = 5 * 1024 * 1024; // 5 MB
+      if (file.size > maxSize) {
+        // Reject the file and show toast via ViewChild reference
+        this.files = [];
+        this.uploadSuccess = false;
+  this.toastComponent.showError(this.translateService.instant('LBL.UPLOAD.FILE_SIZE_EXCEED'));
+        return;
+      }
+
+      // Accept file (no other client-side validations per request)
       this.files = [file];
+      this.errorMessage = '';
+      // reset uploadSuccess because a new file is selected
+      this.uploadSuccess = false;
     }
-  }
   }
 
   onRemove(file: File) {
+    // Remove the selected/uploaded file but keep form values
+    if (!file) {
+      this.files = [];
+      this.uploadSuccess = false;
+      return;
+    }
     const idx = this.files.indexOf(file);
     if (idx > -1) {
       this.files.splice(idx, 1);
     }
+    this.uploadSuccess = false;
     this.errorMessage = '';
   }
 

@@ -11,6 +11,7 @@ import { ReleaseNotesComponent } from "./pages/master-data-management/release-ma
 import { UploadDownloadDialogComponent } from "./shared/component/dialog/upload-download-dialog/upload-download-dialog.component";
 import { PagePlaceholderComponent } from "./shared/component/page-placeholder/page-placeholder.component";
 import { HomeComponent } from "./pages/home/home/home.component";
+import { CustomerCarrierManagementComponent } from './pages/master-data-management/customer-carrier-management/customer-carrier-management/customer-carrier-management.component';
 
 export const routes: Routes = [
     {
@@ -49,7 +50,7 @@ export const routes: Routes = [
     { path: 'master-data/peta-petd', component: PetaManagementComponent },
     { path: 'master-data/subscription-management', component: SubscriptionComponent },
     { path: 'master-data/role-management', component: RoleControlComponent },
-    { path: 'master-data/customer-carrier', component: PagePlaceholderComponent, data: { title: 'Customer Carrier Management' } },
+    { path: 'master-data/customer-carrier', component: CustomerCarrierManagementComponent},
     { path: 'master-data/customer-onboarding', component: PagePlaceholderComponent, data: { title: 'Customer Onboarding' } },
     { path: 'master-data/hierarchy', component: PagePlaceholderComponent, data: { title: 'Hierarchy Management' } },
     { path: 'master-data/location/ocean-port', component: PagePlaceholderComponent, data: { title: 'Ocean Port Master' } },

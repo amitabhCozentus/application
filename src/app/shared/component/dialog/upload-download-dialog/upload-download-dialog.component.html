@@ -1,61 +1,95 @@
 <div id="upload-download-dialog">
+    <app-toast-component></app-toast-component>
     <p-dialog
-        [header]="editMode ? 'Edit Release Notes' : 'Upload Release Notes'"
-        [(visible)]="uploadDialogVisible"
-        [modal]="true"
-        [style]="{ width: '50vw' }"
-        [baseZIndex]="10000"
-        (onHide)="closeDialog()">
+        [header]="editMode ? (noteType === 'USER_MANUAL' ? 'Edit User Manual' : 'Edit Release Notes') : (noteType === 'USER_MANUAL' ? 'Upload User Manual' : 'Upload Release Notes')"
+        [(visible)]="uploadDialogVisible" [modal]="true" [responsive]="true" [style]="{ width: '50vw' }"
+        [baseZIndex]="10000" (onHide)="closeDialog()">
         <ng-template pTemplate="header">
-            <h4>{{ editMode ? 'Edit Release Notes' : 'Upload Release Notes' }}</h4>
+            <h4>
+                @if (editMode) {
+                    @if (noteType === 'USER_MANUAL') {
+                        {{ 'LBL.HEADER.EDIT_USER_MANUAL' | translate }}
+                    } @else {
+                        {{ 'LBL.HEADER.EDIT_RELEASE_NOTE' | translate }}
+                    }
+                } @else {
+                    @if (noteType === 'USER_MANUAL') {
+                        {{ 'LBL.HEADER.UPLOAD_USER_MANUAL' | translate }}
+                    } @else {
+                        {{ 'LBL.HEADER.UPLOAD_RELEASE_NOTE' | translate }}
+                    }
+                }
+            </h4>
         </ng-template>
-        <p-divider></p-divider>
+    <p-divider></p-divider>
         <ng-template pTemplate="content">
             <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()">
                 <div class="flex gap-8 mb-2">
-                <span class="p-field flex flex-column">
-                    <label for="releaseNotesDate" class="p-required">Release Note Date</label>
-                    <p-datepicker [iconDisplay]="'input'" [showIcon]="true" inputId="releaseNotesDate"
-                        formControlName="releaseNotesDate" />
-                    @if (uploadForm.get('releaseNotesDate')?.invalid && uploadForm.get('releaseNotesDate')?.touched) {
-                        <p-message severity="error" text="Please select a valid date."></p-message>
-                    }
-                </span>
-                <span class="p-field flex flex-column">
-                    <label for="releaseName" class="p-required">Release Name</label>
-                    <input pInputText type="text" id="releaseName" placeholder="Release Name"
-                        formControlName="releaseName" />
-                    @if (uploadForm.get('releaseName')?.invalid && uploadForm.get('releaseName')?.touched) {
-                        <p-message severity="error" text="Please enter a valid release name."></p-message>
-                    }
-                </span>
+                    <span class="p-field flex flex-column">
+                        <label for="releaseNotesDate" class="p-required">
+                            @if (noteType === 'USER_MANUAL') {
+                                {{ 'LBL.MANUAL.DATE' | translate }}
+                            } @else {
+                                {{ 'LBL.RELEASE.NOTE.DATE' | translate }}
+                            }
+                        </label>
+                        <p-datepicker [iconDisplay]="'input'" [showIcon]="true" inputId="releaseNotesDate"
+                            formControlName="releaseNotesDate" [disabled]="uploadForm.get('releaseNotesDate')?.disabled"></p-datepicker>
+                    </span>
+                    <span class="p-field flex flex-column">
+                        <label for="releaseName" class="p-required">
+                            @if (noteType === 'USER_MANUAL') {
+                                {{ 'LBL.MANUAL_NAME' | translate }}
+                            } @else {
+                                {{ 'LBL.RELEASE_NAME' | translate }}
+                            }
+                        </label>
+                        @if (noteType === 'USER_MANUAL') {
+                        <p-select [options]="manualOptions" optionLabel="label" optionValue="value"
+                            formControlName="releaseName" placeholder="{{ 'LBL.PLACEHOLDER.RELEASE_NAME' | translate }}"></p-select>
+                        } @else {
+                        <input pInputText type="text" id="releaseName" placeholder="{{ 'LBL.PLACEHOLDER.RELEASE_NAME' | translate }}"
+                            formControlName="releaseName" />
+                        }
+                        @if (uploadForm.get('releaseName')?.invalid && uploadForm.get('releaseName')?.touched) {
+                        <p-message severity="error" text="{{ 'LBL.ERROR.INVALID_RELEASE_NAME' | translate }}"></p-message>
+                        }
+                    </span>
                 </div>
-                 <div class="">
-                            <h4 class="bdp-card-heading fw-bold">1.Maximum File Size:5 MB 2.File Type:PDF</h4>
-                        <div class="p-card card-height-1 p-4 border border-2 border-dashed" style="border-color: #6c757d !important;text-align: center;">
-                            <ngx-dropzone class="bdp-drop-zone" (change)="onChoosingFile($event)" [multiple]="false"
-                                [disabled]="files.length > 0" accept=".pdf" >
-                                <ngx-dropzone-label>
-                                    <i class="fad fa-cloud-upload" style="font-size: 2rem; margin-bottom: 8px; color: #007bff;"></i><br />
-                                    <div style="color: #495057;">
-                                        Drag & Drop your File or
-                                        <span class="bdp-link bdp-underline" style="color: #007bff;">Upload</span>
-                                    </div>
-                                </ngx-dropzone-label>
-                                @for (f of files; track f.name) {
-                                    <ngx-dropzone-preview class="bdp-drop-zone-preview" [removable]="true"
-                                        (removed)="onRemove(f)">
-                                        <ngx-dropzone-label style="overflow-wrap: anywhere;">{{ f.name }}</ngx-dropzone-label>
-                                    </ngx-dropzone-preview>
-                                }
-                            </ngx-dropzone>
-                        </div>
+                <div class="">
+                    <h4 class="bdp-card-heading fw-bold">{{ 'LBL.UPLOAD.HINTS' | translate }}</h4>
+                    <div class="p-card card-height-1 p-4 border border-2 border-dashed"
+                        style="border-color: #6c757d !important;text-align: center;">
+                        <ngx-dropzone class="bdp-drop-zone" (change)="onChoosingFile($event)" [multiple]="false"
+                            [disabled]="files.length > 0" accept=".pdf">
+                            <ngx-dropzone-label>
+                                <i class="fad fa-cloud-upload"
+                                    style="font-size: 2rem; margin-bottom: 8px; color: #007bff;"></i><br />
+                                <div style="color: #495057;">
+                                    {{ 'LBL.UPLOAD.DROP_TEXT' | translate }}
+                                </div>
+                            </ngx-dropzone-label>
+                            @for (f of files; track f.name) {
+                            <ngx-dropzone-preview class="bdp-drop-zone-preview" [removable]="true"
+                                (removed)="onRemove(f)">
+                                <ngx-dropzone-label style="overflow-wrap: anywhere;">{{ f.name }}</ngx-dropzone-label>
+                            </ngx-dropzone-preview>
+                            }
+                        </ngx-dropzone>
                     </div>
+                </div>
             </form>
         </ng-template>
         <ng-template pTemplate="footer">
-            <button pButton label="Cancel" icon="pi pi-times" (click)="closeDialog()"></button>
-            <button pButton [label]="editMode ? 'Update' : 'Upload'" icon="pi pi-check" (click)="uploadFile()"></button>
+            <div style="display:flex; align-items:center; justify-content:space-between; width:100%; gap:12px; padding:0 8px;">
+                <div style="display:flex;">
+                    <button pButton [label]="'LBL.BUTTON.REMOVE_FILE' | translate" icon="pi pi-trash" class="p-button-danger" (click)="onRemove(files[0])" [disabled]="files.length === 0 && !uploadSuccess" style="margin-right:12px;"></button>
+                </div>
+                <div style="display:flex; gap:12px;">
+                    <button pButton label="{{ 'LBL.BUTTON.CANCEL' | translate }}" icon="pi pi-times" (click)="closeDialog()"></button>
+                    <button pButton [label]="editMode ? ('LBL.BUTTON.UPDATE' | translate) : ('LBL.BUTTON.UPLOAD' | translate)" icon="pi pi-check" (click)="uploadFile()" [disabled]="uploadSuccess || !uploadForm.valid || files.length === 0"></button>
+                </div>
+            </div>
         </ng-template>
     </p-dialog>
 </div>

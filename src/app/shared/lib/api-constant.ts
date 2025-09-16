@@ -81,6 +81,14 @@ export namespace AppRoutes {
         public static readonly GET_COMPANY_PETA_CONFIG = "peta-petd-management/configs";
     }
 
+    export abstract class ReleaseManagement {
+        public static readonly GET_RELEASE_MANUAL_NOTES = "releases/release-manual-notes";
+        public static readonly UPLOAD_DOCUMENT = "releases/upload";
+        public static readonly REUPLOAD_DOCUMENT = (id: number) => "releases/" + id + "/re-upload";  // {id}/re-upload will be appended
+        public static readonly DELETE_DOCUMENT = (id: number, docType: string) => "releases/" + id + "/" + docType;    // {id}/{docType} will be appended
+        public static readonly DOWNLOAD_DOCUMENT = (id: number) => "releases/" + id ;  // {id} will be appended
+    }
+
 
     export abstract class User {
         public static readonly ROOT = "app";
@@ -100,6 +108,7 @@ export namespace AppRoutes {
         public static readonly ALERT_SUBSCRIPTION = "alert-subscription";
         public static readonly CONTRACT_CSV_UPLOAD = User.CONTRACT_AGREEMENT + '/' + "contract-csv-upload";
         public static readonly USER_MANAGEMENT_CONFIG = "user-configuration";
+        public static readonly USER_MANAGEMENT_CONTROL = "user-control";
         public static readonly CONTRACT_CSV_HISTORY = User.CONTRACT_AGREEMENT + '/' + "contract-csv-history";
         public static readonly RELEASE_NOTES = User.PROFILE + '/' + "data-upload-download";
         public static readonly FILTER_PAGE = User.PROFILE + '/' + "filterpanel";

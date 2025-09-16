@@ -308,4 +308,7 @@
             <p-button label="Apply" [outlined]="true" severity="primary" (click)="visible = false" />
         </ng-template>
     </p-dialog>
+    <app-role-configuration #existingUserTable (saved)="refresh()"></app-role-configuration>
+    <app-filter-panel [(visible)]="filtersVisible" (applied)="onFiltersApplied()" (cleared)="onFiltersCleared()">
+    </app-filter-panel>
 </div>

@@ -23,10 +23,13 @@ export interface TableHeaders {
     type?: 'text' | 'numeric' | 'date' | 'boolean' | 'select';
 }
 export const USER_TABLE_HEADERS: TableHeaders[] = [
-    { field: 'userName', header: 'Name', sortable: true, filter: true, type: 'text' },
-    { field: 'userId', header: 'User Email Id', sortable: true, filter: true, type: 'text' },
+    { field: 'name', header: 'Name', sortable: true, filter: true, type: 'text' },
+    { field: 'userType', header: 'User Type', sortable: true, filter: true, type: 'text' },
+    { field: 'email', header: 'User Email Id', sortable: true, filter: true, type: 'text' },
     { field: 'companies', header: 'Company Name', sortable: true, filter: true, type: 'text' },
-    { field: 'roleGranted', header: 'Role Granted', sortable: true, filter: true, type: 'text' }
+    { field: 'roleGranted', header: 'Role Granted', sortable: true, filter: true, type: 'text' },
+    { field: 'updatedBy', header: 'Updated By', sortable: true, filter: true, type: 'text' },
+    { field: 'updatedOn', header: 'Updated On', sortable: true, filter: true, type: 'date' }
 ];
 
 export const ROLE_TABLE_HEADERS: TableHeaders[] = [
@@ -44,16 +47,17 @@ export const ROLE_TABLE_HEADERS: TableHeaders[] = [
 ];
 
 export const RELEASE_NOTES_TABLE_HEADERS: TableHeaders[] = [
-  { field: 'fileName', header: 'LBL.RELEASE_NAME', sortable: true, filter: true, type: 'text' },
-  { field: 'dateOfReleaseNote', header: 'LBL.RELEASE_DATE', sortable: true, filter: true, type: 'date' },
-  { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
-  { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
+    { field: 'releaseName', header: 'LBL.RELEASE_NAME', sortable: true, filter: true, type: 'text' },
+    { field: 'releaseDate', header: 'LBL.RELEASE_DATE', sortable: true, filter: true, type: 'date' },
+    { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
+    { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
 ];
+
 export const USER_MANUAL_TABLE_HEADERS: TableHeaders[] = [
-  { field: 'manualName', header: 'LBL.MANUAL_NAME', sortable: true, filter: true, type: 'text' },
-  { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
-  { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
-  { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
+    { field: 'manualName', header: 'LBL.MANUAL_NAME', sortable: true, filter: true, type: 'text' },
+    { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
+    { field: 'uploadedBy', header: 'LBL.UPLOADED_BY', sortable: true, filter: true, type: 'text' },
+    { field: 'uploadedOn', header: 'LBL.UPLOADED_ON', sortable: true, filter: true, type: 'date' }
 ];
 
 export const SUBSCRIPTION_TABLE_HEADERS: TableHeaders[] = [
@@ -76,6 +80,16 @@ export const PETA_TABLE_HEADERS: TableHeaders[] = [
   { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true, type: 'text' },
   { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' }
 ];
+
+export const CUSTOMER_CARRIER_TABLE_HEADERS: TableHeaders[] = [
+  { field: 'carrierScac', header: 'LBL.CARRIER_SCAC', sortable: true, filter: true, type: 'text' },
+  { field: 'carrierProvider', header: 'LBL.CARRIER_PROVIDER', sortable: true, filter: true, type: 'text' },
+  { field: 'modeOfTransport', header: 'LBL.MODE_OF_TRANSPORT', sortable: true, filter: true, type: 'text' },
+  { field: 'onboardedOn', header: 'LBL.ONBOARDED_ON', sortable: true, filter: true, type: 'date' },
+  { field: 'updatedOn', header: 'LBL.UPDATED_ON', sortable: true, filter: true, type: 'date' },
+  { field: 'updatedBy', header: 'LBL.UPDATED_BY', sortable: true, filter: true, type: 'text' }
+];
+ 
 
 export interface SelectOption {
     label: string;
@@ -313,35 +327,4 @@ export interface RequestBody {
     }>;
   };
   isActiveRole: boolean;
-}
-
-export interface ReleaseNoteData {
-  id: number;
-  noteType: 'RELEASE_NOTE' | 'USER_MANUAL';
-  fileName: string;
-  releaseUserManualName: string;
-  dateOfReleaseNote: string;
-  uploadedOn: string;
-  uploadedBy: string;
-  updatedOn: string;
-  updatedBy: string;
-}
-
-export interface ReleaseUploadResponse<T> {
-  success: boolean;
-  message: string;
-  data: ReleaseNoteData;
-  errorCode: string;
-  validationErrors: {
-    field: string;
-    rejectedValue: any;
-    message: string;
-    code: string;
-  }[];
-  path: string;
-  timestamp: string;
-  traceId: string;
-  metadata: {
-    [key: string]: any;
-  };
 }
